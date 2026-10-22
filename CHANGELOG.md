@@ -2,6 +2,14 @@
 
 This project was previously called LumaRemote. Entries before 1.3.0 keep that name.
 
+## 1.3.1
+
+- Relicensed from MIT to **FSL-1.1-MIT** (Functional Source License 1.1, MIT Future License):
+  free non-competing use, including internal business use; no competing or rebranded product; each
+  release becomes MIT two years after publication.
+- Added `TRADEMARK.md` for the TellyMote name, wordmark and logo.
+- Note: 1.3.0 was published under MIT; copies already distributed remain MIT for those copies.
+
 ## 1.3.0
 
 - Renamed the product, app ID, installer, GitHub repository and UI from LumaRemote to TellyMote.

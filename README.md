@@ -177,6 +177,7 @@ The smoke mode disables hardware acceleration so `capturePage()` works on GPU-le
 - [Security policy](SECURITY.md)
 - [Security review (1.2.0)](docs/SECURITY-REVIEW.md)
 - [Privacy and your data](docs/PRIVACY.md)
+- [Trademark policy](TRADEMARK.md)
 - [Changelog](CHANGELOG.md)
 
 ## Known limitations
@@ -207,5 +208,11 @@ protocol implementation.
 
 ## Licence
 
-MIT â€” see [LICENSE](LICENSE). Not affiliated with Xiaomi, Google, Samsung, LG, Roku or Android TV.
-Product names are used only to describe compatibility.
+**FSL-1.1-MIT** — the Functional Source License 1.1 with an MIT Future License. You may use, copy,
+modify and redistribute TellyMote for any non-competing purpose, including internal business use.
+You may not ship a competing or rebranded product; each release becomes MIT two years after it is
+published. The TellyMote name, wordmark and logo are reserved — see [TRADEMARK.md](TRADEMARK.md).
+Versions published before 1.3.1 (including 1.3.0) were MIT, and those copies remain MIT.
+
+Not affiliated with Xiaomi, Google, Samsung, LG, Roku or Android TV. Product names are used only to
+describe compatibility.
