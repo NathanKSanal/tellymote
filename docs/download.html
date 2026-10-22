@@ -160,7 +160,7 @@
             note: 'AppImage · x86_64',
           };
         }
-        return { main: null, label: 'View all releases', note: 'Choose the build for your system' };
+        if (platform === 'android') { return { main: { browser_download_url: 'https://github.com/NathanKSanal/tellymote/releases/tag/android-v0.1.0' }, label: 'Android preview (discovery only)', note: 'Scans your LAN; pairing and control are the next slice' }; } return { main: null, label: 'View all releases', note: 'Choose the build for your system' };
       }
 
       function render(assets) {
