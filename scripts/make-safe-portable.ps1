@@ -19,6 +19,12 @@ $electron = Join-Path $root "node_modules\electron\dist\electron.exe"
 $zip = Join-Path $root "release\TellyMote-$version-portable-safe.zip"
 
 if (-not (Test-Path $source)) { throw "Run 'npm run package' first; $source is missing." }
+if (-not (Test-Path $electron)) {
+  Write-Host "Electron binary missing; running its installer."
+  Push-Location (Join-Path $root "node_modules\electron")
+  node install.js
+  Pop-Location
+}
 if (-not (Test-Path $electron)) { throw "Electron binary not found at $electron." }
 
 Remove-Item $target -Recurse -Force -ErrorAction SilentlyContinue
