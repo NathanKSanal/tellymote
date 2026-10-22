@@ -9,6 +9,9 @@ Build machine: Windows 11 x64, Wi-Fi on a private /24 network.
 > before the TV was powered off; the code path exists and is unit/mock-tested, but that is not proof
 > of firmware acceptance. Nothing here is presented as working until the TV actually answers.
 
+> The **Android client** is a separate implementation and is currently a discovery-only preview;
+> see [mobile/android/README.md](../mobile/android/README.md).
+
 ## Status matrix
 
 | Capability | Implementation | Automated evidence | On real Mi TV |

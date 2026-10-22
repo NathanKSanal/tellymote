@@ -11,7 +11,7 @@ screenshot or setting from the machine that built it.
 On first run the app creates its own folder:
 
 ```
-%APPDATA%\tellymote\
+%APPDATA%\TellyMote\
   devices.json    saved TV names, addresses, capabilities
   settings.json   your preferences
   secrets.bin     DPAPI-encrypted pairing certificate, ADB key, pinned fingerprints
@@ -19,6 +19,13 @@ On first run the app creates its own folder:
 ```
 
 A fresh install on another machine starts with an empty device list; there is nothing to import.
+
+## Android preview
+
+The Android client is a discovery-only preview. It has no account, no telemetry, no cloud relay and
+does not persist a device list yet. It requests only internet, network/Wi-Fi state and Wi-Fi
+multicast permissions; no location, storage, camera, contacts or account access. The APK is
+debug-signed for sideloading.
 
 ## What is not included in a release
 
@@ -35,7 +42,7 @@ same check runs in GitHub Actions.
 
 - **Forget** a device in the app: removes its saved record and pinned fingerprint.
 - **Settings → Reset settings**: restores defaults without deleting pairings.
-- To remove everything, quit the app and delete `%APPDATA%\tellymote`.
+- To remove everything, quit the app and delete `%APPDATA%\TellyMote`.
 - Revoke the ADB key on the TV separately if you no longer want debugging access.
 
 ## Sharing diagnostics

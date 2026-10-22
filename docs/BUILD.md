@@ -12,7 +12,7 @@
 | Vitest | 3.2.7 | node environment, forks pool |
 | electron-builder | 26.15.3 | NSIS x64 installer |
 
-No Rust, MSVC, Android SDK or platform-tools are required.
+No Rust, MSVC, Android SDK or platform-tools are required for the desktop app.
 
 ## Scripts
 
@@ -130,6 +130,20 @@ icons are still TellyMote's. This does not weaken the app: the same `app.asar`, 
 checks are used.
 
 
+
+## Android client
+
+The mobile client is a separate Gradle project under `mobile/android`. It needs JDK 21, Android
+SDK platform 35, build-tools 35.0.0 and Gradle 8.14. The desktop toolchain is unrelated.
+
+```bash
+cd mobile/android
+gradle :core:test :app:assembleDebug
+# app/build/outputs/apk/debug/app-debug.apk
+```
+
+The **Android** GitHub Actions workflow installs the SDK and uploads the APK as
+`TellyMote-android-debug`. A preview APK is attached to the `android-v0.1.0` pre-release.
 
 ## Reproducing the documented environment check
 

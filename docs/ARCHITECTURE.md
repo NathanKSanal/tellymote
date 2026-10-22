@@ -12,8 +12,8 @@
 | WebView2 | present | Electron also benefits |
 | `adb` on PATH | **absent** | App must ship its own ADB implementation (no platform-tools dependency) |
 | Wi-Fi LAN | private `/24`, link 115.6 Mbps | Real discovery must work on a local /24 |
-| Hosts answering on LAN | `.1` (router), `.100`, `.104`, `.108` (randomised MACs, no Android TV ports) | **No Mi TV reachable at build time** → hardware validation must be reported honestly as pending |
-| Ports probed | 6466/6467 (ATV remote v2), 6095 (v1), 5555 (ADB), 8009 (Cast), 80/443 | None open on the above hosts |
+| Real TV (later in the project) | Xiaomi Mi TV 4A (`MiTV4I`), Android 9 / SDK 28 | ATV v2, ADB and PNG capture verified; see [COMPATIBILITY.md](COMPATIBILITY.md) |
+| Ports on the TV while awake | 6466/6467, 5555, 8009 | ATV remote, ADB and Cast all reachable |
 
 ### Stack decision (documented deviation)
 
@@ -125,13 +125,24 @@ Manual override always wins.
 - Logs redact tokens, keys, pairing codes, and IPs on export (opt-in to include IPs).
 - No telemetry, no cloud, no remote-control listener.
 
-## 7. Verification status legend
+## 7. Android client (in progress)
+
+`mobile/android` is a separate Gradle project, not a port of the Electron app:
+
+- `:core` — pure Kotlin/JVM: SSDP, `/24` TCP probe, device model. No Android imports, so it can
+  become a KMP module for iOS later.
+- `:app` — Jetpack Compose UI, Android permissions and lifecycle.
+
+Current slice: discovery only. Planned order: ATV v2 pairing/control, ADB PNG view, H.264 via
+MediaCodec, Roku ECP, saved devices.
+
+## 8. Verification status legend
 
 - **Verified** — exercised against real hardware and/or a protocol conformance test in this repo.
 - **Implemented** — code complete, unit/integration tested against a mock, **not yet** run on the Mi TV.
 - **Conditional** — depends on firmware/authorisation; the app probes before offering it.
 - **Unsupported** — not possible through legitimate local protocols; explicitly disabled.
 
-This project ships with **no real Mi TV available on the build network**. Every hardware-dependent
-capability is therefore reported as *implemented, pending on-device verification*, and the app itself
-performs the same verification at runtime rather than trusting this document.
+This document describes the desktop architecture. Hardware status is tracked per capability in
+[docs/COMPATIBILITY.md](COMPATIBILITY.md); the app performs the same checks at runtime rather than
+trusting this document.

@@ -13,6 +13,9 @@ This slice does:
 
 It does **not** control anything yet. Pairing/remote control is the next slice.
 
+Preview APK: [android-v0.1.0](https://github.com/NathanKSanal/tellymote/releases/tag/android-v0.1.0)
+(debug-signed, Android 8.0+). iOS follows after the Android protocol core is complete.
+
 ## Build
 
 Local:

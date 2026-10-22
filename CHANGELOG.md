@@ -2,6 +2,12 @@
 
 This project was previously called LumaRemote. Entries before 1.3.0 keep that name.
 
+## Android preview 0.1.0
+
+- Standalone Android client (Kotlin/Compose): SSDP discovery and /24 probe for ATV 6466, ADB
+  5555 and Roku 8060. Discovery only; pairing/control is the next slice.
+- CI Android workflow builds and uploads a debug APK.
+
 ## 1.3.2
 
 - Added Linux AppImage and macOS ZIP builds to the release workflow, alongside Windows.

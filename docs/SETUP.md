@@ -1,6 +1,9 @@
 # Setup — from a cold TV to a working remote
 
-This guide assumes a **Xiaomi Mi TV 4A 43"** (Android TV 9 / PatchWall) and a Windows PC on the
+This guide covers the **desktop app**. The standalone Android client is a separate preview; see
+[mobile/android/README.md](../mobile/android/README.md).
+
+It assumes a **Xiaomi Mi TV 4A 43"** (Android TV 9 / PatchWall) and a Windows PC on the
 same network. Menu names vary slightly by firmware; the app never depends on a specific menu path.
 
 ## 1. Network prerequisites

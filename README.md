@@ -1,17 +1,23 @@
 # TellyMote
 
-A Windows desktop remote and live screen viewer for Android TV, built first for a **Xiaomi Mi TV 4A 43"**
-(PatchWall / Android TV 9). Everything runs on your LAN: no account, no cloud relay, no telemetry.
+A desktop remote and live screen viewer for Android TV / Google TV, plus Roku control — and a
+standalone Android client in progress. Built first for a **Xiaomi Mi TV 4A 43"** (PatchWall /
+Android TV 9). Everything runs on your LAN: no account, no cloud relay, no telemetry.
 
 ![TellyMote icon](build/icon.png)
 
-> **Honest status:** verified on a real **Xiaomi Mi TV 4A 43" (`MiTV4I`, Android 9 / SDK 28)** over a
-> private LAN: SSDP discovery, ATV v2 pairing and control, ADB authorisation, the live app list,
-> and the PNG screenshot feed (real 1280×720 frames). The H.264 stream was confirmed to carry
-> SPS/PPS/IDR and feed WebCodecs; the final "decoded frames paint" pass was cut short when the TV
-> powered off. Rows in [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md) are marked **verified** or
-> **pending** individually — nothing unverified is presented as working. 149 automated tests cover
-> the protocol and capture logic, including real TLS/TCP mock servers.
+[![CI](https://github.com/NathanKSanal/tellymote/actions/workflows/ci.yml/badge.svg)](https://github.com/NathanKSanal/tellymote/actions/workflows/ci.yml)
+[![Android](https://github.com/NathanKSanal/tellymote/actions/workflows/android.yml/badge.svg)](https://github.com/NathanKSanal/tellymote/actions/workflows/android.yml)
+
+> **Honest status:** the desktop app is verified on a real **Xiaomi Mi TV 4A 43" (`MiTV4I`,
+> Android 9 / SDK 28)** over a private LAN: SSDP discovery, ATV v2 pairing and control, ADB
+> authorisation, the live app list, and the PNG screenshot feed (real 1280×720 frames). The H.264
+> stream was confirmed to carry SPS/PPS/IDR and feed WebCodecs; the final "decoded frames paint"
+> pass was cut short when the TV powered off. **The Android client is a discovery-only preview** —
+> it finds TVs, but pairing/control is the next slice. Rows in
+> [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md) are marked **verified** or **pending** individually;
+> nothing unverified is presented as working. 166 automated tests cover the protocol and capture
+> logic, including real TLS/TCP mock servers.
 
 ---
 
@@ -27,13 +33,15 @@ A Windows desktop remote and live screen viewer for Android TV, built first for 
 | **Shell** | Flat, dense desktop UI (amber/azure/violet/emerald accents), frameless title bar, tray behaviour, configurable keyboard map, fullscreen remote. |
 | **Performance** | Lite / Balanced / Performance / Auto presets, newest-frame-only delivery, stale-frame dropping, decode backpressure, measured stage latency. The remote is prioritised over capture. |
 | **Diagnostics** | Per-stage latency, protocol matrix, device props, network quality, redacted JSON export. |
+| **Android preview** | Standalone Kotlin/Compose client: SSDP discovery and a `/24` probe for ATV `6466`, ADB `5555` and Roku `8060`. **Discovery only** — pairing/control is the next slice. |
 
 ## Requirements
 
-- **Windows 10/11 x64** (the build target; the UI is Electron and would run elsewhere, but only Windows was built and tested).
-- **Node.js 20+** and npm for development.
+- **Windows 10/11 x64** for the desktop app (the verified target).
+- **Node.js 20+** and npm for the desktop build.
 - **An Android TV / Google TV or Roku device on the same subnet** for anything beyond the UI and mock tests.
-- No `adb.exe`, Android SDK or platform-tools are required — the ADB host protocol is implemented in-app.
+- No `adb.exe`, Android SDK or platform-tools are required for the desktop app — the ADB host protocol is implemented in-app.
+- **Android client build:** JDK 21, Android SDK 35, Gradle 8.14. CI installs these; see [mobile/android/README.md](mobile/android/README.md).
 
 ## Supported platforms
 
@@ -46,23 +54,46 @@ Verified on a Xiaomi Mi TV 4A 43" (`MiTV4I`, Android 9). Other Android TV sets a
 but were not individually tested. See [docs/SUPPORT.md](docs/SUPPORT.md) for the full matrix and the
 per-feature status.
 
+### Host platforms
+
+| Host | Status |
+| --- | --- |
+| **Windows 10/11 x64** | **Verified.** Installer, portable and SAC-safe portable. |
+| **Linux** | AppImage built by CI; unsigned, not hardware-verified. |
+| **macOS** | arm64/x64 ZIP built by CI; unsigned, not hardware-verified. |
+| **Android** | **Preview (discovery only).** Kotlin/Compose APK; pairing/control is in progress. |
+| **iOS** | Planned after Android; shares the pure-Kotlin protocol core where possible. |
+
 ## Download
 
 Open **[the download page](https://nathanksanal.github.io/tellymote/download.html)** - it detects your
-platform and links the matching build. All files are also on
+platform and links the matching build. All desktop files are also on
 [Releases](https://github.com/NathanKSanal/tellymote/releases).
+
+**Android preview:** [discovery-only APK](https://github.com/NathanKSanal/tellymote/releases/tag/android-v0.1.0)
+(no pairing or control yet).
 
 ## Install on Windows
 
 Two builds are attached to [Releases](https://github.com/NathanKSanal/tellymote/releases):
 
-- **`TellyMote-1.3.0-x64.exe`** — per-user installer. Adds Start Menu and Desktop shortcuts, an
+- **`TellyMote-<version>-x64.exe`** - per-user installer. Adds Start Menu and Desktop shortcuts, an
   uninstall entry, and installs to `%LOCALAPPDATA%\Programs\TellyMote`.
-- **`TellyMote-1.3.0-portable-safe.zip`** — portable build whose launcher is the untouched Electron
+- **`TellyMote-<version>-portable-safe.zip`** - portable build whose launcher is the untouched Electron
   binary. Use this if Windows Smart App Control blocks the installer or the normal launcher.
 
 The build is unsigned, so SmartScreen may warn. On first launch, data from an older LumaRemote
 install is copied from `%APPDATA%\lumaremote` to `%APPDATA%\TellyMote` once.
+
+## Install on Android (preview)
+
+Download `app-debug.apk` from the
+[Android preview release](https://github.com/NathanKSanal/tellymote/releases/tag/android-v0.1.0),
+allow "install unknown apps", and open it. It scans the LAN and lists TVs with ATV Remote v2
+(`6466`), ADB (`5555`) or Roku ECP (`8060`).
+
+**It does not pair or control yet.** The next slice adds ATV v2 pairing and a D-pad/volume remote,
+then ADB PNG view, H.264 and Roku. Android 8.0+; debug-signed.
 
 ## Quick start (from source)
 
@@ -82,6 +113,16 @@ npm run package      # NSIS installer in release/
 
 The installer is written to `release/TellyMote-<version>-x64.exe` (unpacked build in
 `release/win-unpacked/`). A portable ZIP with the same files is produced alongside it.
+
+Android (JDK 21 + Android SDK 35):
+
+```bash
+cd mobile/android
+gradle :core:test :app:assembleDebug
+# app/build/outputs/apk/debug/app-debug.apk
+```
+
+Or download the APK from the Android CI workflow / preview release.
 
 ## First run
 
@@ -152,16 +193,17 @@ capture request → TV capture → bytes received → decoded → painted
 electron/        main process: discovery, ATV v2, ADB, capture, frame server, session
 shared/          domain types, capability rules, IPC channel allowlist
 src/             React renderer (views, components, typed IPC client)
-tests/           15 Vitest suites (149 tests) including real TLS/TCP mock servers
+mobile/android/  standalone Android client: Compose app + pure-Kotlin protocol core
+tests/           18 Vitest suites (166 tests) including real TLS/TCP mock servers
 docs/            architecture, setup, ADB, compatibility, troubleshooting, build notes
-scripts/         dev runner, Electron bundler, icon generator
+scripts/         dev runner, Electron bundler, icon generator, safe portable, privacy check
 ```
 
 ## Tests and smoke checks
 
 ```powershell
 npm run typecheck    # renderer + Electron TypeScript
-npm test             # Vitest: 149 tests, mock TLS/TCP servers, no hardware needed
+npm test             # Vitest: 166 tests, mock TLS/TCP servers, no hardware needed
 npm run build
 npx electron . --smoke                       # boots the app and writes a screenshot
 $env:LUMA_SMOKE_OUT='.smoke'
@@ -174,6 +216,7 @@ The smoke mode disables hardware acceleration so `capturePage()` works on GPU-le
 ## Documentation
 
 - [Supported platforms and status](docs/SUPPORT.md)
+- [Android client status and build](mobile/android/README.md)
 - [Architecture and protocol strategy](docs/ARCHITECTURE.md)
 - [Setup and first-run walkthrough](docs/SETUP.md)
 - [ADB authorisation and capture](docs/ADB.md)
@@ -188,9 +231,9 @@ The smoke mode disables hardware acceleration so `capturePage()` works on GPU-le
 
 ## Known limitations
 
-- **Windows builds only.** The installer and portable ZIP are produced for Windows 10/11 x64. The
-  Electron/Node source is platform-neutral and CI typechecks/tests/builds on Linux and macOS, but
-  no Linux/macOS package is currently published or hardware-verified.
+- **Host platforms.** Windows is the verified desktop target. Linux AppImage and macOS ZIPs are
+  CI-built and unsigned. **Android is a discovery-only preview**; pairing, control and live view are
+  still to come. iOS is planned after Android.
 - **Roku has no live video.** Roku ECP supports remote keys, app list, app launch and literal text,
   but exposes no screen-capture endpoint. Live view is Android TV / Google TV only, and the Live
   page says so when a Roku is selected.
