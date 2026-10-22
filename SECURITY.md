@@ -7,6 +7,8 @@ Please do not open a public issue for a security problem. Use GitHub's
 privately. Include the affected version, platform, and reproduction steps. You should get an
 acknowledgement within a few days.
 
+See [docs/SECURITY-REVIEW.md](docs/SECURITY-REVIEW.md) for the 1.2.0 review, fixed findings and residual risks.
+
 ## What this app can do
 
 LumaRemote talks directly to a TV on your LAN. With ADB authorised, it can inject input, read
