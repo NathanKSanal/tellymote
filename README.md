@@ -173,8 +173,9 @@ The smoke mode disables hardware acceleration so `capturePage()` works on GPU-le
   VIDAA require separate protocol adapters; see [docs/SUPPORT.md](docs/SUPPORT.md).
 - **Unsigned build.** There is no code-signing certificate. Windows SmartScreen warns on the
   installer, and Smart App Control (if enabled) blocks unsigned launchers. The build keeps the
-  packaged launcher byte-identical to the signed Electron binary so it remains runnable locally;
-  see [docs/BUILD.md](docs/BUILD.md#smart-app-control).
+  packaged launcher byte-compatible with the signed Electron binary so it remains runnable locally;
+  if that is still blocked, use `LumaRemote-<version>-portable-safe.zip`, which uses the stock
+  Electron launcher. See [docs/BUILD.md](docs/BUILD.md#smart-app-control).
 - **Verification status is per-capability.** See [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md);
   the Diagnostics view only marks something verified after your TV answers.
 - Mi TV firmware varies; PatchWall builds may hide Developer options or use different IME behaviour.

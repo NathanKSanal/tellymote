@@ -34,6 +34,7 @@ import { api } from '../lib/api';
 import { cx, formatBitrate, formatBytes, formatMs, shortHost } from '../lib/format';
 import { useScreenFeed } from '../lib/useScreenFeed';
 import { EmptyState, InlineNote, PageHeader, Panel, SectionTitle, Sparkline, Spinner, Stat } from '../components/ui';
+import { ConnectionDiagram } from '../components/ui';
 
 type Preference = 'auto' | 'h264' | 'png';
 
@@ -319,10 +320,8 @@ export function LiveScreen({ onNavigate }: { onNavigate: (view: ViewId) => void 
 
             {!active && (
               <div className="absolute inset-0 grid place-items-center p-8 text-center">
-                <div className="max-w-[420px]">
-                  <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-lg border border-[var(--line)] bg-[var(--surface-2)] text-muted">
-                    <MonitorPlay size={22} />
-                  </div>
+                <div className="max-w-[440px]">
+                  <ConnectionDiagram active={adbAuthorised} className="mx-auto mb-1 h-[128px] w-[270px]" />
                   <div className="text-[14.5px] font-semibold text-ink">Nothing is being mirrored</div>
                   <p className="mt-1.5 text-[12px] leading-relaxed text-muted">
                     {rokuOnly

@@ -26,7 +26,7 @@ import {
 import type { ViewId } from '../App';
 import { useApp, useDisplayDevice, useMetricHistory } from '../lib/store';
 import { capabilityLabel, cx, formatBitrate, formatMs, phaseLabel, phaseTone, remoteTransportLabel, shortHost } from '../lib/format';
-import { CapabilityChip, EmptyState, InlineNote, KeyValue, PageHeader, Panel, SectionTitle, Sparkline, Spinner, Stat, StatRow } from '../components/ui';
+import { CapabilityChip, EmptyState, InlineNote, PageHeader, Panel, SectionTitle, SignalChain, Sparkline, Spinner, Stat, StatRow } from '../components/ui';
 
 const QUICK_KEYS = [
   { key: 'home', label: 'Home', icon: Home },
@@ -158,32 +158,41 @@ export function Dashboard({ onNavigate }: { onNavigate: (view: ViewId) => void }
             </div>
           </div>
 
-          <div className="rounded-lg border border-[var(--line)] bg-[var(--surface-2)] px-4 py-2">
-            <div className="eyebrow py-2">Session</div>
-            <div className="divide-y divide-[var(--line-soft)]">
-              <KeyValue
-                label="Remote"
-                value={
-                  state.connection.remoteTransport === 'none'
-                    ? 'Not connected'
-                    : remoteTransportLabel(state.connection.remoteTransport)
-                }
-              />
-              <KeyValue
-                label="Screen"
-                value={
-                  state.connection.captureTransport === 'adb-h264'
-                    ? 'H.264'
-                    : state.connection.captureTransport === 'adb-png'
-                      ? 'Screenshots'
-                      : 'Idle'
-                }
-              />
-              <KeyValue label="Resolution" value={metrics.width ? `${metrics.width}×${metrics.height}` : '—'} />
-              <KeyValue label="Bitrate" value={formatBitrate(metrics.kbps)} />
+          <div className="rounded-lg border border-[var(--line)] bg-[var(--surface-2)] px-3 py-3">
+            <div className="mb-2.5 flex items-center justify-between">
+              <span className="eyebrow">Signal chain</span>
+              <span className={cx('dot', dialTone)} aria-hidden />
             </div>
+            <SignalChain
+              active={captureActive}
+              nodes={[
+                {
+                  label: 'Remote',
+                  value:
+                    state.connection.remoteTransport === 'none'
+                      ? 'Offline'
+                      : remoteTransportLabel(state.connection.remoteTransport),
+                  tone: state.connection.remoteTransport === 'none' ? 'idle' : state.connection.remoteTransport === 'adb' ? 'warn' : 'ok',
+                },
+                {
+                  label: 'Screen',
+                  value:
+                    state.connection.captureTransport === 'adb-h264'
+                      ? 'H.264'
+                      : state.connection.captureTransport === 'adb-png'
+                        ? 'PNG'
+                        : 'Idle',
+                  tone: state.connection.captureTransport === 'none' ? 'idle' : state.connection.captureTransport === 'adb-png' ? 'warn' : 'ok',
+                },
+                {
+                  label: 'Output',
+                  value: metrics.width ? `${metrics.width}×${metrics.height}` : '—',
+                  tone: metrics.width ? 'ok' : 'idle',
+                },
+              ]}
+            />
             {captureActive && (
-              <div className="border-t border-[var(--line-soft)] py-2.5">
+              <div className="mt-3">
                 <div className="flex items-baseline justify-between">
                   <span className="eyebrow">Throughput</span>
                   <span className="mono text-[10.5px] text-muted">{formatBitrate(metrics.kbps)}</span>

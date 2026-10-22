@@ -113,6 +113,23 @@ For distribution to other machines, buy a code-signing certificate (or use Azure
 set `signAndEditExecutable` back to `true`, and sign both the app and the NSIS installer. A
 self-signed certificate will **not** satisfy Smart App Control.
 
+### Smart App Control-safe portable
+
+Even with resource editing skipped, electron-builder's launcher hash can be unfamiliar to Smart App
+Control on a specific machine. The stock `electron.exe` is already trusted and loads
+`resources\app.asar` from its own folder, so a portable copy can use it as the launcher:
+
+```powershell
+npm run package
+powershell -ExecutionPolicy Bypass -File .\scripts\make-safe-portable.ps1
+# release\LumaRemote-<version>-portable-safe.zip
+```
+
+The trade-off is that the file icon and version metadata are Electron's; the in-app window and tray
+icons are still LumaRemote's. This does not weaken the app: the same `app.asar`, CSP, sandbox and IPC
+checks are used.
+
+
 
 ## Reproducing the documented environment check
 

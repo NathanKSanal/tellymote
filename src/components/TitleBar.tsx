@@ -24,7 +24,7 @@ export function TitleBar() {
         <div className="grid h-[22px] w-[22px] place-items-center rounded-[5px] bg-[var(--accent)] text-[var(--accent-ink)]">
           <Tv size={12} strokeWidth={2.4} />
         </div>
-        <span className="text-[12.5px] font-semibold tracking-[-0.01em] text-ink">LumaRemote</span>
+        <span className="display text-[13px] font-semibold tracking-[0.01em] text-ink">LumaRemote</span>
         <span className="mono text-[10px] text-faint">{state.appInfo?.version ? `v${state.appInfo.version}` : ''}</span>
       </div>
 

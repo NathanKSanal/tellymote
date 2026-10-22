@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, type ReactNode } from 'react';
+import { Fragment, useEffect, useId, useRef, type ReactNode } from 'react';
 import { AlertTriangle, Check, Loader2, X } from 'lucide-react';
 import type { Capability, CapabilityState } from '@shared/types';
 import { capabilityLabel, capabilityTone, cx } from '../lib/format';
@@ -302,6 +302,67 @@ export function KeyValue({ label, value }: { label: string; value: ReactNode }) 
 
 export function Divider() {
   return <div className="hairline my-4" />;
+}
+
+/**
+ * Horizontal transport chain: Remote → Screen → Output. Each node is live
+ * state, and the connector animates only when that stage is actually active.
+ */
+export function SignalChain({
+  nodes,
+  active = false,
+  className,
+}: {
+  nodes: Array<{ label: string; value: string; tone?: 'ok' | 'warn' | 'bad' | 'idle' }>;
+  active?: boolean;
+  className?: string;
+}) {
+  const tone = (value: 'ok' | 'warn' | 'bad' | 'idle' | undefined) =>
+    value === 'ok' ? 'text-ok' : value === 'warn' ? 'text-warn' : value === 'bad' ? 'text-bad' : 'text-faint';
+  return (
+    <div className={cx('flex items-stretch', className)}>
+      {nodes.map((node, index) => (
+        <Fragment key={node.label}>
+          <div className="min-w-0 flex-1 rounded-md border border-[var(--line-soft)] bg-[var(--surface)] px-2.5 py-2">
+            <div className="eyebrow text-[9.5px]">{node.label}</div>
+            <div className="mt-1 flex items-center gap-1.5">
+              <span className={cx('dot flex-none', tone(node.tone))} aria-hidden />
+              <span className="mono truncate text-[10.5px] text-ink/90">{node.value}</span>
+            </div>
+          </div>
+          {index < nodes.length - 1 && (
+            <div className="relative my-auto h-px w-4 flex-none bg-[var(--line)]" aria-hidden>
+              {active && <span className="signal-dot" />}
+            </div>
+          )}
+        </Fragment>
+      ))}
+    </div>
+  );
+}
+
+/** Monochrome line diagram of the laptop ↔ TV link. No gradients, no chrome. */
+export function ConnectionDiagram({ active = false, className }: { active?: boolean; className?: string }) {
+  return (
+    <svg viewBox="0 0 280 130" className={cx('text-faint', className)} aria-hidden="true">
+      <g fill="none" stroke="currentColor" strokeWidth="1">
+        <rect x="14" y="34" width="82" height="50" rx="5" />
+        <path d="M34 94h42" />
+        <rect x="184" y="22" width="82" height="62" rx="5" />
+        <path d="M196 84h58" />
+        <path d="M14 84h82" strokeDasharray="1 3" />
+      </g>
+      <path d="M96 59h88" stroke="var(--line)" strokeWidth="1" strokeDasharray="3 5" />
+      <circle cx="140" cy="59" r="3.5" fill="var(--accent)" />
+      {active && <circle className="diagram-pulse" cx="140" cy="59" r="3.5" fill="none" stroke="var(--accent)" />}
+      <text x="55" y="112" textAnchor="middle" fill="currentColor" fontSize="9" letterSpacing="1.2">
+        THIS PC
+      </text>
+      <text x="225" y="112" textAnchor="middle" fill="currentColor" fontSize="9" letterSpacing="1.2">
+        TV
+      </text>
+    </svg>
+  );
 }
 
 /**

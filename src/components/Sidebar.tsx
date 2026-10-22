@@ -1,3 +1,4 @@
+import { motion, useReducedMotion } from 'framer-motion';
 import {
   Activity,
   Grid2x2,
@@ -49,6 +50,7 @@ export function Sidebar({ view, onNavigate }: { view: ViewId; onNavigate: (view:
   const device = useDisplayDevice();
   const tone = phaseTone(state.connection.phase);
   const live = state.connection.captureTransport !== 'none';
+  const reduceMotion = useReducedMotion();
 
   return (
     <aside className="flex w-[212px] flex-none flex-col border-r border-[var(--line)] bg-[#0c0e12]">
@@ -69,13 +71,20 @@ export function Sidebar({ view, onNavigate }: { view: ViewId; onNavigate: (view:
                     onClick={() => onNavigate(item.id)}
                     aria-current={active ? 'page' : undefined}
                   >
-                    <Icon size={15} strokeWidth={1.9} className="flex-none" />
-                    <span className="flex-1 text-left">{item.label}</span>
+                    {active && (
+                      <motion.span
+                        layoutId="nav-active"
+                        className="pointer-events-none absolute inset-0 rounded-[6px] bg-[#1b1f27]"
+                        transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 520, damping: 42 }}
+                      />
+                    )}
+                    <Icon size={15} strokeWidth={1.9} className="relative flex-none" />
+                    <span className="relative flex-1 text-left">{item.label}</span>
                     {item.badge === 'devices' && state.devices.length > 0 && (
-                      <span className="mono text-[10px] text-faint">{state.devices.length}</span>
+                      <span className="mono relative text-[10px] text-faint">{state.devices.length}</span>
                     )}
                     {item.badge === 'live' && live && (
-                      <span className={cx('dot', state.connection.captureTransport === 'adb-png' ? 'text-warn' : 'text-ok')} />
+                      <span className={cx('dot relative', state.connection.captureTransport === 'adb-png' ? 'text-warn' : 'text-ok')} />
                     )}
                   </button>
                 );

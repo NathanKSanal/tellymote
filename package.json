@@ -1,6 +1,6 @@
 {
   "name": "lumaremote",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "private": true,
   "description": "LumaRemote — premium local-network remote and live screen viewer for Android TV / Xiaomi Mi TV",
   "main": "dist-electron/main.cjs",
