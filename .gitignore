@@ -26,3 +26,9 @@ Thumbs.db
 .idea/
 .vscode/
 *.local
+
+# Android
+mobile/android/.gradle/
+mobile/android/**/build/
+mobile/android/local.properties
+mobile/android/.idea/
