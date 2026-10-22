@@ -29,7 +29,7 @@ export interface ClientCertificate {
   createdAt: number;
 }
 
-export function generateClientCertificate(commonName = 'LumaRemote'): ClientCertificate {
+export function generateClientCertificate(commonName = 'TellyMote'): ClientCertificate {
   const keys = forge.pki.rsa.generateKeyPair(2048);
   const cert = forge.pki.createCertificate();
   cert.publicKey = keys.publicKey;
@@ -38,7 +38,7 @@ export function generateClientCertificate(commonName = 'LumaRemote'): ClientCert
   cert.validity.notAfter = new Date(Date.now() + 20 * 365 * 24 * 60 * 60 * 1000);
   const attrs = [
     { name: 'commonName', value: commonName },
-    { name: 'organizationName', value: 'LumaRemote' },
+    { name: 'organizationName', value: 'TellyMote' },
     { name: 'countryName', value: 'US' },
   ];
   cert.setSubject(attrs);
@@ -109,7 +109,7 @@ function bigIntToLittleEndianBytes(value: bigint, length: number): Buffer {
   return out;
 }
 
-export function generateAdbIdentity(userLabel = 'lumaremote'): AdbIdentity {
+export function generateAdbIdentity(userLabel = 'tellymote'): AdbIdentity {
   const { privateKey, publicKey: publicKeyObject } = generateKeyPairSync('rsa', { modulusLength: 2048 });
   const jwk = publicKeyObject.export({ format: 'jwk' }) as { n: string; e: string };
   const n = BigInt('0x' + Buffer.from(jwk.n, 'base64url').toString('hex'));
@@ -146,7 +146,7 @@ export function generateAdbIdentity(userLabel = 'lumaremote'): AdbIdentity {
 /**
  * Reuses the standard Android ADB key in `%USERPROFILE%\.android` when one
  * exists. The TV authorises that key once and then trusts it for every tool
- * that uses it, so the user is not asked again for LumaRemote specifically.
+ * that uses it, so the user is not asked again for TellyMote specifically.
  *
  * The private key is copied into the encrypted vault; it is never written back
  * or logged.

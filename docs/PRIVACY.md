@@ -1,6 +1,6 @@
 # Privacy and your data
 
-LumaRemote has no account, no telemetry, no cloud relay and no update check. Everything it learns
+TellyMote has no account, no telemetry, no cloud relay and no update check. Everything it learns
 about your TV stays on the laptop that ran it.
 
 ## What is stored, and where
@@ -11,7 +11,7 @@ screenshot or setting from the machine that built it.
 On first run the app creates its own folder:
 
 ```
-%APPDATA%\lumaremote\
+%APPDATA%\tellymote\
   devices.json    saved TV names, addresses, capabilities
   settings.json   your preferences
   secrets.bin     DPAPI-encrypted pairing certificate, ADB key, pinned fingerprints
@@ -35,7 +35,7 @@ same check runs in GitHub Actions.
 
 - **Forget** a device in the app: removes its saved record and pinned fingerprint.
 - **Settings → Reset settings**: restores defaults without deleting pairings.
-- To remove everything, quit the app and delete `%APPDATA%\lumaremote`.
+- To remove everything, quit the app and delete `%APPDATA%\tellymote`.
 - Revoke the ADB key on the TV separately if you no longer want debugging access.
 
 ## Sharing diagnostics

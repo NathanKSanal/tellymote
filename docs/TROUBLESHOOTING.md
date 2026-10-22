@@ -49,7 +49,7 @@ rewriting traffic. Try `Diagnostics → Ping` to separate "host reachable" from 
 - If port `5555` stays closed, the firmware only enables ADB over USB. The app cannot open it
   remotely; use the remote-only feature set.
 - `ADB_UNAUTHORIZED` means the TV saw the key but it was not approved.
-- **Asked on every connection?** Tick **“Always allow from this computer”** once. LumaRemote reuses
+- **Asked on every connection?** Tick **“Always allow from this computer”** once. TellyMote reuses
   the standard `%USERPROFILE%\.android\adbkey`, so it shares the trust you already gave adb/scrcpy.
   If the TV still asks after a reboot, its firmware is not persisting `adb_keys`; accept once more or
   check for a firmware update. Running a second tool with a *different* key always needs its own
@@ -111,7 +111,7 @@ The app never displays a cached still as if it were live video. If the feed stop
 
 1. `Settings → Reset settings` restores defaults without deleting pairings.
 2. `Forget` on a device removes its saved record and pinned certificate.
-3. To remove everything (pairings, ADB key, logs), quit the app and delete `%APPDATA%\LumaRemote`.
+3. To remove everything (pairings, ADB key, logs), quit the app and delete `%APPDATA%\TellyMote`.
 4. Revoke the ADB key separately on the TV if it is still authorised.
 
 ## Reporting a problem

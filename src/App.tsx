@@ -48,7 +48,7 @@ function BootScreen() {
         <div className="mx-auto grid h-10 w-10 place-items-center rounded-lg bg-[var(--accent)] text-[var(--accent-ink)]">
           <Tv size={20} strokeWidth={2} />
         </div>
-        <div className="display mt-5 text-[18px] font-semibold tracking-[-0.02em] text-ink">LumaRemote</div>
+        <div className="display mt-5 text-[18px] font-semibold tracking-[-0.02em] text-ink">TellyMote</div>
         <div className="mt-2 flex items-center justify-center gap-2 text-[11.5px] text-faint">
           <Loader2 size={13} className="animate-spin" />
           Preparing the local session…

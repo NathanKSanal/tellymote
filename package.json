@@ -1,10 +1,10 @@
 {
-  "name": "lumaremote",
-  "version": "1.2.2",
+  "name": "tellymote",
+  "version": "1.3.0",
   "private": true,
-  "description": "LumaRemote — premium local-network remote and live screen viewer for Android TV / Xiaomi Mi TV",
+  "description": "TellyMote - local-network remote and live screen viewer for Android TV / Google TV, plus Roku control. No cloud.",
   "main": "dist-electron/main.cjs",
-  "author": "LumaRemote contributors",
+  "author": "TellyMote contributors",
   "license": "MIT",
   "scripts": {
     "dev": "node scripts/dev.mjs",
@@ -42,8 +42,8 @@
     "vitest": "^3.2.4"
   },
   "build": {
-    "appId": "com.lumaremote.app",
-    "productName": "LumaRemote",
+    "appId": "com.tellymote.app",
+    "productName": "TellyMote",
     "directories": {
       "output": "release"
     },
@@ -63,7 +63,7 @@
         }
       ],
       "icon": "build/icon.png",
-      "artifactName": "LumaRemote-${version}-${arch}.${ext}",
+      "artifactName": "TellyMote-${version}-${arch}.${ext}",
       "signAndEditExecutable": false
     },
     "nsis": {
@@ -71,17 +71,17 @@
       "allowToChangeInstallationDirectory": true,
       "perMachine": false,
       "createDesktopShortcut": true,
-      "shortcutName": "LumaRemote"
+      "shortcutName": "TellyMote"
     }
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/NathanKSanal/lumaremote.git"
+    "url": "https://github.com/NathanKSanal/tellymote.git"
   },
   "bugs": {
-    "url": "https://github.com/NathanKSanal/lumaremote/issues"
+    "url": "https://github.com/NathanKSanal/tellymote/issues"
   },
-  "homepage": "https://github.com/NathanKSanal/lumaremote#readme",
+  "homepage": "https://github.com/NathanKSanal/tellymote#readme",
   "keywords": [
     "android-tv",
     "google-tv",

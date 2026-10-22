@@ -21,7 +21,7 @@ export function makeCertificate(commonName: string, usage: 'client' | 'server' =
   cert.validity.notAfter = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
   const attrs = [
     { name: 'commonName', value: commonName },
-    { name: 'organizationName', value: 'LumaRemote tests' },
+    { name: 'organizationName', value: 'TellyMote tests' },
     { name: 'countryName', value: 'US' },
   ];
   cert.setSubject(attrs);

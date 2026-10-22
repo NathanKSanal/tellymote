@@ -309,7 +309,7 @@ export function Dashboard({ onNavigate }: { onNavigate: (view: ViewId) => void }
                   title={device.capabilities.adb.state === 'verified' ? 'Ready to view' : 'Screen viewing needs debugging'}
                 >
                   {device.capabilities.adb.state === 'verified'
-                    ? 'Start the feed from Live screen. LumaRemote will prefer a real H.264 stream and fall back to screenshots.'
+                    ? 'Start the feed from Live screen. TellyMote will prefer a real H.264 stream and fall back to screenshots.'
                     : `${device.capabilities.adb.detail ?? 'ADB is not authorised.'} Enable Developer options → USB debugging on the TV, then reconnect and accept the prompt.`}
                 </InlineNote>
               </div>
@@ -410,7 +410,7 @@ export function Dashboard({ onNavigate }: { onNavigate: (view: ViewId) => void }
           <EmptyState
             icon={<Tv size={22} />}
             title="No display selected"
-            body="LumaRemote looks for Android TV devices with mDNS, SSDP and a direct port probe. You can also enter the TV's IP address."
+            body="TellyMote looks for Android TV devices with mDNS, SSDP and a direct port probe. You can also enter the TV's IP address."
             action={
               <div className="flex gap-2">
                 <button type="button" className="btn btn-primary" onClick={() => onNavigate('devices')}>

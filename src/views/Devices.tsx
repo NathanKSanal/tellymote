@@ -106,7 +106,7 @@ export function Devices({ onNavigate }: { onNavigate: (view: ViewId) => void }) 
             </div>
           </div>
           <div className="mt-3 text-[10.5px] text-faint">
-            Only private or local addresses are expected. LumaRemote never sends traffic outside your network.
+            Only private or local addresses are expected. TellyMote never sends traffic outside your network.
           </div>
         </Panel>
       )}
@@ -230,7 +230,7 @@ export function Devices({ onNavigate }: { onNavigate: (view: ViewId) => void }) 
               <div className="eyebrow mb-2">Auto reconnect</div>
               <div className="text-[11.5px] leading-relaxed text-muted">
                 {state.settings.autoReconnect
-                  ? 'LumaRemote will try the last display when it starts, with backoff and a six-attempt cap.'
+                  ? 'TellyMote will try the last display when it starts, with backoff and a six-attempt cap.'
                   : 'Auto reconnect is off. Connect manually from a device card.'}
               </div>
               <div className="mt-2 flex items-center gap-1.5 text-[10.5px] text-faint">

@@ -335,7 +335,7 @@ export function Settings() {
             <SectionTitle
               eyebrow="Shortcuts"
               title="Window shortcuts"
-              description="Handled inside LumaRemote while its window is focused. F11 is the default fullscreen toggle."
+              description="Handled inside TellyMote while its window is focused. F11 is the default fullscreen toggle."
               actions={<Laptop size={15} className="text-faint" />}
             />
             <div className="mt-4 space-y-1">

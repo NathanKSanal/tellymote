@@ -1,6 +1,6 @@
 # Supported platforms
 
-LumaRemote is an **Android TV / Google TV** remote and screen viewer. It is not a universal smart-TV
+TellyMote is an **Android TV / Google TV** remote and screen viewer. It is not a universal smart-TV
 remote, and the repository does not claim to be one.
 
 ## Status levels

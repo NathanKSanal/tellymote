@@ -14,7 +14,7 @@ const HINTS: Partial<Record<ErrorCode, string>> = {
   CAPTURE_UNSUPPORTED: 'Screen viewing needs ADB authorisation. Remote control still works without it.',
   CAPTURE_TIMEOUT: 'The TV is slow to capture. Lower the capture rate in Settings → Performance.',
   PROTECTED_CONTENT: 'This app is blocking screen capture (DRM). That restriction cannot be bypassed.',
-  TV_OVERLOADED: 'The TV is struggling. LumaRemote will reduce capture quality automatically.',
+  TV_OVERLOADED: 'The TV is struggling. TellyMote will reduce capture quality automatically.',
   NETWORK_BLOCKED: 'The network may be using client isolation. Disable AP isolation or use the same VLAN.',
   NETWORK_LOST: 'Reconnect when the TV is back on the network.',
   INVALID_INPUT: 'Check the value and try again.',

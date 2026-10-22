@@ -257,7 +257,7 @@ export function Diagnostics() {
                 </div>
                 <div className="mt-4 flex items-start gap-2 text-[10.5px] leading-relaxed text-faint">
                   <Wifi size={12} className="mt-0.5 flex-none" />
-                  Windows does not expose per-socket Wi-Fi signal or loss to a desktop app without extra drivers. LumaRemote leaves these blank instead of inventing numbers.
+                  Windows does not expose per-socket Wi-Fi signal or loss to a desktop app without extra drivers. TellyMote leaves these blank instead of inventing numbers.
                 </div>
               </Panel>
 
@@ -424,7 +424,7 @@ export function Diagnostics() {
               <Panel className="p-5">
                 <SectionTitle eyebrow="This laptop" title="Runtime" />
                 <div className="mt-2 divide-y divide-[var(--line-soft)]">
-                  <Row label="LumaRemote" value={snap.app.version} mono />
+                  <Row label="TellyMote" value={snap.app.version} mono />
                   <Row label="Electron" value={snap.app.electron} mono />
                   <Row label="Chromium" value={snap.app.chrome} mono />
                   <Row label="Node" value={snap.app.node} mono />

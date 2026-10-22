@@ -11,7 +11,7 @@ See [docs/SECURITY-REVIEW.md](docs/SECURITY-REVIEW.md) for the 1.2.0 review, fix
 
 ## What this app can do
 
-LumaRemote talks directly to a TV on your LAN. With ADB authorised, it can inject input, read
+TellyMote talks directly to a TV on your LAN. With ADB authorised, it can inject input, read
 packages, and capture the screen. That is equivalent to giving a debugger access to the TV. Treat an
 authorised ADB connection as sensitive.
 

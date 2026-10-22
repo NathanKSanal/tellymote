@@ -239,7 +239,7 @@ export function Remote({ onNavigate }: { onNavigate: (view: ViewId) => void }) {
 
           {!remoteReady && (
             <InlineNote tone="warn" title="No remote transport">
-              The TV is not accepting key events right now. Reconnect from Devices; if the native remote service is unavailable, LumaRemote can fall back to ADB key events when debugging is authorised.
+              The TV is not accepting key events right now. Reconnect from Devices; if the native remote service is unavailable, TellyMote can fall back to ADB key events when debugging is authorised.
             </InlineNote>
           )}
 

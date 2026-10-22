@@ -406,7 +406,7 @@ export class LumaSession {
     if (this.adbIdentity) return this.adbIdentity;
 
     // Prefer the standard Android key. The TV authorises it once and then
-    // reuses that trust for every tool, so LumaRemote stops triggering a new
+    // reuses that trust for every tool, so TellyMote stops triggering a new
     // "Allow USB debugging?" dialog on each connection.
     const platform = readPlatformAdbIdentity();
     if (platform) {
@@ -677,7 +677,7 @@ export class LumaSession {
   async beginPairing(device: DiscoveredDevice): Promise<void> {
     const cert = this.ensureCertificate();
     this.pairing?.cancel();
-    const session = new AtvPairingSession(device.host, cert, 'LumaRemote', ATV_PAIRING_PORT);
+    const session = new AtvPairingSession(device.host, cert, 'TellyMote', ATV_PAIRING_PORT);
     this.pairing = session;
     this.setPhase('pairing');
     this.deps.log.info('pairing', 'Pairing request sent to the TV.', { host: device.host });
@@ -1319,7 +1319,7 @@ export class LumaSession {
         id: 'audio',
         label: 'TV audio',
         status: 'skip',
-        detail: 'The local protocols expose no display audio; LumaRemote does not claim audio support.',
+        detail: 'The local protocols expose no display audio; TellyMote does not claim audio support.',
       });
     }
     const snapshot: DiagnosticsSnapshot = {
@@ -1383,14 +1383,14 @@ export class LumaSession {
         }
       : null;
     const payload = {
-      product: 'LumaRemote',
+      product: 'TellyMote',
       exportedAt: new Date().toISOString(),
       note: 'Secrets, pairing codes and keys are never included. IP addresses are redacted unless enabled in Settings.',
       diagnostics: redactedSnapshot,
       log,
     };
     const stamp = new Date().toISOString().replace(/[:.]/g, '-');
-    return { filename: `lumaremote-diagnostics-${stamp}.json`, content: JSON.stringify(payload, null, 2) };
+    return { filename: `tellymote-diagnostics-${stamp}.json`, content: JSON.stringify(payload, null, 2) };
   }
 
   private pushDiagnostics(): void {

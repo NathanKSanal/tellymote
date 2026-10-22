@@ -22,11 +22,13 @@ import { DeviceRegistry } from './core/registry/devices';
 import { SecretVault, type SecretCipher } from './core/security/vault';
 import { FrameServer } from './core/streaming/frameServer';
 import { LumaSession } from './core/session';
+import { migrateLegacyUserData } from './core/migrate';
 import { appError, toAppError } from './core/errors';
 import { KEY_CODES } from './core/remote/atv/messages';
 
 const isDev = !app.isPackaged;
 const smokeMode = process.argv.includes('--smoke');
+app.setName('TellyMote');
 const channelSet = new Set<string>(CHANNELS);
 const eventSet = new Set<string>(EVENTS);
 
@@ -57,19 +59,23 @@ if (!gotLock) {
   });
 
   app.whenReady().then(bootstrap).catch((err: unknown) => {
-    dialog.showErrorBox('LumaRemote could not start', err instanceof Error ? err.message : String(err));
+    dialog.showErrorBox('TellyMote could not start', err instanceof Error ? err.message : String(err));
     app.exit(1);
   });
 }
 
 async function bootstrap(): Promise<void> {
-  app.setAppUserModelId('com.lumaremote.app');
+  app.setAppUserModelId('com.tellymote.app');
   Menu.setApplicationMenu(null);
 
   const directory = app.getPath('userData');
   fs.mkdirSync(directory, { recursive: true });
 
   log = new AppLog();
+  const migrated = migrateLegacyUserData(directory, path.join(app.getPath('appData'), 'lumaremote'));
+  if (migrated.length > 0) {
+    log.info('app', 'Imported data from the previous LumaRemote install.', { files: migrated.length });
+  }
   settingsStore = new SettingsStore(directory);
   const registry = new DeviceRegistry(directory);
 
@@ -124,7 +130,7 @@ async function bootstrap(): Promise<void> {
   await session.init();
 
   log.subscribe((entry) => emit('log:entry', entry));
-  log.info('app', 'LumaRemote started.', {
+  log.info('app', 'TellyMote started.', {
     version: appInfo.version,
     electron: appInfo.electron,
     vault: vault.persisted ? 'encrypted' : 'memory-only',
@@ -194,7 +200,7 @@ function createWindow(): void {
     minHeight: 720,
     show: false,
     backgroundColor: '#07070a',
-    title: 'LumaRemote',
+    title: 'TellyMote',
     icon: fs.existsSync(icon) ? icon : undefined,
     titleBarStyle: 'hidden',
     titleBarOverlay:
@@ -271,11 +277,11 @@ function createTray(): void {
     const image = nativeImage.createFromPath(iconPath).resize({ width: 32, height: 32 });
     if (image.isEmpty()) return;
     tray = new Tray(image);
-    tray.setToolTip('LumaRemote');
+    tray.setToolTip('TellyMote');
     tray.setContextMenu(
       Menu.buildFromTemplate([
         {
-          label: 'Open LumaRemote',
+          label: 'Open TellyMote',
           click: () => {
             mainWindow?.show();
             mainWindow?.focus();
@@ -316,7 +322,7 @@ const SMOKE_NAV: Record<string, string> = {
 };
 
 function scheduleSmokeCapture(win: BrowserWindow): void {
-  const outDir = process.env.LUMA_SMOKE_OUT || path.join(app.getPath('temp'), 'lumaremote-smoke');
+  const outDir = process.env.LUMA_SMOKE_OUT || path.join(app.getPath('temp'), 'tellymote-smoke');
   const views = (process.env.LUMA_SMOKE_VIEWS || 'dashboard')
     .split(',')
     .map((value) => value.trim())

@@ -1,4 +1,4 @@
-# LumaRemote — Architecture & Compatibility Plan
+# TellyMote — Architecture & Compatibility Plan
 
 ## 1. Environment inspection (measured, not assumed)
 

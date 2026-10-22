@@ -51,7 +51,7 @@ Build machine: Windows 11 x64, Wi-Fi on a private /24 network.
   `00 00 00 01 67 …` (SPS), `68 …` (PPS) and `65 …` (IDR); every later chunk is `41 …`
   (non-IDR slice). Measured throughput while the screen changed: ~2.7 Mbps at 1280×720.
 - **Firmware quirk:** `screenrecord` is **v1.2** and has no `--output-format=h264` option. It only
-  emits parameter sets and a keyframe when the stream opens, never again. LumaRemote caches them and
+  emits parameter sets and a keyframe when the stream opens, never again. TellyMote caches them and
   reopens the stream when a decoder attaches, so a late Live view still gets an in-order keyframe
   burst.
 - **Sleep behaviour:** this TV drops Wi-Fi completely in deep standby (all ports closed, no ICMP).

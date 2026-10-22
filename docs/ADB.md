@@ -1,6 +1,6 @@
-# ADB — what LumaRemote uses and why
+# ADB — what TellyMote uses and why
 
-LumaRemote never shells out to `adb.exe`. The ADB host protocol is implemented in
+TellyMote never shells out to `adb.exe`. The ADB host protocol is implemented in
 `electron/core/remote/adb/` so the app works on a machine with no Android SDK, no platform-tools and
 no `PATH` changes. This also keeps key material inside the app's encrypted vault.
 
@@ -43,10 +43,10 @@ Details that matter on real hardware:
 
 ## Authorising once, not every time
 
-LumaRemote does **not** create a separate ADB identity when a standard one already exists. On connect
+TellyMote does **not** create a separate ADB identity when a standard one already exists. On connect
 it reads `%USERPROFILE%\.android\adbkey` and `adbkey.pub` (the key adb, scrcpy and Android Studio
 use), verifies that the private key matches the public blob, and stores that identity in its
-encrypted vault. The TV already trusts that key, so there is no new prompt for LumaRemote.
+encrypted vault. The TV already trusts that key, so there is no new prompt for TellyMote.
 
 - It never writes to `~/.android`; the private key is only copied into the DPAPI-encrypted vault.
 - If no standard key exists, one is generated and kept in the vault. Accept the TV prompt **once**
@@ -76,7 +76,7 @@ No command writes to the TV's storage, changes settings, installs packages or re
 
 1. Enable Developer options on the TV (About → Build ×7).
 2. Enable USB debugging / Network debugging.
-3. In LumaRemote, reconnect the device (or press **Reconnect & authorise** in Apps). The first
+3. In TellyMote, reconnect the device (or press **Reconnect & authorise** in Apps). The first
    connection sends the public key.
 4. The TV shows a fingerprint. Compare it with the one in the app before approving.
 5. The key stays authorised until it is revoked in the TV's Developer options or the app's data is
@@ -93,7 +93,7 @@ security warning in Diagnostics.
 - `screenrecord` has a **180-second limit** per invocation; the app restarts the stream and the
   renderer resets its decoder cleanly.
 - DRM-protected video surfaces may be black in the capture. That is the platform protecting content;
-  LumaRemote does not attempt to bypass it and reports the limitation.
+  TellyMote does not attempt to bypass it and reports the limitation.
 - Audio capture is **not** offered: `screenrecord` audio capture is not available on this class of
   device, and the app does not claim it.
 - If `screenrecord` refuses `--output-format=h264`, the app falls back to `screencap` and labels the
@@ -102,5 +102,5 @@ security warning in Diagnostics.
 ## Revoking access
 
 - TV: Developer options → revoke USB debugging authorisations, or delete the key entry.
-- App: `Disconnect` and forget the device; or delete `%APPDATA%\LumaRemote` to remove all keys.
+- App: `Disconnect` and forget the device; or delete `%APPDATA%\TellyMote` to remove all keys.
 - Nothing is left listening on the TV after the app closes; there is no agent or receiver installed.

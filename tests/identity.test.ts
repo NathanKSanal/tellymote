@@ -23,13 +23,13 @@ let adb: AdbIdentity;
 beforeAll(() => {
   client = generateClientCertificate();
   server = makeCertificate('Mock TV', 'server');
-  adb = generateAdbIdentity('lumaremote');
+  adb = generateAdbIdentity('tellymote');
 });
 
 describe('client pairing certificate', () => {
   it('produces a parseable self-signed certificate with a matching fingerprint', () => {
     const parsed = new X509Certificate(client.certPem);
-    expect(parsed.subject).toContain('CN=LumaRemote');
+    expect(parsed.subject).toContain('CN=TellyMote');
     expect(parsed.verify(parsed.publicKey)).toBe(true);
     expect(client.fingerprint).toBe(createHash('sha256').update(parsed.raw).digest('hex'));
     expect(client.fingerprint).toMatch(/^[0-9a-f]{64}$/);
@@ -95,7 +95,7 @@ describe('ADB RSA identity', () => {
     expect(blob).toHaveLength(8 + 256 + 256 + 4);
     expect(blob.readUInt32LE(0)).toBe(64); // modulus length in 32-bit words
     expect(blob.readUInt32LE(520)).toBe(65537); // e, little-endian
-    expect(adb.publicKey).toBe(`${adb.publicKeyBlob} lumaremote`);
+    expect(adb.publicKey).toBe(`${adb.publicKeyBlob} tellymote`);
     expect(adb.fingerprint).toBe(createHash('sha256').update(adb.publicKeyBlob).digest('hex'));
   });
 

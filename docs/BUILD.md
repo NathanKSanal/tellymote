@@ -34,7 +34,7 @@ dist/                     renderer: index.html + hashed JS/CSS
 dist-electron/main.cjs    Electron main process (CJS bundle, electron external)
 dist-electron/preload.cjs sandbox-safe contextBridge
 release/win-unpacked/     runnable app directory
-release/LumaRemote-1.0.0-x64.exe   NSIS installer
+release/TellyMote-1.0.0-x64.exe   NSIS installer
 ```
 
 esbuild bundles the main and preload entries with `platform: node`, `target: node22`, `format: cjs`
@@ -92,7 +92,7 @@ missing view. It disables hardware acceleration because `webContents.capturePage
 `npm run package` runs the build then `electron-builder --win nsis`. Configuration lives in
 `package.json → build`:
 
-- appId `com.lumaremote.app`, productName `LumaRemote`, NSIS x64
+- appId `com.tellymote.app`, productName `TellyMote`, NSIS x64
 - per-user install, selectable directory, desktop shortcut
 - files: `dist/**`, `dist-electron/**`, `build/icon.png`, `package.json`
 
@@ -105,9 +105,9 @@ first run. To sign, add a certificate and electron-builder's `win.certificateFil
 If **Windows Security → App & browser control → Smart App Control** is On, Windows blocks unsigned
 executables whose hash it does not recognise. electron-builder normally rewrites the Electron
 launcher (icon, version resources, integrity), which changes its hash and makes it look unfamiliar.
-`win.signAndEditExecutable` is therefore set to `false`: the packaged `LumaRemote.exe` stays
+`win.signAndEditExecutable` is therefore set to `false`: the packaged `TellyMote.exe` stays
 byte-identical to the stock Electron binary, which Smart App Control already trusts. The trade-off is
-that the file icon and version metadata are Electron's, not LumaRemote's.
+that the file icon and version metadata are Electron's, not TellyMote's.
 
 For distribution to other machines, buy a code-signing certificate (or use Azure Trusted Signing),
 set `signAndEditExecutable` back to `true`, and sign both the app and the NSIS installer. A
@@ -122,11 +122,11 @@ Control on a specific machine. The stock `electron.exe` is already trusted and l
 ```powershell
 npm run package
 powershell -ExecutionPolicy Bypass -File .\scripts\make-safe-portable.ps1
-# release\LumaRemote-<version>-portable-safe.zip
+# release\TellyMote-<version>-portable-safe.zip
 ```
 
 The trade-off is that the file icon and version metadata are Electron's; the in-app window and tray
-icons are still LumaRemote's. This does not weaken the app: the same `app.asar`, CSP, sandbox and IPC
+icons are still TellyMote's. This does not weaken the app: the same `app.asar`, CSP, sandbox and IPC
 checks are used.
 
 

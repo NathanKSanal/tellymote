@@ -1,9 +1,9 @@
-# LumaRemote
+# TellyMote
 
 A Windows desktop remote and live screen viewer for Android TV, built first for a **Xiaomi Mi TV 4A 43"**
 (PatchWall / Android TV 9). Everything runs on your LAN: no account, no cloud relay, no telemetry.
 
-![LumaRemote icon](build/icon.png)
+![TellyMote icon](build/icon.png)
 
 > **Honest status:** verified on a real **Xiaomi Mi TV 4A 43" (`MiTV4I`, Android 9 / SDK 28)** over a
 > private LAN: SSDP discovery, ATV v2 pairing and control, ADB authorisation, the live app list,
@@ -37,7 +37,7 @@ A Windows desktop remote and live screen viewer for Android TV, built first for 
 
 ## Supported platforms
 
-**Android TV / Google TV (full) and Roku (control only).** For Android TV, LumaRemote speaks the
+**Android TV / Google TV (full) and Roku (control only).** For Android TV, TellyMote speaks the
 Android TV Remote Service v2 protocol (ports 6466/6467) and, optionally, ADB (port 5555). For Roku it
 uses ECP on port 8060: remote, app list, app launch and literal text, with no screen capture. It does
 **not** control Samsung Tizen, LG webOS, Apple TV, Vizio SmartCast or Hisense VIDAA devices.
@@ -49,7 +49,7 @@ per-feature status.
 ## Quick start
 
 ```powershell
-cd lumaremote
+cd tellymote
 npm install
 npm run dev          # Vite + Electron with hot reload
 ```
@@ -62,7 +62,7 @@ npm start            # run the production build
 npm run package      # NSIS installer in release/
 ```
 
-The installer is written to `release/LumaRemote-<version>-x64.exe` (unpacked build in
+The installer is written to `release/TellyMote-<version>-x64.exe` (unpacked build in
 `release/win-unpacked/`). A portable ZIP with the same files is produced alongside it.
 
 ## First run
@@ -76,7 +76,7 @@ The installer is written to `release/LumaRemote-<version>-x64.exe` (unpacked bui
 4. **Authorise ADB (screen + apps, optional).** On the TV:
    - `Settings → Device Preferences → About → Build` — press 7 times to unlock Developer options.
    - `Settings → Device Preferences → Developer options → USB debugging` / `Network debugging` — enable.
-   - In LumaRemote, connect the TV again (or use **Reconnect & authorise** in Apps); approve the RSA
+   - In TellyMote, connect the TV again (or use **Reconnect & authorise** in Apps); approve the RSA
      fingerprint dialog on the TV.
    On some Mi TV firmware ADB is already listening on `5555`; the app probes it and never enables
    debugging silently.
@@ -174,14 +174,14 @@ The smoke mode disables hardware acceleration so `capturePage()` works on GPU-le
 - **Unsigned build.** There is no code-signing certificate. Windows SmartScreen warns on the
   installer, and Smart App Control (if enabled) blocks unsigned launchers. The build keeps the
   packaged launcher byte-compatible with the signed Electron binary so it remains runnable locally;
-  if that is still blocked, use `LumaRemote-<version>-portable-safe.zip`, which uses the stock
+  if that is still blocked, use `TellyMote-<version>-portable-safe.zip`, which uses the stock
   Electron launcher. See [docs/BUILD.md](docs/BUILD.md#smart-app-control).
 - **Verification status is per-capability.** See [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md);
   the Diagnostics view only marks something verified after your TV answers.
 - Mi TV firmware varies; PatchWall builds may hide Developer options or use different IME behaviour.
   The app reports what it observes instead of assuming.
 - This Mi TV runs `screenrecord` **v1.2**, which has no `--output-format=h264` and emits SPS/PPS/IDR
-  only when a stream opens. LumaRemote caches them and reopens the stream when a decoder attaches;
+  only when a stream opens. TellyMote caches them and reopens the stream when a decoder attaches;
   if a firmware emits no Annex-B at all, the app falls back to the explicitly labelled PNG feed.
 - DRM-protected playback may appear black. This is expected and is not worked around.
 - The interface is dark-only by design; a light theme is not included.

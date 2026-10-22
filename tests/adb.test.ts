@@ -20,7 +20,7 @@ let identity: AdbIdentity;
 const cleanups: Array<() => void> = [];
 
 beforeAll(() => {
-  identity = generateAdbIdentity('lumaremote');
+  identity = generateAdbIdentity('tellymote');
 });
 
 afterEach(() => {

@@ -17,12 +17,12 @@ import { ProtoWriter, decodeMessage, getBytes, getString, getUint } from '../ele
 
 describe('RemoteConfigure', () => {
   it('requests the 622 feature mask and identifies this client', () => {
-    const outer = decodeMessage(encodeRemoteConfigure('LumaRemote', 'LumaRemote', '1.0.0'));
+    const outer = decodeMessage(encodeRemoteConfigure('TellyMote', 'TellyMote', '1.0.0'));
     const configure = decodeMessage(getBytes(outer, 1) as Buffer);
     expect(getUint(configure, 1)).toBe(622);
     const info = decodeMessage(getBytes(configure, 2) as Buffer);
-    expect(getString(info, 1)).toBe('LumaRemote');
-    expect(getString(info, 2)).toBe('LumaRemote');
+    expect(getString(info, 1)).toBe('TellyMote');
+    expect(getString(info, 2)).toBe('TellyMote');
     expect(getString(info, 5)).toBe('atvremote');
     expect(getString(info, 6)).toBe('1.0.0');
   });

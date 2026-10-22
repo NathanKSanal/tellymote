@@ -125,7 +125,7 @@ export class AtvRemoteClient extends EventEmitter {
       socket.once('secureConnect', () => {
         const peer = socket.getPeerCertificate();
         this.peerFingerprint = peer?.fingerprint256 ?? null;
-        socket.write(frame(encodeRemoteConfigure('LumaRemote', 'LumaRemote')));
+        socket.write(frame(encodeRemoteConfigure('TellyMote', 'TellyMote')));
       });
 
       socket.on('data', (chunk) => {

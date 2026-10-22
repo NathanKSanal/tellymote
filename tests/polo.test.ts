@@ -22,12 +22,12 @@ function outer(body: (w: ProtoWriter) => void, status: number): Buffer {
 
 describe('polo client messages', () => {
   it('encodes a pairing request for the atvremote service', () => {
-    const msg = decodeMessage(encodePairingRequest('LumaRemote'));
+    const msg = decodeMessage(encodePairingRequest('TellyMote'));
     expect(getUint(msg, 1)).toBe(2);
     expect(getUint(msg, 2)).toBe(200);
     const request = decodeMessage(getBytes(msg, 10) as Buffer);
     expect(getString(request, 1)).toBe(PAIRING_SERVICE_NAME);
-    expect(getString(request, 2)).toBe('LumaRemote');
+    expect(getString(request, 2)).toBe('TellyMote');
   });
 
   it('advertises 6-character hexadecimal input', () => {

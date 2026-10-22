@@ -18,14 +18,14 @@ The app shows the selected interface and subnet in `Devices → Network`. Virtua
 ## 2. Install and launch
 
 ```powershell
-cd lumaremote
+cd tellymote
 npm install
 npm run dev
 ```
 
-or run the packaged installer (`release/LumaRemote-1.0.0-x64.exe`).
+or run the packaged installer (`release/TellyMote-1.0.0-x64.exe`).
 
-On first launch Windows Firewall may ask about network access. LumaRemote sends discovery datagrams
+On first launch Windows Firewall may ask about network access. TellyMote sends discovery datagrams
 and listens for multicast/unicast replies (mDNS on UDP 5353, SSDP on an ephemeral port), makes
 outbound TCP connections, and binds one **loopback** HTTP port for the video feed. It never opens an
 inbound TCP port on the LAN. If inbound replies are blocked, mDNS/SSDP discovery can be incomplete,
@@ -46,7 +46,7 @@ Results are labelled by source (`mDNS`, `SSDP`, `Probe`, `Manual`, `Saved`). A d
 
 1. Select the TV card → **Pair**.
 2. The TV displays a six-character code.
-3. Enter it in the dialog and confirm. LumaRemote validates the code's checksum locally and refuses
+3. Enter it in the dialog and confirm. TellyMote validates the code's checksum locally and refuses
    an implausible code before sending the pairing secret, then completes the TLS handshake.
 4. The card shows **Paired** and the Dashboard shows the authenticated session.
 
@@ -65,7 +65,7 @@ Control works without ADB. Screen capture, text injection and the installed-app 
 2. `Settings → Device Preferences → Developer options`:
    - enable **USB debugging** and/or **Network debugging** (firmware naming differs);
    - keep "verify apps over USB" off if the TV offers it.
-3. Back in LumaRemote, reconnect the device (or press **Reconnect & authorise** in Apps). If the TV's
+3. Back in TellyMote, reconnect the device (or press **Reconnect & authorise** in Apps). If the TV's
    debugging service is reachable, the app sends its public key and waits for approval.
 4. The TV shows an RSA fingerprint dialog. Compare it with the fingerprint in the app and approve.
 5. Diagnostics should now show `adb: authorized` and the device model/Android version.
@@ -96,6 +96,6 @@ encoder missing) instead of showing a placeholder image.
 ## 8. Uninstall / reset
 
 - Uninstall through Windows Settings; the installer is per-user.
-- Local state lives in `%APPDATA%\LumaRemote` (settings, saved devices, encrypted keys, logs).
+- Local state lives in `%APPDATA%\TellyMote` (settings, saved devices, encrypted keys, logs).
   Deleting that folder removes pairings and requires pairing again.
 - To revoke ADB access without uninstalling, remove the authorised key in the TV's Developer options.

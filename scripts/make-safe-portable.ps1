@@ -16,16 +16,16 @@ $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
 $source = Join-Path $root "release\win-unpacked"
 $target = Join-Path $root "release\win-unpacked-safe"
 $electron = Join-Path $root "node_modules\electron\dist\electron.exe"
-$zip = Join-Path $root "release\LumaRemote-$version-portable-safe.zip"
+$zip = Join-Path $root "release\TellyMote-$version-portable-safe.zip"
 
 if (-not (Test-Path $source)) { throw "Run 'npm run package' first; $source is missing." }
 if (-not (Test-Path $electron)) { throw "Electron binary not found at $electron." }
 
 Remove-Item $target -Recurse -Force -ErrorAction SilentlyContinue
 Copy-Item $source $target -Recurse
-Copy-Item $electron (Join-Path $target "LumaRemote.exe") -Force
+Copy-Item $electron (Join-Path $target "TellyMote.exe") -Force
 Remove-Item $zip -Force -ErrorAction SilentlyContinue
 Compress-Archive -Path (Join-Path $target "*") -DestinationPath $zip -CompressionLevel Optimal -Force
 
 Write-Host "Wrote $zip"
-Write-Host "Launcher SHA-256: $((Get-FileHash (Join-Path $target 'LumaRemote.exe') -Algorithm SHA256).Hash)"
+Write-Host "Launcher SHA-256: $((Get-FileHash (Join-Path $target 'TellyMote.exe') -Algorithm SHA256).Hash)"

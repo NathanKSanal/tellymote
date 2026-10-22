@@ -17,7 +17,7 @@ export interface LocalSubnet {
   address: string;
   prefixLength: number;
   subnet: string;
-  /** Hosts inside the immediate /24 only. LumaRemote never sweeps beyond it. */
+  /** Hosts inside the immediate /24 only. TellyMote never sweeps beyond it. */
   hosts: string[];
   interfaceName: string;
 }

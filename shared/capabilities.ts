@@ -28,7 +28,7 @@ export function unknownCapabilities(): Capabilities {
     settingsKey: cap('unknown'),
     hardwareEncoding: cap('unknown'),
     adb: cap('unknown'),
-    receiverInstall: cap('unsupported', 'LumaRemote does not install unverified TV-side software.'),
+    receiverInstall: cap('unsupported', 'TellyMote does not install unverified TV-side software.'),
   };
 }
 

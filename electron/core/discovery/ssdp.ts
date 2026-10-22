@@ -110,7 +110,7 @@ async function fetchDescription(location: string): Promise<UpnpDescription | nul
   try {
     const response = await fetch(location, {
       signal: AbortSignal.timeout(1600),
-      headers: { 'user-agent': 'LumaRemote/1.0 UPnP/1.1' },
+      headers: { 'user-agent': 'TellyMote/1.0 UPnP/1.1' },
       redirect: 'error',
     });
     if (!response.ok) return null;
@@ -156,7 +156,7 @@ export async function discoverSsdp(timeoutMs = 2600, maxDescriptions = 6): Promi
         'MAN: "ssdp:discover"',
         'MX: 2',
         `ST: ${st}`,
-        'USER-AGENT: LumaRemote/1.0 UPnP/1.1',
+        'USER-AGENT: TellyMote/1.0 UPnP/1.1',
         '',
         '',
       ].join('\r\n');

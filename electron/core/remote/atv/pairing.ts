@@ -39,7 +39,7 @@ export class AtvPairingSession extends EventEmitter {
   constructor(
     private readonly host: string,
     private readonly certificate: ClientCertificate,
-    private readonly clientName = 'LumaRemote',
+    private readonly clientName = 'TellyMote',
     private readonly port = ATV_PAIRING_PORT,
   ) {
     super();

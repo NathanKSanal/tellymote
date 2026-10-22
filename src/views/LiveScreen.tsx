@@ -158,7 +158,7 @@ export function LiveScreen({ onNavigate }: { onNavigate: (view: ViewId) => void 
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `lumaremote-${new Date().toISOString().replace(/[:.]/g, '-')}.png`;
+      link.download = `tellymote-${new Date().toISOString().replace(/[:.]/g, '-')}.png`;
       link.click();
       window.setTimeout(() => URL.revokeObjectURL(url), 2000);
     }, 'image/png');
@@ -327,7 +327,7 @@ export function LiveScreen({ onNavigate }: { onNavigate: (view: ViewId) => void 
                     {rokuOnly
                       ? 'Roku ECP has no screen-capture endpoint. Remote control, apps and text still work; live view requires an Android TV with ADB enabled.'
                       : adbAuthorised
-                        ? 'Start viewing to open a real capture session. LumaRemote tries H.264 first and falls back to screenshots.'
+                        ? 'Start viewing to open a real capture session. TellyMote tries H.264 first and falls back to screenshots.'
                         : 'Enable debugging on the TV and accept the authorisation prompt before screen viewing can start.'}
                   </p>
                   <div className="mt-5 flex justify-center gap-2">
@@ -422,7 +422,7 @@ export function LiveScreen({ onNavigate }: { onNavigate: (view: ViewId) => void 
           {isPng && (
             <div className="mt-3">
               <InlineNote tone="warn" title="This is a screenshot feed, not video">
-                LumaRemote is polling <span className="mono">screencap</span> as fast as the TV can answer. Motion will look stepped and
+                TellyMote is polling <span className="mono">screencap</span> as fast as the TV can answer. Motion will look stepped and
                 audio is never included. The rate shown is real; no frame is duplicated or synthesised.
               </InlineNote>
             </div>
@@ -490,7 +490,7 @@ export function LiveScreen({ onNavigate }: { onNavigate: (view: ViewId) => void 
             </div>
             <div className="mt-3 rounded-lg border border-[var(--line-soft)] bg-[var(--surface-2)] px-2.5 py-2 text-[10px] leading-relaxed text-faint">
               {state.metrics.continuous
-                ? 'The H.264 path has no shared clock with the TV, so an end-to-end number would be a guess. LumaRemote refuses to display one.'
+                ? 'The H.264 path has no shared clock with the TV, so an end-to-end number would be a guess. TellyMote refuses to display one.'
                 : 'Screenshot end-to-end is capture + transfer + paint, measured, not a guess. Network jitter can add more.'}
             </div>
           </Panel>
