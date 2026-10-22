@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>LumaRemote</title>
+    <style>
+      html,
+      body,
+      #root {
+        height: 100%;
+        margin: 0;
+        background: #07070a;
+      }
+      #boot {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: #07070a;
+        color: #f2b24b;
+        font: 500 13px/1.4 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+      }
+      #boot .ring {
+        width: 26px;
+        height: 26px;
+        margin: 0 auto 14px;
+        border-radius: 999px;
+        border: 2px solid rgba(242, 178, 75, 0.22);
+        border-top-color: #f2b24b;
+        animation: boot-spin 0.9s linear infinite;
+      }
+      @keyframes boot-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #boot .ring {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div id="boot">
+        <div>
+          <div class="ring"></div>
+          LumaRemote
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

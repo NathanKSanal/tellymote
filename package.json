@@ -1,0 +1,98 @@
+{
+  "name": "lumaremote",
+  "version": "1.2.0",
+  "private": true,
+  "description": "LumaRemote — premium local-network remote and live screen viewer for Android TV / Xiaomi Mi TV",
+  "main": "dist-electron/main.cjs",
+  "author": "LumaRemote contributors",
+  "license": "MIT",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build:renderer": "vite build",
+    "build:electron": "node scripts/build-electron.mjs",
+    "build": "npm run build:renderer && npm run build:electron",
+    "start": "electron .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.electron.json",
+    "package": "npm run build && electron-builder --win nsis"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "framer-motion": "^14.4.0",
+    "lucide-react": "^0.548.0",
+    "node-forge": "^1.4.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^24.10.1",
+    "@types/node-forge": "^1.3.14",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^5.1.0",
+    "electron": "^44.9.1",
+    "electron-builder": "^26.0.12",
+    "esbuild": "^0.28.2",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.4",
+    "vitest": "^3.2.4"
+  },
+  "build": {
+    "appId": "com.lumaremote.app",
+    "productName": "LumaRemote",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*",
+      "build/icon.png",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "artifactName": "LumaRemote-${version}-${arch}.${ext}",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "shortcutName": "LumaRemote"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/natsforai-lab/lumaremote.git"
+  },
+  "bugs": {
+    "url": "https://github.com/natsforai-lab/lumaremote/issues"
+  },
+  "homepage": "https://github.com/natsforai-lab/lumaremote#readme",
+  "keywords": [
+    "android-tv",
+    "google-tv",
+    "remote-control",
+    "adb",
+    "webcodecs",
+    "electron",
+    "xiaomi",
+    "screen-viewer",
+    "local-network"
+  ],
+  "engines": {
+    "node": ">=20"
+  }
+}

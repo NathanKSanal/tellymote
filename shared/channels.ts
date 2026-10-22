@@ -1,0 +1,63 @@
+import type { Channel, EventMap } from './types';
+
+/** Every renderer→main request. The main process rejects anything not listed here. */
+export const CHANNELS: Channel[] = [
+  'app:info',
+  'settings:get',
+  'settings:set',
+  'settings:reset',
+  'devices:list',
+  'devices:scan',
+  'devices:cancelScan',
+  'devices:addManual',
+  'devices:forget',
+  'devices:rename',
+  'devices:probe',
+  'connection:connect',
+  'connection:disconnect',
+  'connection:status',
+  'connection:autoConnect',
+  'pairing:start',
+  'pairing:submitCode',
+  'pairing:cancel',
+  'remote:key',
+  'remote:tap',
+  'remote:text',
+  'remote:app',
+  'remote:apps',
+  'capture:start',
+  'capture:stop',
+  'capture:status',
+  'capture:probeMethods',
+  'capture:parameterSets',
+  'capture:restartVideo',
+  'capture:reportRender',
+  'capture:setPaused',
+  'performance:apply',
+  'performance:benchmark',
+  'diagnostics:snapshot',
+  'diagnostics:export',
+  'diagnostics:ping',
+  'diagnostics:adbShell',
+  'window:setFullscreen',
+  'window:minimize',
+  'window:close',
+  'shell:openExternal',
+];
+
+export const EVENTS: Array<keyof EventMap> = [
+  'scan:status',
+  'devices:changed',
+  'connection:changed',
+  'pairing:prompt',
+  'frame:meta',
+  'video:chunk',
+  'video:reset',
+  'metrics:changed',
+  'diagnostics:changed',
+  'log:entry',
+  'toast',
+];
+
+export const INVOKE_CHANNEL = 'luma:invoke';
+export const EVENT_PREFIX = 'luma:event:';

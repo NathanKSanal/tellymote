@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-electron/
+release/
+*.tsbuildinfo
+
+# Local logs and smoke artefacts
+package.log
+*.log
+.smoke/
+.smoke-*/
+
+# Secrets and local state (never inside the repo, but be explicit)
+secrets.bin
+*.pem
+*.key
+.env
+.env.*
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.local
