@@ -182,6 +182,12 @@ The smoke mode disables hardware acceleration so `capturePage()` works on GPU-le
 
 ## Known limitations
 
+- **Windows builds only.** The installer and portable ZIP are produced for Windows 10/11 x64. The
+  Electron/Node source is platform-neutral and CI typechecks/tests/builds on Linux and macOS, but
+  no Linux/macOS package is currently published or hardware-verified.
+- **Roku has no live video.** Roku ECP supports remote keys, app list, app launch and literal text,
+  but exposes no screen-capture endpoint. Live view is Android TV / Google TV only, and the Live
+  page says so when a Roku is selected.
 - **Android TV / Google TV, plus Roku control.** Samsung Tizen, LG webOS, Apple TV, Vizio and Hisense
   VIDAA require separate protocol adapters; see [docs/SUPPORT.md](docs/SUPPORT.md).
 - **Unsigned build.** There is no code-signing certificate. Windows SmartScreen warns on the
@@ -189,6 +195,8 @@ The smoke mode disables hardware acceleration so `capturePage()` works on GPU-le
   packaged launcher byte-compatible with the signed Electron binary so it remains runnable locally;
   if that is still blocked, use `TellyMote-<version>-portable-safe.zip`, which uses the stock
   Electron launcher. See [docs/BUILD.md](docs/BUILD.md#smart-app-control).
+- **DRM-protected playback is black.** Netflix, Prime Video, Disney+ and similar apps render on a
+  protected plane that Android refuses to capture. This is expected and is not bypassed.
 - **Verification status is per-capability.** See [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md);
   the Diagnostics view only marks something verified after your TV answers.
 - Mi TV firmware varies; PatchWall builds may hide Developer options or use different IME behaviour.
@@ -196,7 +204,6 @@ The smoke mode disables hardware acceleration so `capturePage()` works on GPU-le
 - This Mi TV runs `screenrecord` **v1.2**, which has no `--output-format=h264` and emits SPS/PPS/IDR
   only when a stream opens. TellyMote caches them and reopens the stream when a decoder attaches;
   if a firmware emits no Annex-B at all, the app falls back to the explicitly labelled PNG feed.
-- DRM-protected playback may appear black. This is expected and is not worked around.
 - The interface is dark-only by design; a light theme is not included.
 
 ## Contributing
@@ -208,10 +215,10 @@ protocol implementation.
 
 ## Licence
 
-**FSL-1.1-MIT** — the Functional Source License 1.1 with an MIT Future License. You may use, copy,
+**FSL-1.1-MIT** ï¿½ the Functional Source License 1.1 with an MIT Future License. You may use, copy,
 modify and redistribute TellyMote for any non-competing purpose, including internal business use.
 You may not ship a competing or rebranded product; each release becomes MIT two years after it is
-published. The TellyMote name, wordmark and logo are reserved — see [TRADEMARK.md](TRADEMARK.md).
+published. The TellyMote name, wordmark and logo are reserved ï¿½ see [TRADEMARK.md](TRADEMARK.md).
 Versions published before 1.3.1 (including 1.3.0) were MIT, and those copies remain MIT.
 
 Not affiliated with Xiaomi, Google, Samsung, LG, Roku or Android TV. Product names are used only to

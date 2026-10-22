@@ -10,9 +10,13 @@ permissions:
 
 jobs:
   verify:
-    name: Typecheck, tests, build
-    runs-on: windows-latest
+    name: Verify (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
     steps:
       - name: Checkout
         uses: actions/checkout@v5

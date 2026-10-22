@@ -1,7 +1,17 @@
 # Supported platforms
 
-TellyMote is an **Android TV / Google TV** remote and screen viewer. It is not a universal smart-TV
-remote, and the repository does not claim to be one.
+TellyMote is an **Android TV / Google TV** remote and screen viewer, plus a **Roku** remote. It is
+not a universal smart-TV remote, and the repository does not claim to be one.
+
+## Host platforms
+
+| Host | Status |
+| --- | --- |
+| **Windows 10/11 x64** | **Verified.** Installer and portable builds are produced here. |
+| **Linux / macOS** | Source is platform-neutral and CI typechecks, tests and builds the bundles on both. No packaged binary is published or hardware-verified yet. |
+
+Windows-specific code is limited to the title-bar overlay, login item behaviour and DPAPI via
+Electron's `safeStorage`; Electron provides equivalents on macOS/Linux.
 
 ## Status levels
 
