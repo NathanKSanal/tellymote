@@ -1,6 +1,6 @@
 {
   "name": "lumaremote",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "description": "LumaRemote — premium local-network remote and live screen viewer for Android TV / Xiaomi Mi TV",
   "main": "dist-electron/main.cjs",
@@ -15,7 +15,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.electron.json",
-    "package": "npm run build && electron-builder --win nsis"
+    "package": "npm run build && electron-builder --win nsis",
+    "privacy": "node scripts/privacy-check.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -75,12 +76,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/natsforai-lab/lumaremote.git"
+    "url": "https://github.com/NathanKSanal/lumaremote.git"
   },
   "bugs": {
-    "url": "https://github.com/natsforai-lab/lumaremote/issues"
+    "url": "https://github.com/NathanKSanal/lumaremote/issues"
   },
-  "homepage": "https://github.com/natsforai-lab/lumaremote#readme",
+  "homepage": "https://github.com/NathanKSanal/lumaremote#readme",
   "keywords": [
     "android-tv",
     "google-tv",

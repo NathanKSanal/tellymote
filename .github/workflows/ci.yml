@@ -35,6 +35,9 @@ jobs:
       - name: Build renderer and main process
         run: npm run build
 
+      - name: Privacy check
+        run: npm run privacy
+
       - name: Upload test report on failure
         if: failure()
         uses: actions/upload-artifact@v4

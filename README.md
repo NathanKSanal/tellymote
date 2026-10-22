@@ -164,6 +164,7 @@ The smoke mode disables hardware acceleration so `capturePage()` works on GPU-le
 - [Build and packaging](docs/BUILD.md)
 - [Security policy](SECURITY.md)
 - [Security review (1.2.0)](docs/SECURITY-REVIEW.md)
+- [Privacy and your data](docs/PRIVACY.md)
 - [Changelog](CHANGELOG.md)
 
 ## Known limitations
