@@ -1,0 +1,85 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  prepare:
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create or reuse release
+        shell: bash
+        run: |
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || \
+            gh release create "$GITHUB_REF_NAME" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "TellyMote $GITHUB_REF_NAME" \
+              --generate-notes
+
+  build:
+    needs: prepare
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            command: npm run package
+            extra: powershell -ExecutionPolicy Bypass -File ./scripts/make-safe-portable.ps1
+            files: release/*-x64.exe release/*portable-safe.zip
+          - os: ubuntu-latest
+            command: npm run package:linux
+            extra: ''
+            files: release/*.AppImage
+          - os: macos-latest
+            command: npm run package:mac
+            extra: ''
+            files: release/*-mac-*.zip
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build package
+        run: ${{ matrix.command }}
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - name: Build SAC-safe portable
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: ${{ matrix.extra }}
+
+      - name: Upload to release
+        shell: bash
+        run: gh release upload "$GITHUB_REF_NAME" ${{ matrix.files }} --clobber
+
+  checksums:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download assets and write checksums
+        shell: bash
+        run: |
+          mkdir -p assets
+          gh release download "$GITHUB_REF_NAME" --dir assets --clobber
+          rm -f assets/SHA256SUMS.txt
+          cd assets
+          sha256sum * > SHA256SUMS.txt
+          gh release upload "$GITHUB_REF_NAME" SHA256SUMS.txt --clobber

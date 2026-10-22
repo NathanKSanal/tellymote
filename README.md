@@ -46,6 +46,12 @@ Verified on a Xiaomi Mi TV 4A 43" (`MiTV4I`, Android 9). Other Android TV sets a
 but were not individually tested. See [docs/SUPPORT.md](docs/SUPPORT.md) for the full matrix and the
 per-feature status.
 
+## Download
+
+Open **[the download page](https://nathanksanal.github.io/tellymote/download.html)** - it detects your
+platform and links the matching build. All files are also on
+[Releases](https://github.com/NathanKSanal/tellymote/releases).
+
 ## Install on Windows
 
 Two builds are attached to [Releases](https://github.com/NathanKSanal/tellymote/releases):

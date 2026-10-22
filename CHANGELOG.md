@@ -2,6 +2,12 @@
 
 This project was previously called LumaRemote. Entries before 1.3.0 keep that name.
 
+## 1.3.2
+
+- Added Linux AppImage and macOS ZIP builds to the release workflow, alongside Windows.
+- Added an OS-detecting download page at `docs/download.html` (GitHub Pages).
+- Windows remains the hardware-verified target; Linux/macOS packages are CI-built and unsigned.
+
 ## 1.3.1
 
 - Relicensed from MIT to **FSL-1.1-MIT** (Functional Source License 1.1, MIT Future License):

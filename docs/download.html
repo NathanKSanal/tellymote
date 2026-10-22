@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Download TellyMote</title>
+    <style>
+      :root {
+        --bg: #0b0c0f;
+        --surface: #111318;
+        --surface-2: #15181e;
+        --line: #23262e;
+        --ink: #e7e9ee;
+        --muted: #9aa1ac;
+        --faint: #6d7480;
+        --accent: #e0ad63;
+        --accent-ink: #1a1308;
+        --ok: #63b58c;
+        --warn: #c7a252;
+        font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+        color-scheme: dark;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-size: 14px;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap { max-width: 980px; margin: 0 auto; padding: 28px 24px 64px; }
+      header { display: flex; align-items: center; gap: 12px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+      .mark { width: 30px; height: 30px; border-radius: 7px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-weight: 700; }
+      .brand { font-family: Bahnschrift, "Segoe UI Variable Display", sans-serif; font-size: 19px; letter-spacing: 0.01em; }
+      .version { color: var(--faint); font-family: Consolas, monospace; font-size: 11px; }
+      .pill { margin-left: auto; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); padding: 3px 8px; font-size: 10.5px; }
+      h1 { font-family: Bahnschrift, "Segoe UI Variable Display", sans-serif; font-size: 30px; letter-spacing: -0.01em; margin: 34px 0 8px; }
+      .lede { color: var(--muted); max-width: 70ch; margin: 0 0 26px; }
+      .primary {
+        display: inline-flex; align-items: center; gap: 9px;
+        background: var(--accent); color: var(--accent-ink);
+        border-radius: 7px; padding: 12px 18px; font-weight: 600; text-decoration: none;
+      }
+      .primary:hover { filter: brightness(1.06); }
+      .sub { color: var(--faint); font-size: 11.5px; margin-top: 9px; }
+      .grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 18px; margin-top: 30px; }
+      .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
+      .eyebrow { text-transform: uppercase; letter-spacing: 0.1em; font-size: 10px; color: var(--faint); font-weight: 600; }
+      h2 { font-family: Bahnschrift, "Segoe UI Variable Display", sans-serif; font-size: 15px; margin: 4px 0 10px; }
+      table { width: 100%; border-collapse: collapse; }
+      td { padding: 9px 0; border-top: 1px solid var(--line-soft, #1b1e25); font-size: 12px; }
+      td:first-child { color: var(--muted); }
+      td:last-child { text-align: right; color: var(--faint); font-family: Consolas, monospace; font-size: 11px; }
+      a { color: var(--ink); }
+      a.dl { color: var(--accent); text-decoration: none; }
+      ul { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 12.5px; }
+      li { margin: 5px 0; }
+      .note { border: 1px solid rgba(199, 162, 82, 0.34); background: rgba(199, 162, 82, 0.08); color: #d5b471; border-radius: 8px; padding: 11px 13px; font-size: 12px; margin-top: 14px; }
+      .ok { color: var(--ok); }
+      footer { border-top: 1px solid var(--line); margin-top: 32px; padding-top: 14px; color: var(--faint); font-size: 11px; display: flex; gap: 12px; flex-wrap: wrap; }
+      @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 25px; } }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="mark">T</div>
+        <div>
+          <div class="brand">TellyMote</div>
+          <div class="version" id="version">latest</div>
+        </div>
+        <span class="pill">Windows · macOS · Linux</span>
+      </header>
+
+      <h1>Your TV, on your desktop.</h1>
+      <p class="lede">
+        A local-network remote and live screen viewer for Android TV / Google TV, plus Roku control.
+        No account, no cloud relay, no telemetry.
+      </p>
+
+      <div id="primary"></div>
+      <div class="sub" id="detected">Detecting your platform…</div>
+
+      <div class="grid">
+        <section class="panel">
+          <div class="eyebrow">Downloads</div>
+          <h2>All builds</h2>
+          <table id="assets"><tbody><tr><td>Loading release assets…</td><td></td></tr></tbody></table>
+          <div class="note" id="android-note" hidden>
+            TellyMote is a desktop app. Android <strong>TVs</strong> are controlled from a PC; an
+            Android <strong>phone</strong> app is not available.
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="eyebrow">Before you install</div>
+          <h2>Good to know</h2>
+          <ul>
+            <li><strong>Windows:</strong> unsigned, so SmartScreen may ask you to confirm. Use the
+              portable-safe ZIP if Smart App Control blocks the installer.</li>
+            <li><strong>macOS:</strong> unsigned ZIP; right-click → Open the first time.</li>
+            <li><strong>Linux:</strong> AppImage; <code>chmod +x</code> then run.</li>
+            <li><strong>Roku:</strong> remote, apps and text only — no live video.</li>
+            <li><strong>DRM:</strong> Netflix/Prime/Disney+ show black in the live view.</li>
+            <li>Live view on Android TV needs ADB debugging enabled.</li>
+          </ul>
+        </section>
+      </div>
+
+      <footer>
+        <span>FSL-1.1-MIT · free non-competing use</span>
+        <a href="https://github.com/NathanKSanal/tellymote">Source</a>
+        <a href="https://github.com/NathanKSanal/tellymote/releases/latest">All releases</a>
+        <a href="https://github.com/NathanKSanal/tellymote/blob/main/TRADEMARK.md">Trademark</a>
+      </footer>
+    </div>
+
+    <script>
+      const REPO = 'NathanKSanal/tellymote';
+      const releaseUrl = `https://github.com/${REPO}/releases/latest`;
+      const primary = document.getElementById('primary');
+      const detected = document.getElementById('detected');
+      const table = document.querySelector('#assets tbody');
+      const version = document.getElementById('version');
+      const androidNote = document.getElementById('android-note');
+
+      const bytes = (n) => `${(n / 1024 / 1024).toFixed(1)} MB`;
+      const platform = (() => {
+        const ua = navigator.userAgent;
+        if (/Android/i.test(ua)) return 'android';
+        if (/Windows/i.test(ua)) return 'windows';
+        if (/Macintosh|Mac OS X/i.test(ua)) return 'mac';
+        if (/Linux/i.test(ua)) return 'linux';
+        return 'other';
+      })();
+
+      function choose(assets) {
+        const find = (suffix) => assets.find((a) => a.name.endsWith(suffix));
+        if (platform === 'windows') {
+          return {
+            main: find('-x64.exe'),
+            label: 'Download for Windows',
+            note: 'Installer · per-user · Start Menu and Desktop shortcuts',
+            extra: find('-portable-safe.zip'),
+          };
+        }
+        if (platform === 'mac') {
+          return {
+            main: find('-mac-arm64.zip') || find('-mac-x64.zip'),
+            label: 'Download for macOS',
+            note: 'Unsigned ZIP · right-click → Open on first launch',
+            extra: find('-mac-x64.zip'),
+          };
+        }
+        if (platform === 'linux') {
+          return {
+            main: find('.AppImage'),
+            label: 'Download for Linux',
+            note: 'AppImage · x86_64',
+          };
+        }
+        return { main: null, label: 'View all releases', note: 'Choose the build for your system' };
+      }
+
+      function render(assets) {
+        const choice = choose(assets);
+        if (choice.main) {
+          const a = document.createElement('a');
+          a.className = 'primary';
+          a.href = choice.main.browser_download_url;
+          a.textContent = choice.label;
+          primary.replaceChildren(a);
+          detected.textContent = `${choice.note} · ${bytes(choice.main.size)}`;
+        } else {
+          const a = document.createElement('a');
+          a.className = 'primary';
+          a.href = releaseUrl;
+          a.textContent = choice.label;
+          primary.replaceChildren(a);
+          detected.textContent = choice.note;
+        }
+        androidNote.hidden = platform !== 'android';
+
+        table.replaceChildren();
+        for (const asset of assets) {
+          if (asset.name === 'SHA256SUMS.txt') continue;
+          const tr = document.createElement('tr');
+          const name = document.createElement('td');
+          const link = document.createElement('a');
+          link.className = 'dl';
+          link.href = asset.browser_download_url;
+          link.textContent = asset.name;
+          name.appendChild(link);
+          const size = document.createElement('td');
+          size.textContent = bytes(asset.size);
+          tr.append(name, size);
+          table.appendChild(tr);
+        }
+      }
+
+      fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
+        headers: { Accept: 'application/vnd.github+json' },
+      })
+        .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+        .then((release) => {
+          version.textContent = release.tag_name;
+          render(release.assets);
+        })
+        .catch(() => {
+          const a = document.createElement('a');
+          a.className = 'primary';
+          a.href = releaseUrl;
+          a.textContent = 'Open releases';
+          primary.replaceChildren(a);
+          detected.textContent = 'Could not read the release list. Use the releases page.';
+          table.replaceChildren();
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          td.textContent = 'Release list unavailable.';
+          tr.appendChild(td);
+          table.appendChild(tr);
+        });
+    </script>
+  </body>
+</html>
