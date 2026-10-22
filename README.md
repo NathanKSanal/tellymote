@@ -46,7 +46,19 @@ Verified on a Xiaomi Mi TV 4A 43" (`MiTV4I`, Android 9). Other Android TV sets a
 but were not individually tested. See [docs/SUPPORT.md](docs/SUPPORT.md) for the full matrix and the
 per-feature status.
 
-## Quick start
+## Install on Windows
+
+Two builds are attached to [Releases](https://github.com/NathanKSanal/tellymote/releases):
+
+- **`TellyMote-1.3.0-x64.exe`** — per-user installer. Adds Start Menu and Desktop shortcuts, an
+  uninstall entry, and installs to `%LOCALAPPDATA%\Programs\TellyMote`.
+- **`TellyMote-1.3.0-portable-safe.zip`** — portable build whose launcher is the untouched Electron
+  binary. Use this if Windows Smart App Control blocks the installer or the normal launcher.
+
+The build is unsigned, so SmartScreen may warn. On first launch, data from an older LumaRemote
+install is copied from `%APPDATA%\lumaremote` to `%APPDATA%\TellyMote` once.
+
+## Quick start (from source)
 
 ```powershell
 cd tellymote
