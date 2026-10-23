@@ -1,0 +1,26 @@
+{
+  "name": "tellymote-video",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Motion graphics for TellyMote, rendered with Remotion",
+  "scripts": {
+    "assets": "node scripts/sync-assets.mjs",
+    "studio": "npm run assets && remotion studio",
+    "render": "npm run assets && remotion render Promo out/tellymote-promo.mp4 --codec=h264 --crf=18",
+    "still": "npm run assets && remotion still Promo out/frame.png"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.538",
+    "@remotion/google-fonts": "4.0.538",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.538"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "typescript": "5.9.3"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true
+  }
+}
