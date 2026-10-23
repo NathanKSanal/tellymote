@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TellyMote — your TV, on your desktop</title>
+    <meta
+      name="description"
+      content="A remote and live screen viewer for Android TV, Google TV and Roku. Runs on your own network: no account, no cloud relay, no telemetry."
+    />
+    <link rel="canonical" href="https://nathanksanal.github.io/tellymote/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="TellyMote" />
+    <meta property="og:title" content="TellyMote — your TV, on your desktop" />
+    <meta
+      property="og:description"
+      content="Remote and live screen for Android TV, Google TV and Roku over your LAN. No account, no cloud relay, no telemetry."
+    />
+    <meta property="og:url" content="https://nathanksanal.github.io/tellymote/" />
+    <meta property="og:image" content="https://nathanksanal.github.io/tellymote/media/promo-poster.jpg" />
+    <meta name="theme-color" content="#0b0c0f" />
+    <link rel="icon" href="media/promo-poster.jpg" />
+    <link rel="preload" as="image" href="media/dashboard.png" />
+    <link rel="stylesheet" href="site/site.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "TellyMote",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Windows, macOS, Linux",
+        "description": "Remote and live screen viewer for Android TV, Google TV and Roku over the local network.",
+        "url": "https://github.com/NathanKSanal/tellymote",
+        "downloadUrl": "https://github.com/NathanKSanal/tellymote/releases/latest",
+        "license": "https://github.com/NathanKSanal/tellymote/blob/main/LICENSE",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "GBP" }
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="glow" aria-hidden="true"></div>
+    <div class="grid-bg" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="TellyMote, back to top">
+        <span class="mark" aria-hidden="true">T</span>
+        <span>TellyMote</span>
+      </a>
+      <nav class="topnav" aria-label="Sections">
+        <a href="#remote">Remote</a>
+        <a href="#screen">Screen</a>
+        <a href="#protocols">Protocols</a>
+        <a href="#compare">Compare</a>
+      </nav>
+      <a class="btn btn-primary btn-sm" href="download.html">Download</a>
+    </header>
+
+    <nav class="rail" aria-label="Section progress">
+      <div class="rail-track" aria-hidden="true"><div class="rail-fill"></div></div>
+      <a href="#remote"><span>Remote</span></a>
+      <a href="#screen"><span>Screen</span></a>
+      <a href="#protocols"><span>Protocols</span></a>
+      <a href="#numbers"><span>Numbers</span></a>
+      <a href="#compare"><span>Compare</span></a>
+      <a href="#download"><span>Download</span></a>
+    </nav>
+
+    <main id="main">
+      <!-- ---------------- hero ---------------- -->
+      <section class="hero" id="top">
+        <div class="wrap hero-grid">
+          <div>
+            <p class="eyebrow">Local network · no account</p>
+            <h1>
+              <span class="line"><span>Your TV,</span></span>
+              <span class="line"><span>on your <em>desktop</em>.</span></span>
+            </h1>
+            <p class="lede hero-sub">
+              A remote and live screen viewer for Android TV, Google TV and Roku. Everything runs on your
+              own network — no account, no cloud relay, no telemetry.
+            </p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="download.html">Download for Windows</a>
+              <a class="btn btn-ghost" href="download.html#tour">Watch the 47s tour</a>
+            </div>
+            <div class="hero-meta">
+              <span><i class="dot" aria-hidden="true"></i> Verified on Mi TV 4A</span>
+              <span>Windows · macOS · Linux</span>
+              <span>FSL-1.1-MIT</span>
+            </div>
+          </div>
+
+          <div class="hero-visual">
+            <div class="hero-frame">
+              <img
+                src="media/dashboard.png"
+                width="1280"
+                height="778"
+                alt="TellyMote dashboard showing a saved TV that is not connected, with signal chain, capture rate and capability panels."
+              />
+            </div>
+            <div class="chip-float chip-a"><b>ATV v2</b> paired</div>
+            <div class="chip-float chip-b"><i class="dot" aria-hidden="true"></i> loopback only</div>
+          </div>
+        </div>
+
+        <div class="scroll-cue" aria-hidden="true"><span>SCROLL</span><i></i></div>
+      </section>
+
+      <!-- ---------------- remote ---------------- -->
+      <section class="remote" id="remote">
+        <div class="remote-sticky">
+          <div class="wrap remote-grid">
+            <div>
+              <p class="eyebrow"><span class="idx">01</span>Remote</p>
+              <h2 class="reveal">Every key, from your keyboard.</h2>
+              <div class="steps">
+                <div class="step">
+                  <h3>D-pad and OK</h3>
+                  <p>Arrow keys move. Enter selects. Hold an arrow and it repeats, like the plastic remote.</p>
+                  <div class="kbd-row"><span class="kbd">↑</span><span class="kbd">↓</span><span class="kbd">←</span><span class="kbd">→</span><span class="kbd">Enter</span></div>
+                </div>
+                <div class="step">
+                  <h3>Volume and transport</h3>
+                  <p>Page Up and Down for volume, Space for play/pause, F8 to mute. Every binding is editable.</p>
+                  <div class="kbd-row"><span class="kbd">PgUp</span><span class="kbd">PgDn</span><span class="kbd">Space</span><span class="kbd">F8</span></div>
+                </div>
+                <div class="step">
+                  <h3>Text, the fast way</h3>
+                  <p>Type a YouTube search on a real keyboard instead of hunting letters on a grid.</p>
+                  <div class="kbd-row"><span class="kbd">Ctrl</span><span class="kbd">+</span><span class="kbd">V</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pad-wrap">
+              <div class="pad-img">
+                <img src="media/remote.png" width="1280" height="778" alt="TellyMote remote view with the D-pad, volume, transport keys and keyboard bindings." />
+              </div>
+              <span class="pad-key" data-key="up" aria-hidden="true"></span>
+              <span class="pad-key" data-key="ok" aria-hidden="true"></span>
+              <span class="pad-key" data-key="back" aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------------- screen ---------------- -->
+      <section class="screen-pin" id="screen">
+        <div class="screen-sticky">
+          <div class="wrap">
+            <div class="screen-head">
+              <p class="eyebrow"><span class="idx">02</span>Live screen</p>
+              <h2 class="reveal">The TV screen, on your laptop.</h2>
+            </div>
+            <figure class="screen-figure">
+              <div class="frame-badge"><span class="rec" aria-hidden="true"></span><span class="frame-count">0000</span><span>× 720 PNG frames</span></div>
+              <div class="reveal-frame">
+                <img src="media/dashboard.png" width="1280" height="778" alt="The TellyMote window with the live screen panel open." />
+                <span class="scan" aria-hidden="true"></span>
+              </div>
+              <figcaption class="reveal-caption">Shown with no TV attached — live frames need an authorised ADB connection</figcaption>
+            </figure>
+            <p class="lede screen-note">
+              Capture needs ADB debugging enabled on the TV. DRM apps render black — that is the DRM, not a bug.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------------- protocols ---------------- -->
+      <section class="protocols section" id="protocols">
+        <div class="wrap">
+          <p class="eyebrow"><span class="idx">03</span>Protocols</p>
+          <h2 class="reveal" style="max-width: 20ch">Three protocols. One window.</h2>
+          <p class="lede reveal" style="margin-top: 18px">
+            No platform-tools, no vendor app, no account. TellyMote speaks the protocols the devices already
+            expose on your network.
+          </p>
+          <div class="h-rail" style="margin-top: 42px">
+            <article class="p-card">
+              <span class="tag">6466 / 6467</span>
+              <div>
+                <h3>Android TV Remote v2</h3>
+                <p>Native pairing with the six-character code the TV shows, then authenticated key events.</p>
+              </div>
+              <div class="meta">
+                <div><span>Pairing</span><b>RSA + code</b></div>
+                <div><span>Controls</span><b>Keys, power, volume</b></div>
+                <div><span>Status</span><b>Verified on Mi TV 4A</b></div>
+              </div>
+            </article>
+            <article class="p-card">
+              <span class="tag">5555</span>
+              <div>
+                <h3>ADB host protocol</h3>
+                <p>Implemented in-app, so there is nothing to install. Unlocks text entry, the app list and capture.</p>
+              </div>
+              <div class="meta">
+                <div><span>Auth</span><b>RSA key exchange</b></div>
+                <div><span>Unlocks</span><b>Text, apps, screen</b></div>
+                <div><span>Status</span><b>Optional, off by default</b></div>
+              </div>
+            </article>
+            <article class="p-card">
+              <span class="tag">8060</span>
+              <div>
+                <h3>Roku ECP</h3>
+                <p>Remote keys, app launch and literal text over HTTP. Roku exposes no capture endpoint.</p>
+              </div>
+              <div class="meta">
+                <div><span>Transport</span><b>HTTP / ECP</b></div>
+                <div><span>Live screen</span><b>Not possible</b></div>
+                <div><span>Status</span><b>Implemented</b></div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------------- numbers ---------------- -->
+      <section class="numbers" id="numbers">
+        <div class="wrap">
+          <div class="num-grid">
+            <div class="num">
+              <b data-value="166">166</b>
+              <span>automated tests</span>
+              <small>Real TLS and TCP mock servers</small>
+            </div>
+            <div class="num">
+              <b data-value="3">3</b>
+              <span>protocols spoken</span>
+              <small>ATV v2 · ADB · Roku ECP</small>
+            </div>
+            <div class="num">
+              <b data-value="0">0</b>
+              <span>accounts, relays, trackers</span>
+              <small>Frames stay on the machine</small>
+            </div>
+            <div class="num">
+              <b data-value="720" data-suffix="p">720p</b>
+              <span>verified capture</span>
+              <small>Measured on real hardware</small>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------------- compare ---------------- -->
+      <section class="section" id="compare">
+        <div class="wrap">
+          <p class="eyebrow"><span class="idx">04</span>Compare</p>
+          <h2 class="reveal" style="max-width: 24ch">Where it fits, and where it doesn't.</h2>
+          <div class="compare-wrap" style="margin-top: 40px">
+            <table class="compare">
+              <caption>Capabilities as understood in October 2026. scrcpy is the better tool for pure mirroring.</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Tool</th>
+                  <th scope="col">Control from PC</th>
+                  <th scope="col">Live screen</th>
+                  <th scope="col">Developer mode</th>
+                  <th scope="col">Account</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="own">
+                  <th scope="row">TellyMote</th>
+                  <td class="yes">Yes — D-pad, volume, media keys</td>
+                  <td>Yes, over authorised ADB</td>
+                  <td>Only for text, apps and capture</td>
+                  <td class="yes">None</td>
+                </tr>
+                <tr>
+                  <th scope="row">scrcpy</th>
+                  <td class="yes">Yes, with the mirror</td>
+                  <td class="yes">Yes, lowest latency</td>
+                  <td class="no">Required</td>
+                  <td class="yes">None</td>
+                </tr>
+                <tr>
+                  <th scope="row">Google TV app</th>
+                  <td class="no">Phone only</td>
+                  <td class="no">No</td>
+                  <td class="no">No</td>
+                  <td class="no">Google account</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="lede reveal" style="margin-top: 26px; font-size: 15px">
+            Full comparison, including Yatse and Unified Remote, on the
+            <a href="alternatives.html">alternatives page</a>.
+          </p>
+        </div>
+      </section>
+
+      <!-- ---------------- download ---------------- -->
+      <section class="cta" id="download">
+        <div class="wrap">
+          <p class="eyebrow" style="text-align: center">No sign-up · no relay</p>
+          <h2 class="reveal">Put the remote back in your hands.</h2>
+          <p class="lede" style="margin-top: 16px">
+            Free for non-competing use. Windows installer and a no-install portable ZIP; macOS and Linux builds
+            come from CI.
+          </p>
+          <div class="cta-actions">
+            <a class="btn btn-primary" href="download.html">Download TellyMote</a>
+            <a class="btn btn-ghost" href="https://github.com/NathanKSanal/tellymote">View the source</a>
+          </div>
+          <p class="cta-note">Unsigned build · SHA-256 in every release · 8.5 MB promo video on the download page</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot wrap">
+      <span>FSL-1.1-MIT · free non-competing use</span>
+      <nav aria-label="Footer">
+        <a href="download.html">Download</a>
+        <a href="alternatives.html">Compare</a>
+        <a href="https://github.com/NathanKSanal/tellymote">Source</a>
+        <a href="https://github.com/NathanKSanal/tellymote/blob/main/docs/PRIVACY.md">Privacy</a>
+        <a href="https://github.com/NathanKSanal/tellymote/blob/main/TRADEMARK.md">Trademark</a>
+      </nav>
+    </footer>
+
+    <script src="site/vendor/gsap.min.js"></script>
+    <script src="site/vendor/ScrollTrigger.min.js"></script>
+    <script src="site/site.js"></script>
+  </body>
+</html>

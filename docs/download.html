@@ -34,7 +34,10 @@
       .mark { width: 30px; height: 30px; border-radius: 7px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-weight: 700; }
       .brand { font-family: Bahnschrift, "Segoe UI Variable Display", sans-serif; font-size: 19px; letter-spacing: 0.01em; }
       .version { color: var(--faint); font-family: Consolas, monospace; font-size: 11px; }
-      .pill { margin-left: auto; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); padding: 3px 8px; font-size: 10.5px; }
+      .pillnav { margin-left: auto; display: flex; gap: 14px; font-size: 12px; margin-right: 12px; }
+      .pillnav a { color: var(--muted); text-decoration: none; }
+      .pillnav a:hover { color: var(--ink); }
+      .pill { margin-left: 0; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); padding: 3px 8px; font-size: 10.5px; }
       h1 { font-family: Bahnschrift, "Segoe UI Variable Display", sans-serif; font-size: 30px; letter-spacing: -0.01em; margin: 34px 0 8px; }
       .lede { color: var(--muted); max-width: 70ch; margin: 0 0 26px; }
       .primary {
@@ -92,6 +95,7 @@
           <div class="brand">TellyMote</div>
           <div class="version" id="version">latest</div>
         </div>
+        <nav class="pillnav"><a href="index.html">Home</a><a href="alternatives.html">Compare</a></nav>
         <span class="pill">Windows / macOS / Linux / Android preview</span>
       </header>
 

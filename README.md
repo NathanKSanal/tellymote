@@ -83,7 +83,8 @@ per-feature status.
 
 ## Download
 
-Open **[the download page](https://nathanksanal.github.io/tellymote/download.html)** - it detects your
+Open **[the site](https://nathanksanal.github.io/tellymote/)** for the scroll tour, or go straight to the
+**[download page](https://nathanksanal.github.io/tellymote/download.html)** - it detects your
 platform and links the matching build. All desktop files are also on
 [Releases](https://github.com/NathanKSanal/tellymote/releases).
 
