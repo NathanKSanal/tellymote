@@ -9,6 +9,8 @@ your own network.** No account. No cloud relay. No telemetry.
 
 ![TellyMote UI tour: dashboard, remote and devices](docs/media/tour.gif)
 
+▶ **[Watch the 24-second video tour](https://nathanksanal.github.io/tellymote/download.html#tour)** (1920×1080, no sound, every frame is the real interface)
+
 Built first for a **Xiaomi Mi TV 4A 43"** (PatchWall / Android TV 9). Everything runs on your LAN.
 
 > **Honest status:** the desktop app is verified on a real **Xiaomi Mi TV 4A 43" (`MiTV4I`,

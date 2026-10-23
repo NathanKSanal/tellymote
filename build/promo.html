@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>TellyMote promo</title>
+    <style>
+      :root {
+        --bg: #0b0c0f;
+        --surface: #111318;
+        --line: #23262e;
+        --ink: #e7e9ee;
+        --muted: #9aa1ac;
+        --faint: #6d7480;
+        --accent: #e0ad63;
+        --accent-ink: #1a1308;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+      body {
+        font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+      }
+      #stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
+
+      .glow {
+        position: absolute;
+        width: 1500px; height: 1500px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(224, 173, 99, 0.13), rgba(224, 173, 99, 0) 62%);
+        left: 900px; top: -700px;
+        will-change: transform, opacity;
+      }
+      .grid-lines {
+        position: absolute; inset: 0;
+        background-image:
+          linear-gradient(to right, rgba(255,255,255,0.028) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255,255,255,0.028) 1px, transparent 1px);
+        background-size: 120px 120px;
+        mask-image: radial-gradient(ellipse at 30% 40%, #000 35%, transparent 78%);
+        -webkit-mask-image: radial-gradient(ellipse at 30% 40%, #000 35%, transparent 78%);
+      }
+
+      .scene { position: absolute; inset: 0; }
+      .layer { position: absolute; will-change: transform, opacity; }
+
+      /* ---------- title ---------- */
+      .brand-row { left: 140px; top: 318px; display: flex; align-items: center; gap: 22px; }
+      .mark {
+        width: 76px; height: 76px; border-radius: 18px;
+        background: var(--accent); color: var(--accent-ink);
+        display: grid; place-items: center;
+        font-weight: 700; font-size: 40px;
+        font-family: Bahnschrift, "Segoe UI Variable Display", sans-serif;
+      }
+      .wordmark {
+        font-family: Bahnschrift, "Segoe UI Variable Display", sans-serif;
+        font-size: 62px; letter-spacing: 0.005em;
+      }
+      .headline {
+        left: 140px; top: 416px; width: 1280px;
+        font-family: Bahnschrift, "Segoe UI Variable Display", sans-serif;
+        font-size: 96px; line-height: 1.02; letter-spacing: -0.03em;
+      }
+      .headline em { font-style: normal; color: var(--accent); }
+      .subline { left: 144px; top: 664px; width: 900px; font-size: 30px; color: var(--muted); line-height: 1.4; }
+      .chips { left: 144px; top: 764px; display: flex; gap: 14px; }
+      .chip {
+        border: 1px solid var(--line); border-radius: 8px;
+        padding: 12px 18px; font-size: 20px; color: var(--muted);
+        background: rgba(17, 19, 24, 0.8);
+      }
+
+      /* ---------- feature scenes ---------- */
+      .shot-wrap {
+        position: absolute; left: 720px; top: 138px;
+        width: 1150px; border-radius: 18px; overflow: hidden;
+        border: 1px solid var(--line);
+        box-shadow: 0 50px 120px rgba(0, 0, 0, 0.65);
+        background: var(--surface);
+      }
+      .shot-wrap img { display: block; width: 100%; height: auto; }
+
+      .copy { position: absolute; left: 130px; top: 330px; width: 560px; }
+      .eyebrow {
+        font-size: 15px; letter-spacing: 0.22em; text-transform: uppercase;
+        color: var(--accent); font-weight: 600; margin-bottom: 26px;
+      }
+      .h2 {
+        font-family: Bahnschrift, "Segoe UI Variable Display", sans-serif;
+        font-size: 62px; line-height: 1.06; letter-spacing: -0.02em; margin-bottom: 26px;
+      }
+      .p { font-size: 24px; line-height: 1.5; color: var(--muted); }
+
+      .rule { position: absolute; left: 130px; top: 300px; width: 80px; height: 3px; background: var(--accent); }
+
+      /* ---------- trust cards ---------- */
+      .trust { left: 0; top: 0; width: 1920px; height: 1080px; }
+      .trust .inner { position: absolute; left: 140px; top: 300px; width: 1400px; }
+      .trust h2 {
+        font-family: Bahnschrift, "Segoe UI Variable Display", sans-serif;
+        font-size: 78px; line-height: 1.06; letter-spacing: -0.025em; margin-bottom: 30px;
+      }
+      .trust p { font-size: 28px; color: var(--muted); line-height: 1.5; width: 1150px; }
+      .trust .row { display: flex; gap: 18px; margin-top: 54px; }
+      .trust .card {
+        flex: 1; border: 1px solid var(--line); background: rgba(17,19,24,0.9);
+        border-radius: 14px; padding: 26px 26px 30px;
+      }
+      .trust .card b { display: block; font-size: 22px; margin-bottom: 10px; }
+      .trust .card span { font-size: 19px; color: var(--muted); line-height: 1.45; }
+
+      /* ---------- CTA ---------- */
+      .cta { left: 0; top: 0; width: 1920px; height: 1080px; }
+      .cta .inner { position: absolute; left: 140px; top: 372px; }
+      .cta .kicker { font-size: 20px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 26px; }
+      .cta h2 {
+        font-family: Bahnschrift, "Segoe UI Variable Display", sans-serif;
+        font-size: 84px; letter-spacing: -0.025em; line-height: 1.05; margin-bottom: 30px;
+      }
+      .cta .url {
+        font-family: Consolas, monospace; font-size: 30px; color: var(--ink);
+        border-bottom: 2px solid var(--accent); padding-bottom: 10px; display: inline-block;
+      }
+      .cta .meta { margin-top: 40px; font-size: 22px; color: var(--faint); letter-spacing: 0.02em; }
+      .cta .badge {
+        position: absolute; right: 150px; top: 400px;
+        width: 300px; height: 300px; border-radius: 32px;
+        background: var(--accent); color: var(--accent-ink);
+        display: grid; place-items: center;
+        font-family: Bahnschrift, "Segoe UI Variable Display", sans-serif;
+        font-size: 150px; font-weight: 700;
+        box-shadow: 0 40px 90px rgba(224, 173, 99, 0.22);
+      }
+      .vignette {
+        position: absolute; inset: 0; pointer-events: none;
+        background: radial-gradient(ellipse at 50% 45%, transparent 45%, rgba(0,0,0,0.55) 100%);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage">
+      <div class="glow" id="glow"></div>
+      <div class="grid-lines"></div>
+
+      <!-- 1. title -->
+      <div class="scene" id="s-title">
+        <div class="layer brand-row" id="t-brand">
+          <div class="mark">T</div>
+          <div class="wordmark">TellyMote</div>
+        </div>
+        <div class="layer headline" id="t-head">Your TV,<br />on your <em>desktop</em>.</div>
+        <div class="layer subline" id="t-sub">A remote and live screen viewer for Android TV, Google TV and Roku — over your own network.</div>
+        <div class="layer chips" id="t-chips">
+          <div class="chip">No account</div>
+          <div class="chip">No cloud relay</div>
+          <div class="chip">No telemetry</div>
+        </div>
+      </div>
+
+      <!-- 2. dashboard -->
+      <div class="scene" id="s-dash">
+        <div class="layer copy" id="d-copy">
+          <div class="eyebrow">Dashboard</div>
+          <div class="h2">Remote and screen, in one window.</div>
+          <div class="p">Latency, capture rate and capability status are measured on your network, not estimated.</div>
+        </div>
+        <div class="shot-wrap" id="d-shot"><img src="/.shots/dashboard.png" alt="" /></div>
+      </div>
+
+      <!-- 3. remote -->
+      <div class="scene" id="s-remote">
+        <div class="layer copy" id="r-copy">
+          <div class="eyebrow">Remote</div>
+          <div class="h2">D-pad, volume and media keys from your keyboard.</div>
+          <div class="p">Type a search with a real keyboard. Bind any key. Pair once, then it is instant.</div>
+        </div>
+        <div class="shot-wrap" id="r-shot"><img src="/.shots/remote.png" alt="" /></div>
+      </div>
+
+      <!-- 4. devices -->
+      <div class="scene" id="s-devices">
+        <div class="layer copy" id="v-copy">
+          <div class="eyebrow">Discovery</div>
+          <div class="h2">Finds the TV. And the Roku.</div>
+          <div class="p">Android TV Remote v2, ADB and Roku ECP on your local network. No platform-tools required.</div>
+        </div>
+        <div class="shot-wrap" id="v-shot"><img src="/.shots/devices.png" alt="" /></div>
+      </div>
+
+      <!-- 5. trust -->
+      <div class="scene trust" id="s-trust">
+        <div class="inner" id="x-inner">
+          <h2>Unsigned build.<br />Published hashes.</h2>
+          <p>There is no paid code-signing certificate behind this project, so Windows will warn once. Every file ships with a SHA-256, and you can build it yourself.</p>
+          <div class="row">
+            <div class="card"><b>SHA256SUMS.txt</b><span>In every release, next to the binaries.</span></div>
+            <div class="card"><b>No account, no relay</b><span>Traffic goes laptop → TV, nowhere else.</span></div>
+            <div class="card"><b>Source available</b><span>FSL-1.1-MIT. Read it, build it, fork it.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. CTA -->
+      <div class="scene cta" id="s-cta">
+        <div class="inner" id="c-inner">
+          <div class="kicker">Free for non-competing use</div>
+          <h2>Windows, macOS<br />and Linux.</h2>
+          <div class="url">github.com/NathanKSanal/tellymote</div>
+          <div class="meta">Android client in preview · built for a Mi TV 4A, works with other Android TV sets</div>
+        </div>
+        <div class="badge" id="c-badge">T</div>
+      </div>
+
+      <div class="vignette"></div>
+    </div>
+
+    <script>
+      const EASE = {
+        out: (t) => 1 - Math.pow(1 - t, 3),
+        inOut: (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
+      };
+      const clamp01 = (v) => Math.min(1, Math.max(0, v));
+      const seg = (t, a, b) => clamp01((t - a) / (b - a));
+
+      const el = (id) => document.getElementById(id);
+      const set = (node, { o = 1, x = 0, y = 0, s = 1 } = {}) => {
+        node.style.opacity = String(o);
+        node.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${s})`;
+      };
+
+      // fade in over [a,b], hold, fade out over [c,d]
+      const life = (t, a, b, c, d) => {
+        const inP = EASE.out(seg(t, a, b));
+        const outP = c === null ? 0 : EASE.inOut(seg(t, c, d));
+        return Math.min(inP, 1 - outP);
+      };
+
+      window.renderAt = (t) => {
+        // background drift
+        const g = el('glow');
+        g.style.transform = `translate3d(${-80 * Math.sin(t / 6)}px, ${40 * Math.cos(t / 7)}px, 0)`;
+        g.style.opacity = String(0.9);
+
+        // scene 1: title 0 - 4.4
+        {
+          const op = life(t, 0, 0.7, 3.9, 4.4);
+          el('s-title').style.opacity = String(op);
+          el('s-title').style.visibility = op > 0.001 ? 'visible' : 'hidden';
+          const b = EASE.out(seg(t, 0.15, 0.95));
+          set(el('t-brand'), { o: b, y: 24 * (1 - b) });
+          const h = EASE.out(seg(t, 0.5, 1.35));
+          set(el('t-head'), { o: h, y: 34 * (1 - h) });
+          const s = EASE.out(seg(t, 1.0, 1.8));
+          set(el('t-sub'), { o: s, y: 22 * (1 - s) });
+          const chips = el('t-chips').children;
+          [...chips].forEach((chip, i) => {
+            const p = EASE.out(seg(t, 1.35 + i * 0.16, 1.75 + i * 0.16));
+            chip.style.opacity = String(p);
+            chip.style.transform = `translate3d(0, ${16 * (1 - p)}px, 0)`;
+          });
+          el('t-chips').style.transform = 'none';
+        }
+
+        // feature scenes
+        const feature = (t, start, end, ids) => {
+          const scene = el(ids.scene);
+          const op = life(t, start, start + 0.5, end - 0.45, end);
+          scene.style.opacity = String(op);
+          scene.style.visibility = op > 0.001 ? 'visible' : 'hidden';
+          if (op <= 0.001) return;
+
+          const copyP = EASE.out(seg(t, start, start + 0.7));
+          const copy = el(ids.copy);
+          set(copy, { o: copyP, y: 26 * (1 - copyP) });
+
+          const shotP = EASE.out(seg(t, start + 0.08, start + 1.05));
+          const shot = el(ids.shot);
+          set(shot, { o: shotP, y: 60 * (1 - shotP), s: 0.955 + 0.045 * shotP });
+
+          // slow drift for life
+          const drift = seg(t, start, end);
+          shot.style.transform = `translate3d(${18 * drift}px, ${60 * (1 - shotP) - 10 * drift}px, 0) scale(${0.955 + 0.045 * shotP})`;
+        };
+
+        feature(t, 4.4, 9.4, { scene: 's-dash', copy: 'd-copy', shot: 'd-shot' });
+        feature(t, 9.4, 13.8, { scene: 's-remote', copy: 'r-copy', shot: 'r-shot' });
+        feature(t, 13.8, 18.0, { scene: 's-devices', copy: 'v-copy', shot: 'v-shot' });
+
+        // trust 18.0 - 21.2
+        {
+          const op = life(t, 18.0, 18.5, 20.8, 21.2);
+          el('s-trust').style.opacity = String(op);
+          el('s-trust').style.visibility = op > 0.001 ? 'visible' : 'hidden';
+          if (op > 0.001) {
+            const p = EASE.out(seg(t, 18.0, 18.8));
+            set(el('x-inner'), { o: p, y: 30 * (1 - p) });
+            const cards = el('x-inner').querySelectorAll('.card');
+            [...cards].forEach((card, i) => {
+              const q = EASE.out(seg(t, 18.5 + i * 0.14, 18.95 + i * 0.14));
+              card.style.opacity = String(q);
+              card.style.transform = `translate3d(0, ${18 * (1 - q)}px, 0)`;
+            });
+          }
+        }
+
+        // CTA 21.2 - 24
+        {
+          const op = life(t, 21.2, 21.8, null, null);
+          el('s-cta').style.opacity = String(op);
+          el('s-cta').style.visibility = op > 0.001 ? 'visible' : 'hidden';
+          if (op > 0.001) {
+            const p = EASE.out(seg(t, 21.2, 22.0));
+            set(el('c-inner'), { o: p, y: 26 * (1 - p) });
+            const b = EASE.out(seg(t, 21.5, 22.4));
+            set(el('c-badge'), { o: b, s: 0.86 + 0.14 * b, y: 12 * (1 - b) });
+          }
+        }
+      };
+
+      window.renderAt(0);
+    </script>
+  </body>
+</html>

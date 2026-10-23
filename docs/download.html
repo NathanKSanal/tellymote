@@ -75,6 +75,11 @@
       details p { color: var(--muted); font-size: 12px; }
       code { font-family: Consolas, monospace; font-size: 11px; color: #c9cfd9; }
       .crosslink { margin-top: 18px; font-size: 12.5px; color: var(--muted); }
+      .tour { margin-top: 30px; }
+      .promo {
+        display: block; width: 100%; height: auto; margin-top: 12px;
+        border: 1px solid var(--line); border-radius: 10px; background: #000;
+      }
       footer { border-top: 1px solid var(--line); margin-top: 32px; padding-top: 14px; color: var(--faint); font-size: 11px; display: flex; gap: 12px; flex-wrap: wrap; }
       @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 25px; } .shots { grid-template-columns: 1fr; } }
     </style>
@@ -107,8 +112,19 @@
           height="778"
           alt="TellyMote dashboard: a saved Android TV listed as not connected, with remote, screen feed, capture rate and end-to-end latency panels."
         />
-        <figcaption>Real UI from v1.3.2, captured with a demo profile and the TV switched off. No panel is staged as live.</figcaption>
+        <figcaption>Real UI from v1.3.3, captured with a demo profile and the TV switched off. No panel is staged as live.</figcaption>
       </figure>
+
+      <section class="tour" id="tour">
+        <div class="eyebrow">24-second tour</div>
+        <h2>See it move</h2>
+        <video class="promo" controls playsinline preload="metadata" poster="media/promo-poster.jpg">
+          <source src="media/tellymote-promo.mp4" type="video/mp4" />
+          Your browser cannot play this video.
+          <a href="media/tellymote-promo.mp4">Download it instead</a>.
+        </video>
+        <div class="sub">Every frame is the real interface. Nothing is mocked or sped up.</div>
+      </section>
 
       <div class="grid">
         <section class="panel">
