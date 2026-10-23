@@ -5,8 +5,13 @@
   "description": "Motion graphics for TellyMote, rendered with Remotion",
   "scripts": {
     "assets": "node scripts/sync-assets.mjs",
+    "vo": "py scripts/make_vo.py",
+    "timing": "node scripts/make_timing.mjs",
+    "music": "node scripts/make_music.mjs",
+    "mix": "node scripts/mix.mjs",
     "studio": "npm run assets && remotion studio",
-    "render": "npm run assets && remotion render Promo out/tellymote-promo.mp4 --codec=h264 --crf=18",
+    "render": "npm run assets && remotion render Promo out/tellymote-promo-vo.mp4 --codec=h264 --crf=18",
+    "build": "npm run assets && npm run timing && npm run music && npm run render && npm run mix",
     "still": "npm run assets && remotion still Promo out/frame.png"
   },
   "dependencies": {

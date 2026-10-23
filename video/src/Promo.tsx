@@ -1,5 +1,6 @@
 import React from "react";
-import { AbsoluteFill, interpolate, Sequence, staticFile, useCurrentFrame, useVideoConfig, spring } from "remotion";
+import { AbsoluteFill, Audio, interpolate, Sequence, staticFile, useCurrentFrame, useVideoConfig, spring } from "remotion";
+import { TIMING } from "./timing";
 import { Backdrop, Body, DrawRule, PALETTE, Pill, Scene, ShotCard, WordReveal, useEnter } from "./components";
 
 const DISPLAY = 'Bahnschrift, "Segoe UI Variable Display", "Segoe UI", sans-serif';
@@ -309,46 +310,42 @@ const CtaScene: React.FC = () => {
   );
 };
 
+const scene = (key: keyof typeof TIMING, node: React.ReactNode) => {
+  const t = TIMING[key];
+  return (
+    <Sequence from={t.from} durationInFrames={t.duration} name={key}>
+      <Scene duration={t.duration}>{node}</Scene>
+    </Sequence>
+  );
+};
+
+const voice = (key: keyof typeof TIMING) => {
+  const t = TIMING[key];
+  return (
+    <Sequence from={t.voFrom} durationInFrames={t.voFrames} name={`${key}-vo`}>
+      <Audio src={staticFile(`vo/${t.voFile}`)} volume={1} />
+    </Sequence>
+  );
+};
+
 export const Promo: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: PALETTE.bg }}>
       <Backdrop />
 
-      <Sequence from={0} durationInFrames={124} name="Title">
-        <Scene duration={124}>
-          <TitleScene />
-        </Scene>
-      </Sequence>
+      {scene("intro", <TitleScene />)}
+      {scene("dashboard", <DashboardScene />)}
+      {scene("remote", <RemoteScene />)}
+      {scene("devices", <DevicesScene />)}
+      {scene("trust", <TrustScene />)}
+      {scene("cta", <CtaScene />)}
 
-      <Sequence from={124} durationInFrames={206} name="Dashboard">
-        <Scene duration={206}>
-          <DashboardScene />
-        </Scene>
-      </Sequence>
-
-      <Sequence from={330} durationInFrames={180} name="Remote">
-        <Scene duration={180}>
-          <RemoteScene />
-        </Scene>
-      </Sequence>
-
-      <Sequence from={510} durationInFrames={152} name="Devices">
-        <Scene duration={152}>
-          <DevicesScene />
-        </Scene>
-      </Sequence>
-
-      <Sequence from={662} durationInFrames={120} name="Trust">
-        <Scene duration={120}>
-          <TrustScene />
-        </Scene>
-      </Sequence>
-
-      <Sequence from={782} durationInFrames={118} name="CTA">
-        <Scene duration={118}>
-          <CtaScene />
-        </Scene>
-      </Sequence>
+      {voice("intro")}
+      {voice("dashboard")}
+      {voice("remote")}
+      {voice("devices")}
+      {voice("trust")}
+      {voice("cta")}
     </AbsoluteFill>
   );
 };

@@ -9,7 +9,7 @@ your own network.** No account. No cloud relay. No telemetry.
 
 ![TellyMote UI tour: dashboard, remote and devices](docs/media/tour.gif)
 
-▶ **[Watch the 30-second motion-graphics tour](https://nathanksanal.github.io/tellymote/download.html#tour)** (1920×1080, no sound, every frame is the real interface)
+▶ **[Watch the 47-second narrated tour](https://nathanksanal.github.io/tellymote/download.html#tour)** (1920×1080, narrated, captions included)
 
 Built first for a **Xiaomi Mi TV 4A 43"** (PatchWall / Android TV 9). Everything runs on your LAN.
 
@@ -297,10 +297,10 @@ protocol implementation.
 
 ## Licence
 
-**FSL-1.1-MIT** � the Functional Source License 1.1 with an MIT Future License. You may use, copy,
+**FSL-1.1-MIT** — the Functional Source License 1.1 with an MIT Future License. You may use, copy,
 modify and redistribute TellyMote for any non-competing purpose, including internal business use.
 You may not ship a competing or rebranded product; each release becomes MIT two years after it is
-published. The TellyMote name, wordmark and logo are reserved � see [TRADEMARK.md](TRADEMARK.md).
+published. The TellyMote name, wordmark and logo are reserved — see [TRADEMARK.md](TRADEMARK.md).
 Versions published before 1.3.1 (including 1.3.0) were MIT, and those copies remain MIT.
 
 Not affiliated with Xiaomi, Google, Samsung, LG, Roku or Android TV. Product names are used only to

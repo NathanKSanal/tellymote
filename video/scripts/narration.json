@@ -1,0 +1,31 @@
+{
+  "voice": "en-US-AndrewNeural",
+  "rate": "+3%",
+  "pitch": "-2Hz",
+  "lines": [
+    {
+      "id": "vo1",
+      "text": "Your TV is across the room. TellyMote puts the remote in your hands, and the screen on your laptop."
+    },
+    {
+      "id": "vo2",
+      "text": "One window: remote, live screen, and the numbers that prove it is working. Measured, not guessed."
+    },
+    {
+      "id": "vo3",
+      "text": "Arrow keys move. Enter selects. Type a search on a real keyboard, instead of spelling it out letter by letter."
+    },
+    {
+      "id": "vo4",
+      "text": "It finds Android TV, Google TV, and Roku on your own network. No account. No store in the middle."
+    },
+    {
+      "id": "vo5",
+      "text": "The build is unsigned, so Windows warns you once. Every release ships with a SHA-two-five-six, or you can build it yourself."
+    },
+    {
+      "id": "vo6",
+      "text": "Free on Windows, macOS and Linux. github dot com, slash Nathan K Sanal, slash tellymote."
+    }
+  ]
+}

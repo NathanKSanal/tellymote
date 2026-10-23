@@ -2,3 +2,5 @@ node_modules/
 out/
 .remotion/
 public/*.png
+public/music/
+public/*.srt
