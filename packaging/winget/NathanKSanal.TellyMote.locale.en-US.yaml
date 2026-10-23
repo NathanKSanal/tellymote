@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.6.0.schema.json
+PackageIdentifier: NathanKSanal.TellyMote
+PackageVersion: 1.3.3
+PackageLocale: en-US
+Publisher: NathanKSanal
+PublisherUrl: https://github.com/NathanKSanal
+PublisherSupportUrl: https://github.com/NathanKSanal/tellymote/issues
+PackageName: TellyMote
+PackageUrl: https://github.com/NathanKSanal/tellymote
+License: FSL-1.1-MIT
+LicenseUrl: https://github.com/NathanKSanal/tellymote/blob/main/LICENSE
+ShortDescription: Remote and live screen viewer for Android TV, Google TV and Roku over your local network.
+Description: LAN-only remote and live screen viewer for Android TV, Google TV and Roku. No account, no cloud relay, no telemetry.
+Tags:
+  - android-tv
+  - google-tv
+  - remote-control
+  - roku
+  - screen-viewer
+  - lan
+ReleaseNotesUrl: https://github.com/NathanKSanal/tellymote/releases/download/v1.3.3
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0

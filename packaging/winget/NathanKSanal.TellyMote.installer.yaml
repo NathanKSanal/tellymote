@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.6.0.schema.json
+PackageIdentifier: NathanKSanal.TellyMote
+PackageVersion: 1.3.3
+InstallerType: nullsoft
+Scope: user
+InstallModes:
+  - interactive
+  - silent
+  - silentWithProgress
+UpgradeBehavior: install
+Installers:
+  - Architecture: x64
+    InstallerUrl: https://github.com/NathanKSanal/tellymote/releases/download/v1.3.3/TellyMote-1.3.3-x64.exe
+    InstallerSha256: AE3F92F582499994D6DD4F6DB6FA3B88BAE173F437B8CFC08117CB1620C506EF
+    InstallerSwitches:
+      Silent: /S
+      SilentWithProgress: /S
+ManifestType: installer
+ManifestVersion: 1.6.0
