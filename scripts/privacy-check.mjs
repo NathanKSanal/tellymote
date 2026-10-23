@@ -12,8 +12,12 @@ import path from 'node:path';
  */
 const DENY = [
   { label: 'local Windows user path', re: /\b[A-Za-z]:\\Users\\[^\\\s"']+/g },
-  // 192.168.0.42 is the documented placeholder, 192.168.0.0 the example subnet.
-  { label: 'private LAN address', re: /\b192\.168\.(?!0\.(?:0|42)\b)\d{1,3}\.\d{1,3}\b/g },
+  // Examples in docs and UI use the RFC 5737 documentation range (192.0.2.0/24), which can
+  // never be a reader's real LAN. Every RFC 1918 private range is denied outright.
+  {
+    label: 'private LAN address',
+    re: /\b(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})\b/g,
+  },
   {
     label: 'MAC address',
     re: /\b(?!00(?:[:-]00){5}\b)(?!ff(?:[:-]ff){5}\b)(?:[0-9a-f]{2}[:-]){5}[0-9a-f]{2}\b/gi,

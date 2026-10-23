@@ -10,7 +10,7 @@ same network. Menu names vary slightly by firmware; the app never depends on a s
 
 | Requirement | Why |
 | --- | --- |
-| PC and TV on the **same subnet** (e.g. `192.168.0.0/24`) | Every protocol is link-local. |
+| PC and TV on the **same subnet** (e.g. `192.0.2.0/24`) | Every protocol is link-local. |
 | Client/AP isolation **off** | Guest Wi-Fi and some mesh systems block device-to-device traffic. |
 | Multicast (mDNS/SSDP) allowed, or manual IP entry | Some routers filter multicast; manual entry bypasses it. |
 | TV awake or in standby with network standby enabled | A fully powered-off TV cannot answer. |
@@ -39,7 +39,7 @@ but manual IP entry and the direct TCP probe still work.
 1. Open **Devices**.
 2. Press **Scan network**. mDNS, SSDP and a direct probe of TCP `6466`, `6467` and `5555` run in
    parallel for about five seconds.
-3. If nothing appears, use **Add by IP address** (e.g. `192.168.0.42`). The app probes the address
+3. If nothing appears, use **Add by IP address** (e.g. `192.0.2.42`). The app probes the address
    directly and tells you which services answered.
 
 Results are labelled by source (`mDNS`, `SSDP`, `Probe`, `Manual`, `Saved`). A device is only marked

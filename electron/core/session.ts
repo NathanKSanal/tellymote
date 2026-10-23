@@ -321,7 +321,7 @@ export class LumaSession {
   async addManual(hostInput: string, name?: string): Promise<DiscoveredDevice> {
     const host = hostInput.trim();
     if (!/^[a-zA-Z0-9.-]{1,253}$/.test(host)) {
-      throw appError('INVALID_INPUT', 'Enter an IPv4 address such as 192.168.0.42, or a hostname.');
+      throw appError('INVALID_INPUT', 'Enter an IPv4 address such as 192.0.2.42, or a hostname.');
     }
     const resolved = net.isIPv4(host) ? host : await this.resolveHost(host);
     if (!resolved) throw appError('TV_NOT_FOUND', `Could not resolve ${host} on this network.`);

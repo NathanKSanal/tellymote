@@ -151,7 +151,7 @@ The **Android** GitHub Actions workflow installs the SDK and uploads the APK as
 node -v; npm -v
 Get-Command rustc,cargo,adb -ErrorAction SilentlyContinue
 Get-NetIPConfiguration | Where-Object { $_.IPv4Address } | Select-Object InterfaceAlias, IPv4Address
-Test-NetConnection 192.168.0.1 -Port 6466   # example probe
+Test-NetConnection 192.0.2.1 -Port 6466   # example probe
 ```
 
 ## Common build problems

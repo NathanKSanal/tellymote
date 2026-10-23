@@ -73,7 +73,7 @@ export function Devices({ onNavigate }: { onNavigate: (view: ViewId) => void }) 
               <span className="eyebrow mb-1.5 block">Address</span>
               <input
                 className="field"
-                placeholder="192.168.0.42"
+                placeholder="192.0.2.42"
                 value={host}
                 autoFocus
                 spellCheck={false}

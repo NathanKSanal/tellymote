@@ -50,7 +50,7 @@ export function StatusBar() {
           scanning {state.scan.hostsProbed}/{state.scan.hostsTotal}
         </span>
       )}
-      <span className="ml-auto hidden xl:inline">127.0.0.1 · loopback · no cloud</span>
+      <span className="ml-auto hidden xl:inline">Loopback only · no cloud</span>
     </footer>
   );
 }

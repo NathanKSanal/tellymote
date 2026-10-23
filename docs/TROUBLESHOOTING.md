@@ -8,7 +8,7 @@ the authenticated transports, ADB state, measured latency and a list of suggeste
 
 | Check | What to do |
 | --- | --- |
-| Same subnet? | `Devices → Network` must show the TV's subnet, e.g. `192.168.0.0/24`. A `172.x` or VPN adapter means the wrong interface was picked. |
+| Same subnet? | `Devices → Network` must show the TV's subnet, e.g. `192.0.2.0/24`. A `172.x` or VPN adapter means the wrong interface was picked. |
 | TV awake? | Some TVs drop off Wi-Fi in deep standby. Wake it with its own remote and rescan. |
 | Multicast blocked? | Use `Add by IP address`. The direct probe does not need mDNS/SSDP. |
 | AP/client isolation? | Guest networks and some mesh systems isolate clients. Move both devices to the main SSID. |
