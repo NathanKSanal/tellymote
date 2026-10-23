@@ -77,8 +77,8 @@ jobs:
         shell: bash
         run: |
           mkdir -p assets
-          gh release download "$GITHUB_REF_NAME" --dir assets --clobber
+          gh release download "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --dir assets --clobber
           rm -f assets/SHA256SUMS.txt
           cd assets
           sha256sum * > SHA256SUMS.txt
-          gh release upload "$GITHUB_REF_NAME" SHA256SUMS.txt --clobber
+          gh release upload "$GITHUB_REF_NAME" SHA256SUMS.txt --repo "$GITHUB_REPOSITORY" --clobber

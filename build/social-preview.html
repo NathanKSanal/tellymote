@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      :root {
+        --bg: #0b0c0f;
+        --ink: #e7e9ee;
+        --muted: #9aa1ac;
+        --faint: #6d7480;
+        --accent: #e0ad63;
+        --accent-ink: #1a1308;
+      }
+      * { box-sizing: border-box; margin: 0; }
+      html, body { width: 1280px; height: 640px; }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+        overflow: hidden;
+        position: relative;
+      }
+      .glow {
+        position: absolute;
+        width: 900px; height: 900px;
+        right: -260px; top: -300px;
+        background: radial-gradient(circle, rgba(224, 173, 99, 0.16), transparent 62%);
+      }
+      .wrap { position: relative; padding: 56px 0 0 56px; display: flex; gap: 32px; }
+      .left { width: 410px; flex: none; padding-top: 30px; }
+      .brand { display: flex; align-items: center; gap: 12px; }
+      .mark {
+        width: 38px; height: 38px; border-radius: 9px;
+        background: var(--accent); color: var(--accent-ink);
+        display: grid; place-items: center; font-weight: 700; font-size: 20px;
+      }
+      .name {
+        font-family: Bahnschrift, "Segoe UI Variable Display", sans-serif;
+        font-size: 26px; letter-spacing: 0.01em;
+      }
+      h1 {
+        font-family: Bahnschrift, "Segoe UI Variable Display", sans-serif;
+        font-size: 48px; line-height: 1.04; letter-spacing: -0.02em;
+        margin: 46px 0 18px;
+      }
+      h1 em { font-style: normal; color: var(--accent); }
+      .sub { color: var(--muted); font-size: 17px; line-height: 1.45; max-width: 38ch; }
+      .chips { display: flex; gap: 8px; margin-top: 30px; flex-wrap: wrap; }
+      .chip {
+        border: 1px solid #23262e; border-radius: 5px;
+        padding: 5px 9px; font-size: 11.5px; color: var(--muted);
+      }
+      .shot {
+        position: relative;
+        flex: none;
+        width: 726px;
+        margin-top: 6px;
+        border: 1px solid #23262e;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+      }
+      .shot img { width: 100%; display: block; }
+      .foot {
+        position: absolute; left: 56px; bottom: 36px;
+        color: var(--faint); font-size: 12px; letter-spacing: 0.02em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="glow"></div>
+    <div class="wrap">
+      <div class="left">
+        <div class="brand">
+          <div class="mark">T</div>
+          <div class="name">TellyMote</div>
+        </div>
+        <h1>Your TV,<br />on your <em>desktop</em>.</h1>
+        <p class="sub">Remote and live screen for Android TV, Google TV and Roku — over your own LAN.</p>
+        <div class="chips">
+          <span class="chip">No account</span>
+          <span class="chip">No cloud relay</span>
+          <span class="chip">No telemetry</span>
+        </div>
+      </div>
+      <div class="shot"><img src="/docs/media/dashboard.png" alt="" /></div>
+    </div>
+    <div class="foot">Windows · macOS · Linux · github.com/NathanKSanal/tellymote</div>
+  </body>
+</html>
