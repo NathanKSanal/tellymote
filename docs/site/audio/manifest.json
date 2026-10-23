@@ -1,0 +1,44 @@
+[
+  {
+    "chapter": "hero",
+    "file": "ch1.mp3",
+    "text": "This is TellyMote. A remote, and a live screen, for the TV across the room. It runs on your own network, and nowhere else.",
+    "seconds": 7.656
+  },
+  {
+    "chapter": "remote",
+    "file": "ch2.mp3",
+    "text": "Your keyboard becomes the remote. Arrow keys move. Enter selects. Page up and down for volume. No phone, no app store.",
+    "seconds": 8.136
+  },
+  {
+    "chapter": "screen",
+    "file": "ch3.mp3",
+    "text": "The TV screen opens on your laptop. Capture needs debugging switched on at the TV end. DRM apps stay black, and that is the DRM, not a bug.",
+    "seconds": 9.336
+  },
+  {
+    "chapter": "protocols",
+    "file": "ch4.mp3",
+    "text": "No vendor app, and no platform tools. TellyMote speaks Android TV Remote version two, the ADB host protocol, and Roku ECP directly.",
+    "seconds": 9.408
+  },
+  {
+    "chapter": "numbers",
+    "file": "ch5.mp3",
+    "text": "A hundred and sixty six automated tests. Three protocols. Zero accounts, zero relays, zero telemetry.",
+    "seconds": 7.68
+  },
+  {
+    "chapter": "compare",
+    "file": "ch6.mp3",
+    "text": "If all you want is mirroring, scrcpy does it better. TellyMote is for driving the TV from your desk, without turning on developer mode first.",
+    "seconds": 8.616
+  },
+  {
+    "chapter": "download",
+    "file": "ch7.mp3",
+    "text": "Free on Windows, macOS and Linux. github dot com, slash Nathan K Sanal, slash tellymote.",
+    "seconds": 7.176
+  }
+]

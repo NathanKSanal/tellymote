@@ -6,7 +6,7 @@
     <title>TellyMote — your TV, on your desktop</title>
     <meta
       name="description"
-      content="A remote and live screen viewer for Android TV, Google TV and Roku. Runs on your own network: no account, no cloud relay, no telemetry."
+      content="A narrated scroll film for TellyMote: a remote and live screen viewer for Android TV, Google TV and Roku, running on your own network with no account, no cloud relay and no telemetry."
     />
     <link rel="canonical" href="https://nathanksanal.github.io/tellymote/" />
     <meta property="og:type" content="website" />
@@ -22,6 +22,7 @@
     <link rel="icon" href="media/promo-poster.jpg" />
     <link rel="preload" as="image" href="media/dashboard.png" />
     <link rel="stylesheet" href="site/site.css" />
+    <link rel="stylesheet" href="site/film.css" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -49,22 +50,22 @@
         <span>TellyMote</span>
       </a>
       <nav class="topnav" aria-label="Sections">
-        <a href="#remote">Remote</a>
-        <a href="#screen">Screen</a>
-        <a href="#protocols">Protocols</a>
-        <a href="#compare">Compare</a>
+        <a href="#remote" data-num="02">Remote</a>
+        <a href="#screen" data-num="03">Screen</a>
+        <a href="#protocols" data-num="04">Protocols</a>
+        <a href="#compare" data-num="06">Compare</a>
       </nav>
       <a class="btn btn-primary btn-sm" href="download.html">Download</a>
     </header>
 
     <nav class="rail" aria-label="Section progress">
       <div class="rail-track" aria-hidden="true"><div class="rail-fill"></div></div>
-      <a href="#remote"><span>Remote</span></a>
-      <a href="#screen"><span>Screen</span></a>
-      <a href="#protocols"><span>Protocols</span></a>
-      <a href="#numbers"><span>Numbers</span></a>
-      <a href="#compare"><span>Compare</span></a>
-      <a href="#download"><span>Download</span></a>
+      <a href="#remote" data-num="02"><span>Remote</span></a>
+      <a href="#screen" data-num="03"><span>Screen</span></a>
+      <a href="#protocols" data-num="04"><span>Protocols</span></a>
+      <a href="#numbers" data-num="05"><span>Numbers</span></a>
+      <a href="#compare" data-num="06"><span>Compare</span></a>
+      <a href="#download" data-num="07"><span>Download</span></a>
     </nav>
 
     <main id="main">
@@ -114,7 +115,7 @@
         <div class="remote-sticky">
           <div class="wrap remote-grid">
             <div>
-              <p class="eyebrow"><span class="idx">01</span>Remote</p>
+              <p class="eyebrow"><span class="idx">02</span>Remote</p>
               <h2 class="reveal">Every key, from your keyboard.</h2>
               <div class="steps">
                 <div class="step">
@@ -152,7 +153,7 @@
         <div class="screen-sticky">
           <div class="wrap">
             <div class="screen-head">
-              <p class="eyebrow"><span class="idx">02</span>Live screen</p>
+              <p class="eyebrow"><span class="idx">03</span>Live screen</p>
               <h2 class="reveal">The TV screen, on your laptop.</h2>
             </div>
             <figure class="screen-figure">
@@ -173,7 +174,7 @@
       <!-- ---------------- protocols ---------------- -->
       <section class="protocols section" id="protocols">
         <div class="wrap">
-          <p class="eyebrow"><span class="idx">03</span>Protocols</p>
+          <p class="eyebrow"><span class="idx">04</span>Protocols</p>
           <h2 class="reveal" style="max-width: 20ch">Three protocols. One window.</h2>
           <p class="lede reveal" style="margin-top: 18px">
             No platform-tools, no vendor app, no account. TellyMote speaks the protocols the devices already
@@ -251,7 +252,7 @@
       <!-- ---------------- compare ---------------- -->
       <section class="section" id="compare">
         <div class="wrap">
-          <p class="eyebrow"><span class="idx">04</span>Compare</p>
+          <p class="eyebrow"><span class="idx">06</span>Compare</p>
           <h2 class="reveal" style="max-width: 24ch">Where it fits, and where it doesn't.</h2>
           <div class="compare-wrap" style="margin-top: 40px">
             <table class="compare">
@@ -326,8 +327,47 @@
       </nav>
     </footer>
 
+    <!-- film controls -->
+    <div class="caption" id="caption" aria-live="polite"><span></span></div>
+
+    <aside class="film-hud" id="film-hud" aria-label="Narration controls">
+      <button class="hud-btn" id="hud-play" type="button" aria-label="Play or pause narration">
+        <span class="hud-icon" aria-hidden="true">❚❚</span>
+      </button>
+      <div class="hud-body">
+        <div class="hud-row">
+          <span class="hud-chapter" id="hud-chapter">01 · Hero</span>
+          <span class="hud-time" id="hud-time">0:00 / 0:00</span>
+        </div>
+        <div class="hud-track"><span class="hud-fill" id="hud-fill"></span></div>
+      </div>
+      <div class="hud-bars" id="hud-bars" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+      <button class="hud-btn hud-mute" id="hud-mute" type="button" aria-label="Mute narration">Mute</button>
+    </aside>
+
+    <div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
+      <div class="gate-card">
+        <div class="gate-mark" aria-hidden="true">T</div>
+        <p class="eyebrow">A 58-second scroll film</p>
+        <h2 id="gate-title">TellyMote, narrated.</h2>
+        <p class="gate-sub">
+          Scroll and the film plays itself: each chapter speaks when you reach it. Seven chapters, no autoplay
+          until you ask.
+        </p>
+        <div class="gate-actions">
+          <button class="btn btn-primary" id="gate-start" type="button">Play with narration</button>
+          <button class="btn btn-ghost" id="gate-silent" type="button">Continue without sound</button>
+        </div>
+        <p class="gate-note">Voice: synthetic. Captions always on screen. Press M to mute.</p>
+      </div>
+    </div>
+
     <script src="site/vendor/gsap.min.js"></script>
     <script src="site/vendor/ScrollTrigger.min.js"></script>
     <script src="site/site.js"></script>
+    <script src="site/film.js"></script>
+
   </body>
 </html>

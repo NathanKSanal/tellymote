@@ -248,7 +248,7 @@ p { margin: 0; }
 
 /* ---------- screen section ---------- */
 .screen-pin { position: relative; height: 240vh; }
-.screen-sticky { position: sticky; top: 0; height: 100svh; display: grid; place-items: center; padding: 96px 0 40px; overflow: hidden; }
+.screen-sticky { position: sticky; top: 0; height: 100svh; display: grid; place-items: center; padding: 84px 0 28px; overflow: hidden; }
 .reveal-frame {
   position: relative; width: min(1120px, 100%); border-radius: 16px; overflow: hidden;
   border: 1px solid var(--line); box-shadow: 0 60px 140px rgba(0, 0, 0, 0.7);
@@ -268,12 +268,12 @@ p { margin: 0; }
 .rec { width: 7px; height: 7px; border-radius: 50%; background: #d3604f; }
 
 /* ---------- protocols ---------- */
-.protocols { overflow: hidden; }
+.protocols { overflow: hidden; padding-top: clamp(70px, 8vw, 110px); }
 .h-rail { display: flex; gap: 22px; will-change: transform; }
 .p-card {
   flex: 0 0 min(520px, 78vw); border: 1px solid var(--line); border-radius: 16px;
   background: linear-gradient(160deg, var(--surface-2), var(--surface));
-  padding: clamp(22px, 3vw, 34px); min-height: 340px;
+  padding: clamp(20px, 2.4vw, 28px); min-height: 300px;
   display: flex; flex-direction: column; justify-content: space-between;
 }
 .p-card .tag {
@@ -375,8 +375,8 @@ p { margin: 0; }
 
 .screen-head { text-align: center; }
 .screen-head .eyebrow { margin-bottom: 14px; }
-.screen-figure { position: relative; width: min(1010px, 100%); margin: 24px auto 0; }
-.screen-note { margin: 26px auto 0; text-align: center; max-width: 56ch; font-size: 15px; }
+.screen-figure { position: relative; width: min(920px, 100%); margin: 22px auto 0; }
+.screen-note { margin: 18px auto 0; text-align: center; max-width: 56ch; font-size: 15px; }
 .scan {
   position: absolute; left: 0; right: 0; top: 0; height: 2px; opacity: 0;
   background: linear-gradient(90deg, transparent, rgba(224, 173, 99, 0.9), transparent);

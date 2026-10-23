@@ -81,23 +81,6 @@
       ease: "none",
       scrollTrigger: { start: 0, end: "max", scrub: 1.2 },
     });
-
-    // Pointer parallax: small, cheap, and off for touch/reduced-motion.
-    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-      const setRX = gsap.quickTo(frame, "rotateX", { duration: 0.6, ease: "power3.out" });
-      const setRY = gsap.quickTo(frame, "rotateY", { duration: 0.6, ease: "power3.out" });
-      hero.addEventListener("pointermove", (e) => {
-        const r = hero.getBoundingClientRect();
-        const px = (e.clientX - r.left) / r.width - 0.5;
-        const py = (e.clientY - r.top) / r.height - 0.5;
-        setRY(px * 7);
-        setRX(-py * 5);
-      });
-      hero.addEventListener("pointerleave", () => {
-        setRY(0);
-        setRX(0);
-      });
-    }
   }
 
   /* ---------------- remote: steps + key press ---------------- */
