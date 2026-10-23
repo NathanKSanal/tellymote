@@ -1,13 +1,15 @@
 # TellyMote
 
-A desktop remote and live screen viewer for Android TV / Google TV, plus Roku control — and a
-standalone Android client in progress. Built first for a **Xiaomi Mi TV 4A 43"** (PatchWall /
-Android TV 9). Everything runs on your LAN: no account, no cloud relay, no telemetry.
+**A remote and live screen viewer for your Android TV, Google TV or Roku — from your laptop, over
+your own network.** No account. No cloud relay. No telemetry.
 
-![TellyMote icon](build/icon.png)
-
+[![Download](https://img.shields.io/badge/download-latest%20release-e8a33d?style=for-the-badge)](https://github.com/NathanKSanal/tellymote/releases/latest)
 [![CI](https://github.com/NathanKSanal/tellymote/actions/workflows/ci.yml/badge.svg)](https://github.com/NathanKSanal/tellymote/actions/workflows/ci.yml)
 [![Android](https://github.com/NathanKSanal/tellymote/actions/workflows/android.yml/badge.svg)](https://github.com/NathanKSanal/tellymote/actions/workflows/android.yml)
+
+![TellyMote UI tour: dashboard, remote and devices](docs/media/tour.gif)
+
+Built first for a **Xiaomi Mi TV 4A 43"** (PatchWall / Android TV 9). Everything runs on your LAN.
 
 > **Honest status:** the desktop app is verified on a real **Xiaomi Mi TV 4A 43" (`MiTV4I`,
 > Android 9 / SDK 28)** over a private LAN: SSDP discovery, ATV v2 pairing and control, ADB
@@ -34,6 +36,19 @@ Android TV 9). Everything runs on your LAN: no account, no cloud relay, no telem
 | **Performance** | Lite / Balanced / Performance / Auto presets, newest-frame-only delivery, stale-frame dropping, decode backpressure, measured stage latency. The remote is prioritised over capture. |
 | **Diagnostics** | Per-stage latency, protocol matrix, device props, network quality, redacted JSON export. |
 | **Android preview** | Standalone Kotlin/Compose client: SSDP discovery and a `/24` probe for ATV `6466`, ADB `5555` and Roku `8060`. **Discovery only** — pairing/control is the next slice. |
+
+## Screenshots
+
+Captured from the real app (v1.3.2) against a sanitised demo profile. No TV was connected at capture
+time, so panels read "Not connected" and nothing is staged to look live.
+
+| Dashboard | Remote |
+| --- | --- |
+| ![Dashboard](docs/media/dashboard.png) | ![Remote](docs/media/remote.png) |
+
+| Devices | Settings |
+| --- | --- |
+| ![Devices](docs/media/devices.png) | ![Settings](docs/media/settings.png) |
 
 ## Requirements
 
@@ -77,13 +92,28 @@ platform and links the matching build. All desktop files are also on
 
 Two builds are attached to [Releases](https://github.com/NathanKSanal/tellymote/releases):
 
+- **`TellyMote-<version>-portable-safe.zip`** - start here if Windows is suspicious. It is the same
+  app; the launcher is the untouched Electron binary.
 - **`TellyMote-<version>-x64.exe`** - per-user installer. Adds Start Menu and Desktop shortcuts, an
   uninstall entry, and installs to `%LOCALAPPDATA%\Programs\TellyMote`.
-- **`TellyMote-<version>-portable-safe.zip`** - portable build whose launcher is the untouched Electron
-  binary. Use this if Windows Smart App Control blocks the installer or the normal launcher.
 
-The build is unsigned, so SmartScreen may warn. On first launch, data from an older LumaRemote
-install is copied from `%APPDATA%\lumaremote` to `%APPDATA%\TellyMote` once.
+### Why Windows shows a warning
+
+The build is **unsigned** - there is no paid code-signing certificate. Windows SmartScreen therefore
+shows "unrecognised app" on first run, and Smart App Control (if enabled) may block the installer
+outright. This is a reputation warning, not a malware report. Verify what you downloaded before
+running it:
+
+```powershell
+Get-FileHash .\TellyMote-<version>-x64.exe -Algorithm SHA256
+# compare with SHA256SUMS.txt from the same release
+```
+
+Every release publishes `SHA256SUMS.txt` and a VirusTotal link in its notes. If you would rather not
+trust an unsigned installer, build from source: `npm install && npm run package`.
+
+On first launch, data from an older LumaRemote install is copied from `%APPDATA%\lumaremote` to
+`%APPDATA%\TellyMote` once.
 
 ## Install on Android (preview)
 
@@ -216,6 +246,7 @@ The smoke mode disables hardware acceleration so `capturePage()` works on GPU-le
 ## Documentation
 
 - [Supported platforms and status](docs/SUPPORT.md)
+- [How it compares to scrcpy, Yatse and friends](docs/alternatives.html)
 - [Android client status and build](mobile/android/README.md)
 - [Architecture and protocol strategy](docs/ARCHITECTURE.md)
 - [Setup and first-run walkthrough](docs/SETUP.md)

@@ -58,8 +58,25 @@
       li { margin: 5px 0; }
       .note { border: 1px solid rgba(199, 162, 82, 0.34); background: rgba(199, 162, 82, 0.08); color: #d5b471; border-radius: 8px; padding: 11px 13px; font-size: 12px; margin-top: 14px; }
       .ok { color: var(--ok); }
+      .secondary {
+        display: inline-flex; align-items: center; gap: 8px; margin-left: 12px;
+        border: 1px solid var(--line); color: var(--muted); background: var(--surface-2);
+        border-radius: 7px; padding: 11px 15px; text-decoration: none; font-size: 12.5px;
+      }
+      .secondary:hover { color: var(--ink); border-color: #333844; }
+      .shots { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 22px; }
+      .shots figure { margin: 0; }
+      .shots img { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; display: block; }
+      .shots figcaption, .lede + figure figcaption { color: var(--faint); font-size: 10.5px; margin-top: 6px; }
+      .hero-shot { margin: 24px 0 0; }
+      .hero-shot img { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 10px; display: block; }
+      details { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-top: 12px; background: var(--surface-2); }
+      summary { cursor: pointer; color: var(--ink); font-size: 12.5px; }
+      details p { color: var(--muted); font-size: 12px; }
+      code { font-family: Consolas, monospace; font-size: 11px; color: #c9cfd9; }
+      .crosslink { margin-top: 18px; font-size: 12.5px; color: var(--muted); }
       footer { border-top: 1px solid var(--line); margin-top: 32px; padding-top: 14px; color: var(--faint); font-size: 11px; display: flex; gap: 12px; flex-wrap: wrap; }
-      @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 25px; } }
+      @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 25px; } .shots { grid-template-columns: 1fr; } }
     </style>
   </head>
   <body>
@@ -81,6 +98,17 @@
 
       <div id="primary"></div>
       <div class="sub" id="detected">Detecting your platform…</div>
+      <div id="secondary"></div>
+
+      <figure class="hero-shot">
+        <img
+          src="media/dashboard.png"
+          width="1280"
+          height="778"
+          alt="TellyMote dashboard: a saved Android TV listed as not connected, with remote, screen feed, capture rate and end-to-end latency panels."
+        />
+        <figcaption>Real UI from v1.3.2, captured with a demo profile and the TV switched off. No panel is staged as live.</figcaption>
+      </figure>
 
       <div class="grid">
         <section class="panel">
@@ -98,15 +126,59 @@
           <h2>Good to know</h2>
           <ul>
             <li><strong>Windows:</strong> unsigned, so SmartScreen may ask you to confirm. Use the
-              portable-safe ZIP if Smart App Control blocks the installer.</li>
+              portable ZIP if Smart App Control blocks the installer.</li>
             <li><strong>macOS:</strong> unsigned ZIP; right-click → Open the first time.</li>
             <li><strong>Linux:</strong> AppImage; <code>chmod +x</code> then run.</li>
             <li><strong>Roku:</strong> remote, apps and text only — no live video.</li>
             <li><strong>DRM:</strong> Netflix/Prime/Disney+ show black in the live view.</li>
             <li>Live view on Android TV needs ADB debugging enabled.</li>
           </ul>
+
+          <details>
+            <summary>Why does Windows show a warning?</summary>
+            <p>
+              The build is <strong>unsigned</strong> — there is no paid code-signing certificate, so
+              SmartScreen reports an “unrecognised app” the first time you run it. That is a reputation
+              warning, not a malware report.
+            </p>
+            <p>
+              Check the file before running it:
+              <code>Get-FileHash .\TellyMote-x64.exe -Algorithm SHA256</code>, then compare with
+              <a href="https://github.com/NathanKSanal/tellymote/releases/latest">SHA256SUMS.txt</a> from the
+              same release. If you would rather run nothing unsigned, build it yourself:
+              <code>npm install &amp;&amp; npm run package</code>.
+            </p>
+          </details>
+
+          <div class="crosslink">
+            Wondering how this compares with scrcpy, Yatse or adb keyevent scripts?
+            <a href="alternatives.html">Read the honest comparison</a>.
+          </div>
         </section>
       </div>
+
+      <section>
+        <div class="eyebrow" style="margin-top: 30px">Screens</div>
+        <h2>What you actually get</h2>
+        <div class="shots">
+          <figure>
+            <img src="media/remote.png" width="1280" height="778" alt="Remote view with D-pad, volume, transport keys, keyboard bindings and text entry." />
+            <figcaption>Remote — D-pad, volume, transport and keyboard bindings.</figcaption>
+          </figure>
+          <figure>
+            <img src="media/devices.png" width="1280" height="778" alt="Device list with protocol badges for Android TV remote and ADB." />
+            <figcaption>Devices — what was found, and which protocols each one answers.</figcaption>
+          </figure>
+          <figure>
+            <img src="media/settings.png" width="1280" height="778" alt="Settings: theme, capture preference, keyboard shortcuts and privacy options." />
+            <figcaption>Settings — capture preference, shortcuts, export privacy.</figcaption>
+          </figure>
+          <figure>
+            <img src="media/diagnostics.png" width="1280" height="778" alt="Diagnostics with per-stage latency and a redacted JSON export." />
+            <figcaption>Diagnostics — per-stage latency and redacted exports.</figcaption>
+          </figure>
+        </div>
+      </section>
 
       <footer>
         <span>FSL-1.1-MIT · free non-competing use</span>
@@ -124,6 +196,7 @@
       const table = document.querySelector('#assets tbody');
       const version = document.getElementById('version');
       const androidNote = document.getElementById('android-note');
+      const secondary = document.getElementById('secondary');
 
       const bytes = (n) => `${(n / 1024 / 1024).toFixed(1)} MB`;
       const platform = (() => {
@@ -143,6 +216,7 @@
             label: 'Download for Windows',
             note: 'Installer · per-user · Start Menu and Desktop shortcuts',
             extra: find('-portable-safe.zip'),
+            extraLabel: 'Portable ZIP · no install',
           };
         }
         if (platform === 'mac') {
@@ -151,6 +225,7 @@
             label: 'Download for macOS',
             note: 'Unsigned ZIP · right-click → Open on first launch',
             extra: find('-mac-x64.zip'),
+            extraLabel: 'Intel (x64) build',
           };
         }
         if (platform === 'linux') {
@@ -165,13 +240,23 @@
 
       function render(assets) {
         const choice = choose(assets);
+        secondary.replaceChildren();
         if (choice.main) {
           const a = document.createElement('a');
           a.className = 'primary';
           a.href = choice.main.browser_download_url;
           a.textContent = choice.label;
           primary.replaceChildren(a);
-          detected.textContent = `${choice.note} · ${bytes(choice.main.size)}`;
+          detected.textContent = choice.main.size
+            ? `${choice.note} · ${bytes(choice.main.size)}`
+            : choice.note;
+          if (choice.extra && choice.extra !== choice.main) {
+            const b = document.createElement('a');
+            b.className = 'secondary';
+            b.href = choice.extra.browser_download_url;
+            b.textContent = `${choice.extraLabel || 'Alternative build'} · ${bytes(choice.extra.size)}`;
+            secondary.appendChild(b);
+          }
         } else {
           const a = document.createElement('a');
           a.className = 'primary';

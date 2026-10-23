@@ -1,6 +1,6 @@
 {
   "name": "tellymote",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "private": true,
   "description": "TellyMote - local-network remote and live screen viewer for Android TV / Google TV, plus Roku control. No cloud.",
   "main": "dist-electron/main.cjs",

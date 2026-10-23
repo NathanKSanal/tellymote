@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import type { RemoteKey } from '@shared/types';
 import type { ViewId } from '../App';
-import { useActiveDevice, useApp } from '../lib/store';
+import { useApp, useDisplayDevice } from '../lib/store';
 import { api } from '../lib/api';
 import { cx, formatMs, shortHost } from '../lib/format';
 import { RemotePad } from '../components/RemotePad';
@@ -40,12 +40,13 @@ const EXTRA_KEYS: Array<{ key: RemoteKey; label: string; icon: typeof Info; note
 
 export function Remote({ onNavigate }: { onNavigate: (view: ViewId) => void }) {
   const { state, actions } = useApp();
-  const device = useActiveDevice();
+  const device = useDisplayDevice();
   const [keyboardEnabled, setKeyboardEnabled] = useState(true);
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
   const [confirmPower, setConfirmPower] = useState(false);
   const [rtt, setRtt] = useState<number | null>(null);
+  const isActive = Boolean(device && state.connection.deviceId === device.id);
   const remoteReady = state.connection.remoteTransport !== 'none';
   const rokuReady = state.connection.remoteTransport === 'roku';
   const textReady = device?.capabilities.adb.state === 'verified' || rokuReady;
@@ -125,6 +126,20 @@ export function Remote({ onNavigate }: { onNavigate: (view: ViewId) => void }) {
           </>
         }
       />
+
+      {!isActive && (
+        <div className="mb-4">
+          <InlineNote tone="warn" title={`${shortHost(device.host)} is saved but not connected`}>
+            <span className="block">
+              Connect to send keys. Pairing is already stored on this laptop, so this is one click — no code needed
+              unless the TV forgot it.
+            </span>
+            <button type="button" className="btn btn-primary mt-2 h-8" onClick={() => void actions.connect(device.id)}>
+              <Radio size={13} /> Connect to {shortHost(device.host)}
+            </button>
+          </InlineNote>
+        </div>
+      )}
 
       <div className="grid gap-6 xl:grid-cols-[340px_minmax(0,1fr)]">
         <div>
@@ -237,7 +252,7 @@ export function Remote({ onNavigate }: { onNavigate: (view: ViewId) => void }) {
             </div>
           </Panel>
 
-          {!remoteReady && (
+          {isActive && !remoteReady && (
             <InlineNote tone="warn" title="No remote transport">
               The TV is not accepting key events right now. Reconnect from Devices; if the native remote service is unavailable, TellyMote can fall back to ADB key events when debugging is authorised.
             </InlineNote>

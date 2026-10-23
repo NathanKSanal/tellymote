@@ -12,6 +12,7 @@ package.log
 *.log
 .smoke/
 .smoke-*/
+.shots/
 
 # Secrets and local state (never inside the repo, but be explicit)
 secrets.bin

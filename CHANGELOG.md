@@ -2,6 +2,19 @@
 
 This project was previously called LumaRemote. Entries before 1.3.0 keep that name.
 
+## 1.3.3
+
+- **Remote page no longer dead-ends.** With a saved TV that is currently off, the full pad stays
+  visible and a one-click **Connect** action replaces the empty state. Previously the page showed
+  "No display connected" and hid the product.
+- README now opens with a screenshot tour and a download button, plus an explicit "why Windows
+  warns" section and SHA-256 verification steps.
+- Download page: hero screenshot, screenshot grid, "why does Windows warn?" disclosure, a portable
+  ZIP secondary button, and a link to the new comparison page.
+- New comparison page: `docs/alternatives.html` (TellyMote vs scrcpy, Google TV app, Unified Remote,
+  Yatse, adb keyevent scripts).
+- Release notes rewritten: portable ZIP first, hash verification, honest limits.
+
 ## Android preview 0.1.0
 
 - Standalone Android client (Kotlin/Compose): SSDP discovery and /24 probe for ATV 6466, ADB

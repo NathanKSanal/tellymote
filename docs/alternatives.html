@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TellyMote vs other ways to control an Android TV from your PC</title>
+    <meta
+      name="description"
+      content="How TellyMote, scrcpy, the Google TV app, Unified Remote, Yatse and adb scripts compare for controlling an Android TV from a PC: developer mode, accounts and Roku."
+    />
+    <link rel="canonical" href="https://nathanksanal.github.io/tellymote/alternatives.html" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="TellyMote" />
+    <meta property="og:title" content="TellyMote vs other ways to control an Android TV from your PC" />
+    <meta
+      property="og:description"
+      content="How TellyMote compares with scrcpy, the Google TV app, Unified Remote, Yatse and adb scripts — and when one of those is the better tool."
+    />
+    <meta property="og:url" content="https://nathanksanal.github.io/tellymote/alternatives.html" />
+    <meta property="og:locale" content="en_GB" />
+    <style>
+      :root {
+        --bg: #0b0c0f;
+        --surface: #111318;
+        --surface-2: #15181e;
+        --line: #23262e;
+        --ink: #e7e9ee;
+        --muted: #9aa1ac;
+        --faint: #6d7480;
+        --accent: #e0ad63;
+        --accent-ink: #1a1308;
+        --ok: #63b58c;
+        --warn: #c7a252;
+        font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+        color-scheme: dark;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-size: 14px;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap { max-width: 980px; margin: 0 auto; padding: 28px 24px 64px; }
+      header { display: flex; align-items: center; gap: 12px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+      .mark { width: 30px; height: 30px; border-radius: 7px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-weight: 700; }
+      .brand { font-family: Bahnschrift, "Segoe UI Variable Display", sans-serif; font-size: 19px; letter-spacing: 0.01em; }
+      .brand a { color: inherit; text-decoration: none; }
+      .version { color: var(--faint); font-family: Consolas, monospace; font-size: 11px; }
+      .pill { margin-left: auto; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); padding: 3px 8px; font-size: 10.5px; }
+      h1 { font-family: Bahnschrift, "Segoe UI Variable Display", sans-serif; font-size: 30px; letter-spacing: -0.01em; margin: 34px 0 8px; max-width: 34ch; }
+      h2 { font-family: Bahnschrift, "Segoe UI Variable Display", sans-serif; font-size: 15px; margin: 4px 0 10px; }
+      h3 { font-family: Bahnschrift, "Segoe UI Variable Display", sans-serif; font-size: 13px; margin: 0 0 4px; }
+      .lede { color: var(--muted); max-width: 70ch; margin: 0 0 26px; }
+      .lede strong { color: var(--ink); font-weight: 600; }
+      .primary {
+        display: inline-flex; align-items: center; gap: 9px;
+        background: var(--accent); color: var(--accent-ink);
+        border-radius: 7px; padding: 12px 18px; font-weight: 600; text-decoration: none;
+      }
+      .primary:hover { filter: brightness(1.06); }
+      .secondary {
+        display: inline-flex; align-items: center; gap: 9px;
+        border: 1px solid var(--line); background: var(--surface-2); color: var(--ink);
+        border-radius: 7px; padding: 11px 17px; font-weight: 600; text-decoration: none;
+      }
+      .secondary:hover { border-color: var(--faint); }
+      .sub { color: var(--muted); font-size: 11.5px; margin-top: 9px; }
+      .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
+      .block { margin-top: 30px; }
+      .eyebrow { text-transform: uppercase; letter-spacing: 0.1em; font-size: 10px; color: var(--muted); font-weight: 600; }
+      p { margin: 0 0 10px; }
+      p.body { color: var(--muted); max-width: 78ch; }
+      a { color: var(--ink); }
+      a.dl { color: var(--accent); text-decoration: none; }
+      code { font-family: Consolas, monospace; font-size: 11.5px; color: var(--muted); }
+      .table-wrap { margin-top: 14px; overflow-x: auto; }
+      table { width: 100%; border-collapse: collapse; min-width: 760px; }
+      caption { text-align: left; color: var(--muted); font-size: 11.5px; padding-bottom: 8px; }
+      .compare th, .compare td { text-align: left; vertical-align: top; padding: 10px 12px 10px 0; font-size: 12px; border-top: 1px solid var(--line); }
+      .compare thead th {
+        border-top: 0; border-bottom: 1px solid var(--line);
+        color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em;
+        font-size: 10px; font-weight: 600; padding-bottom: 8px;
+      }
+      .compare tbody th { font-weight: 600; color: var(--ink); font-size: 12.5px; white-space: nowrap; }
+      .compare tbody th span { display: block; color: var(--muted); font-weight: 400; font-size: 10.5px; }
+      .compare td { color: var(--muted); }
+      .compare tr.own th, .compare tr.own td { background: rgba(224, 173, 99, 0.05); }
+      .compare tr.own td { color: var(--ink); }
+      .compare td:last-child { color: var(--muted); font-family: inherit; }
+      ul, ol { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 12.5px; }
+      li { margin: 6px 0; }
+      li strong { color: var(--ink); font-weight: 600; }
+      .note { border: 1px solid rgba(199, 162, 82, 0.34); background: rgba(199, 162, 82, 0.08); color: #d5b471; border-radius: 8px; padding: 11px 13px; font-size: 12px; margin-top: 14px; }
+      .cta { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+      .faq dt { font-weight: 600; margin-top: 14px; color: var(--ink); }
+      .faq dd { margin: 4px 0 0; color: var(--muted); max-width: 78ch; }
+      .faq dt:first-child { margin-top: 4px; }
+      footer { border-top: 1px solid var(--line); margin-top: 32px; padding-top: 14px; color: var(--faint); font-size: 11px; display: flex; gap: 12px; flex-wrap: wrap; }
+      @media (max-width: 760px) { h1 { font-size: 25px; } .wrap { padding: 22px 18px 48px; } .pill { display: none; } }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="mark" aria-hidden="true">T</div>
+        <div>
+          <div class="brand"><a href="download.html">TellyMote</a></div>
+          <div class="version">alternatives</div>
+        </div>
+        <span class="pill">LAN only · no account · no telemetry</span>
+      </header>
+
+      <main>
+        <h1>TellyMote vs other ways to control an Android TV from your PC</h1>
+        <p class="lede">
+          TellyMote is a desktop app that sends remote keys to an Android TV or Google TV over your
+          local network, and can show the TV's live screen on your PC. It is
+          <strong>LAN-only</strong>: no account, no cloud relay, no telemetry. The same app also sends
+          remote keys to Roku. This page compares it with the alternatives, including the cases where
+          one of them is the better choice.
+        </p>
+
+        <section class="block" aria-labelledby="compare-h">
+          <div class="eyebrow">At a glance</div>
+          <h2 id="compare-h">Side by side</h2>
+          <p class="sub" id="table-note">
+            Capabilities as understood in October 2026. "Check the vendor's docs" means this page has
+            not verified the current behaviour and is not guessing. On a narrow screen, scroll the table
+            sideways.
+          </p>
+          <div class="table-wrap" role="region" aria-label="Comparison of tools" tabindex="0">
+            <table class="compare">
+              <caption>Comparison of tools for controlling an Android TV from a PC</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Tool</th>
+                  <th scope="col">Control a TV from PC</th>
+                  <th scope="col">Live screen on PC</th>
+                  <th scope="col">Needs ADB / developer mode</th>
+                  <th scope="col">Cloud account</th>
+                  <th scope="col">Roku support</th>
+                  <th scope="col">Licence</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="own">
+                  <th scope="row">TellyMote<span>Windows, Linux, macOS</span></th>
+                  <td>
+                    Yes. Android TV Remote v2 on ports 6466/6467; Roku ECP on 8060.
+                  </td>
+                  <td>Yes for Android TV, over an ADB connection you have authorised.</td>
+                  <td>No for remote keys. Yes for text entry, apps and screen capture (port 5555).</td>
+                  <td>No.</td>
+                  <td>Remote keys, apps and text only. No screen capture.</td>
+                  <td>FSL-1.1-MIT. Source-available; each release converts to MIT after two years.</td>
+                </tr>
+                <tr>
+                  <th scope="row">scrcpy<span>Windows, Linux, macOS</span></th>
+                  <td>Yes. Input is forwarded alongside the mirror.</td>
+                  <td>Yes. Low latency, the strongest option here.</td>
+                  <td>Yes. USB or Wi-Fi ADB, with developer options enabled.</td>
+                  <td>No.</td>
+                  <td>No.</td>
+                  <td>Apache-2.0.</td>
+                </tr>
+                <tr>
+                  <th scope="row">Google TV app<span>Android phone</span></th>
+                  <td>No. Phone only; there is no Windows client.</td>
+                  <td>No.</td>
+                  <td>No.</td>
+                  <td>Yes, a Google account.</td>
+                  <td>No.</td>
+                  <td>Proprietary, free.</td>
+                </tr>
+                <tr>
+                  <th scope="row">Unified Remote<span>Windows, Linux, macOS</span></th>
+                  <td>Yes, through its own server component on the PC. Check the vendor's docs for which TV platforms are covered.</td>
+                  <td>It does not use the Android TV Remote v2 capture path. Check the vendor's docs.</td>
+                  <td>No. It relies on its own server, not ADB.</td>
+                  <td>Check the vendor's docs.</td>
+                  <td>Check the vendor's docs.</td>
+                  <td>Proprietary. Free tier with paid upgrades; check the vendor's pricing.</td>
+                </tr>
+                <tr>
+                  <th scope="row">Yatse<span>Android only</span></th>
+                  <td>No Windows client. It is an Android phone or tablet remote.</td>
+                  <td>No. Phone-side only.</td>
+                  <td>No. It works with Kodi and casting targets rather than ADB.</td>
+                  <td>Check the vendor's docs.</td>
+                  <td>Check the vendor's docs.</td>
+                  <td>Proprietary. Free with a paid unlock; check the vendor's pricing.</td>
+                </tr>
+                <tr>
+                  <th scope="row">ADB shell / keyevent scripts<span>Any OS with platform-tools</span></th>
+                  <td>Yes, via <code>adb shell input keyevent</code> and friends.</td>
+                  <td>Stills or screen recordings via <code>screencap</code> and <code>screenrecord</code>. Not an interactive stream.</td>
+                  <td>Yes. That is the whole mechanism.</td>
+                  <td>No.</td>
+                  <td>No. Roku speaks ECP over HTTP, not ADB.</td>
+                  <td>Your scripts; <code>adb</code> ships with Android SDK platform-tools under Google's terms.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="sub">
+            Competitor features change. Re-check anything that would decide your choice.
+          </p>
+        </section>
+
+        <section class="block" aria-labelledby="wrong-tool-h">
+          <div class="eyebrow">Straight answer</div>
+          <h2 id="wrong-tool-h">When TellyMote is the wrong tool</h2>
+          <p class="body">
+            If all you want is low-latency mirroring of one Android device on a PC, and ADB is already
+            set up, use scrcpy. It does that job better: it is built for mirroring, it is mature, and it
+            carries no extra surface. TellyMote's screen view exists so the remote and the picture sit in
+            the same window, not to beat a dedicated mirroring tool.
+          </p>
+          <p class="body">A few other cases where something else fits better:</p>
+          <ul>
+            <li>
+              <strong>You only have a phone and no PC.</strong> The Google TV app is the straightforward
+              route; it needs a Google account, which TellyMote deliberately avoids.
+            </li>
+            <li>
+              <strong>You want a general-purpose PC remote for many devices</strong>, not just a TV.
+              Unified Remote covers more ground, at the cost of a server component and an account model
+              you should read up on.
+            </li>
+            <li>
+              <strong>You are automating a device for testing.</strong> Plain
+              <code>adb shell input</code> scripts are more scriptable than any GUI, and easier to put in
+              CI.
+            </li>
+            <li>
+              <strong>You want Roku screen capture.</strong> TellyMote does not do it, and neither does
+              anything on this page. Roku's ECP is a control interface.
+            </li>
+          </ul>
+        </section>
+
+        <section class="block panel" aria-labelledby="try-h">
+          <div class="eyebrow">Try it</div>
+          <h2 id="try-h">Download TellyMote</h2>
+          <p class="body">
+            Free for non-competing use under FSL-1.1-MIT. Windows is verified; Linux and macOS builds
+            come from CI. The Android client is a discovery-only preview.
+          </p>
+          <div class="cta">
+            <a class="primary" href="https://github.com/NathanKSanal/tellymote/releases/latest">Get the latest release</a>
+            <a class="secondary" href="download.html">Pick the build for your system</a>
+          </div>
+          <div class="sub">No sign-up. The app talks to your TV, not to a server of ours.</div>
+        </section>
+
+        <section class="block" aria-labelledby="faq-h">
+          <div class="eyebrow">FAQ</div>
+          <h2 id="faq-h">Common questions</h2>
+          <dl class="faq">
+            <dt>Does TellyMote need developer mode?</dt>
+            <dd>
+              Only for part of it. Remote keys work over the Android TV Remote v2 protocol without
+              developer options. Text entry, the app list and the live screen view use ADB on port 5555,
+              which does need ADB debugging enabled on the TV.
+            </dd>
+
+            <dt>Does TellyMote phone home?</dt>
+            <dd>
+              No. There is no account, no cloud relay and no telemetry. The app talks to your TV across
+              your local network, and release checks are ordinary GitHub downloads you start yourself.
+            </dd>
+
+            <dt>Does it work with Roku?</dt>
+            <dd>
+              Partly. Roku support uses ECP on port 8060 and covers remote keys, app launching and text
+              entry. There is no screen capture for Roku, because ECP does not provide one.
+            </dd>
+
+            <dt>What does the licence allow?</dt>
+            <dd>
+              TellyMote is FSL-1.1-MIT: source-available, free for non-competing use, and each release
+              converts to the MIT licence two years after it ships.
+            </dd>
+          </dl>
+        </section>
+      </main>
+
+      <footer>
+        <span>FSL-1.1-MIT · free non-competing use</span>
+        <a href="download.html">Download</a>
+        <a href="https://github.com/NathanKSanal/tellymote">Source</a>
+        <a href="https://github.com/NathanKSanal/tellymote/releases/latest">All releases</a>
+        <a href="https://github.com/NathanKSanal/tellymote/blob/main/TRADEMARK.md">Trademark</a>
+      </footer>
+    </div>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Does TellyMote need developer mode?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Only for part of it. Remote keys work over the Android TV Remote v2 protocol without developer options. Text entry, the app list and the live screen view use ADB on port 5555, which does need ADB debugging enabled on the TV."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does TellyMote phone home?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. There is no account, no cloud relay and no telemetry. The app talks to your TV across your local network, and release checks are ordinary GitHub downloads you start yourself."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does it work with Roku?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Partly. Roku support uses ECP on port 8060 and covers remote keys, app launching and text entry. There is no screen capture for Roku, because ECP does not provide one."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What does the licence allow?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "TellyMote is FSL-1.1-MIT: source-available, free for non-competing use, and each release converts to the MIT licence two years after it ships."
+            }
+          }
+        ]
+      }
+    </script>
+  </body>
+</html>
