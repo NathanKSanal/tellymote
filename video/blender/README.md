@@ -52,3 +52,15 @@ Hard cuts with an accent wipe bar between scenes; camera settles inside each sce
    a 1-unit underline into a full cube on screen. Key non-uniform scales explicitly.
 4. **AgX costs about a stop.** `view_settings.exposure = 0.55` brings the dark UI back to what the
    design intends.
+
+## Motion rules learned the hard way
+
+- **Never repeat a camera key at the end of a scene.** The first cut keyed the last camera position
+  twice (start of hold, end of hold), so the camera froze for the last ~2 s of all six scenes.
+  `mpdecimate` counted only 450 unique frames in 720 — 37 % duplicates — and the film read as stutter,
+  not as a slow move. Every scene now has three distinct camera keys, so the frame changes on every
+  frame.
+- **A held object still needs drift.** The logo, the app panel and the numbers each get a few degrees
+  or a couple of percent of motion across the hold, otherwise the "hold" looks like a dropped frame.
+- **Captions as 3D text produced a hairline** through the frame. They were removed; the narration
+  carries the words instead.

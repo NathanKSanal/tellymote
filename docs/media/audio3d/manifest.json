@@ -1,0 +1,44 @@
+[
+  {
+    "file": "ch1.mp3",
+    "text": "This is TellyMote. Your TV, on your desktop.",
+    "start": 0.6,
+    "seconds": 3.216,
+    "end": 3.816
+  },
+  {
+    "file": "ch2.mp3",
+    "text": "A remote, and a live screen, on your own network.",
+    "start": 5.6,
+    "seconds": 3.24,
+    "end": 8.84
+  },
+  {
+    "file": "ch3.mp3",
+    "text": "No account, no cloud relay, no telemetry.",
+    "start": 10.6,
+    "seconds": 3.312,
+    "end": 13.912
+  },
+  {
+    "file": "ch4.mp3",
+    "text": "Android TV Remote version two, ADB, and Roku ECP.",
+    "start": 15.6,
+    "seconds": 4.8,
+    "end": 20.4
+  },
+  {
+    "file": "ch5.mp3",
+    "text": "A hundred and sixty-six tests. Three protocols. Zero accounts.",
+    "start": 20.6,
+    "seconds": 4.488,
+    "end": 25.088
+  },
+  {
+    "file": "ch6.mp3",
+    "text": "Free at github dot com slash Nathan K Sanal slash tellymote.",
+    "start": 25.4,
+    "seconds": 4.632,
+    "end": 30.032
+  }
+]
