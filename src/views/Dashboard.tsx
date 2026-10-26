@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import type { ViewId } from '../App';
 import { useApp, useDisplayDevice, useMetricHistory } from '../lib/store';
-import { capabilityLabel, cx, formatBitrate, formatMs, phaseLabel, phaseTone, remoteTransportLabel, shortHost } from '../lib/format';
+import { capabilityLabel, cx, formatBitrate, formatClock, formatMs, phaseLabel, phaseTone, remoteTransportLabel, shortHost } from '../lib/format';
 import { CapabilityChip, EmptyState, InlineNote, PageHeader, Panel, SectionTitle, SignalChain, Sparkline, Spinner, Stat, StatRow } from '../components/ui';
 
 const QUICK_KEYS = [
@@ -87,8 +87,8 @@ export function Dashboard({ onNavigate }: { onNavigate: (view: ViewId) => void }
         }
       />
 
-      <Panel>
-        <div className="grid gap-6 p-5 lg:grid-cols-[1.5fr_1fr] lg:items-start">
+      <Panel className="panel-hero">
+        <div className="grid gap-6 p-6 lg:grid-cols-[1.45fr_1fr] lg:items-stretch">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-1.5">
               <span className={cx('chip', tone === 'ok' ? 'chip-ok' : tone === 'bad' ? 'chip-bad' : tone === 'warn' ? 'chip-warn' : '')}>
@@ -103,7 +103,7 @@ export function Dashboard({ onNavigate }: { onNavigate: (view: ViewId) => void }
               {device?.simulated && <span className="chip chip-warn">Simulated device</span>}
             </div>
 
-            <h2 className="mt-3 truncate text-[24px] font-semibold leading-tight tracking-[-0.02em] text-ink">
+            <h2 className="display mt-3.5 truncate text-[30px] font-semibold leading-[1.05] text-ink">
               {device?.name ?? 'No display yet'}
             </h2>
 
@@ -156,12 +156,29 @@ export function Dashboard({ onNavigate }: { onNavigate: (view: ViewId) => void }
                 </button>
               )}
             </div>
+
+            {connected && (
+              <div className="mt-6 grid grid-cols-3 gap-4 border-t border-[var(--line-soft)] pt-4">
+                <div className="min-w-0">
+                  <div className="eyebrow truncate">Connected since</div>
+                  <div className="stat-value mt-1.5 truncate text-ink/90">{formatClock(state.connection.since)}</div>
+                </div>
+                <div className="min-w-0">
+                  <div className="eyebrow truncate">Frames drawn</div>
+                  <div className="stat-value mt-1.5 truncate text-ink/90">{state.frameMeta?.seq ?? 0}</div>
+                </div>
+                <div className="min-w-0">
+                  <div className="eyebrow truncate">Dropped</div>
+                  <div className={cx('stat-value mt-1.5 truncate', metrics.dropped > 0 ? 'text-warn' : 'text-ok')}>{metrics.dropped}</div>
+                </div>
+              </div>
+            )}
           </div>
 
-          <div className="rounded-lg border border-[var(--line)] bg-[var(--surface-2)] px-3 py-3">
-            <div className="mb-2.5 flex items-center justify-between">
-              <span className="eyebrow">Signal chain</span>
-              <span className={cx('dot', dialTone)} aria-hidden />
+          <div className="panel-quiet flex h-full flex-col px-4 py-4">
+            <div className="mb-3 flex items-center justify-between">
+              <span className="eyebrow eyebrow-live">Signal chain</span>
+              <span className={cx('dot', captureActive ? 'dot-live' : '', dialTone)} aria-hidden />
             </div>
             <SignalChain
               active={captureActive}
@@ -192,7 +209,7 @@ export function Dashboard({ onNavigate }: { onNavigate: (view: ViewId) => void }
               ]}
             />
             {captureActive && (
-              <div className="mt-3">
+              <div className="mt-4">
                 <div className="flex items-baseline justify-between">
                   <span className="eyebrow">Throughput</span>
                   <span className="mono text-[10.5px] text-muted">{formatBitrate(metrics.kbps)}</span>
@@ -200,8 +217,12 @@ export function Dashboard({ onNavigate }: { onNavigate: (view: ViewId) => void }
                 <Sparkline
                   values={kbpsHistory}
                   tone={state.connection.captureTransport === 'adb-png' ? 'warn' : 'accent'}
-                  className="mt-1.5 h-7 w-full"
+                  className="mt-2 h-12 w-full"
                 />
+                <div className="mt-2.5 flex items-baseline justify-between text-[10.5px]">
+                  <span className="text-faint">Glass to glass</span>
+                  <span className="mono text-muted">{metrics.e2eMs ? formatMs(metrics.e2eMs) : 'not measurable'}</span>
+                </div>
               </div>
             )}
           </div>
@@ -260,7 +281,7 @@ export function Dashboard({ onNavigate }: { onNavigate: (view: ViewId) => void }
         </div>
       </Panel>
 
-      <div className="mt-5 grid gap-5 xl:grid-cols-[1.35fr_1fr]">
+      <div className="mt-5 grid gap-5 lg:grid-cols-[1.35fr_1fr]">
         <div className="space-y-5">
           <Panel className="p-5">
             <SectionTitle
@@ -354,12 +375,12 @@ export function Dashboard({ onNavigate }: { onNavigate: (view: ViewId) => void }
         <div className="space-y-5">
           <Panel className="p-5">
             <SectionTitle eyebrow="Capabilities" title="What this TV has proven" description="Measured facts only. Anything untested stays visibly unknown." />
-            <div className="mt-4 space-y-2.5">
+            <div className="mt-3 divide-y divide-[var(--line-soft)]">
               {device ? (
                 CAP_KEYS.map(([key, label]) => {
                   const capability = device.capabilities[key];
                   return (
-                    <div key={key} className="flex items-center justify-between gap-3">
+                    <div key={key} className="-mx-2 flex items-center justify-between gap-3 rounded-md px-2 py-2.5 transition-colors hover:bg-white/[0.03]">
                       <span className="text-[12px] text-muted">{label}</span>
                       <CapabilityChip capability={capability} />
                     </div>

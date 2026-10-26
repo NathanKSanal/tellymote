@@ -53,7 +53,7 @@ export function Sidebar({ view, onNavigate }: { view: ViewId; onNavigate: (view:
   const reduceMotion = useReducedMotion();
 
   return (
-    <aside className="flex w-[212px] flex-none flex-col border-r border-[var(--line)] bg-[#0c0e12]">
+    <aside className="flex w-[212px] flex-none flex-col border-r border-[var(--line-soft)] bg-[linear-gradient(180deg,#0d1017_0%,#0a0c11_100%)]">
       <nav className="scroll-area flex-1 overflow-y-auto px-2.5 py-4">
         {SECTIONS.map((section) => (
           <div key={section.label} className="mb-5 last:mb-0">
@@ -74,7 +74,7 @@ export function Sidebar({ view, onNavigate }: { view: ViewId; onNavigate: (view:
                     {active && (
                       <motion.span
                         layoutId="nav-active"
-                        className="pointer-events-none absolute inset-0 rounded-[6px] bg-[#1b1f27]"
+                        className="pointer-events-none absolute inset-0 rounded-[8px] bg-[linear-gradient(90deg,color-mix(in_srgb,var(--accent)_14%,transparent),rgba(255,255,255,0.02)_70%)]"
                         transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 520, damping: 42 }}
                       />
                     )}

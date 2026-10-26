@@ -27,11 +27,14 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+    <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0">
-        <div className="eyebrow mb-1.5">{eyebrow}</div>
-        <h1 className="display text-[22px] font-semibold leading-tight text-ink">{title}</h1>
-        {description && <p className="mt-1 max-w-[72ch] text-[12px] leading-relaxed text-muted">{description}</p>}
+        <div className="eyebrow mb-2 flex items-center gap-2">
+          <span className="h-[3px] w-[14px] rounded-full bg-[var(--accent)]" style={{ boxShadow: '0 0 8px 0 var(--accent-glow)' }} aria-hidden />
+          {eyebrow}
+        </div>
+        <h1 className="display text-[27px] font-semibold leading-[1.05] text-ink">{title}</h1>
+        {description && <p className="mt-1.5 max-w-[72ch] text-[12.5px] leading-relaxed text-muted">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </div>
@@ -55,7 +58,7 @@ export function SectionTitle({
     <div className={cx('flex items-start justify-between gap-6', className)}>
       <div className="min-w-0">
         {eyebrow && <div className="eyebrow mb-1.5">{eyebrow}</div>}
-        <h2 className="display text-[14.5px] font-semibold text-ink">{title}</h2>
+        <h2 className="display text-[16px] font-semibold leading-tight text-ink">{title}</h2>
         {description && <p className="mt-1 max-w-[66ch] text-[11.5px] leading-relaxed text-muted">{description}</p>}
       </div>
       {actions && <div className="flex flex-none items-center gap-2">{actions}</div>}
@@ -79,10 +82,10 @@ export function Stat({
   const color =
     tone === 'ok' ? 'text-ok' : tone === 'warn' ? 'text-warn' : tone === 'bad' ? 'text-bad' : tone === 'accent' ? 'text-accent' : 'text-ink';
   return (
-    <div className="min-w-0 px-4 py-3 first:pl-0 last:pr-0">
+    <div className="min-w-0 px-4 py-3.5 first:pl-0 last:pr-0">
       <div className="eyebrow truncate">{label}</div>
-      <div className={cx('mt-1 truncate text-[17px] font-semibold leading-none', mono && 'mono', color)}>{value}</div>
-      {sub && <div className="mt-1 truncate text-[10.5px] text-faint">{sub}</div>}
+      <div className={cx('stat-value mt-1.5 truncate', mono && 'mono', color)}>{value}</div>
+      {sub && <div className="mt-1.5 truncate text-[10.5px] text-faint">{sub}</div>}
     </div>
   );
 }
@@ -198,25 +201,48 @@ export function Dialog({
 }) {
   const titleId = useId();
   const ref = useRef<HTMLDivElement>(null);
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
 
+  // Keyed on `open` alone: onClose is usually an inline arrow, and re-arming on
+  // every parent render would yank focus back out of the dialog.
   useEffect(() => {
     if (!open) return;
+    const restoreTo = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const focusables = () =>
+      [...(ref.current?.querySelectorAll<HTMLElement>('input, button, textarea, select, [tabindex="0"]') ?? [])].filter(
+        (element) => !element.hasAttribute('disabled') && element.tabIndex !== -1,
+      );
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.stopPropagation();
-        onClose();
+        closeRef.current();
+        return;
+      }
+      if (event.key !== 'Tab' || !ref.current) return;
+      // aria-modal promises the page behind is inert, so Tab must stay inside.
+      const items = focusables();
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      const inside = active instanceof Node && ref.current.contains(active);
+      if (event.shiftKey && (!inside || active === first)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (!inside || active === last)) {
+        event.preventDefault();
+        first.focus();
       }
     };
     window.addEventListener('keydown', onKey, true);
-    const timer = window.setTimeout(() => {
-      const focusable = ref.current?.querySelector<HTMLElement>('input, button, textarea, select, [tabindex="0"]');
-      focusable?.focus();
-    }, 40);
+    const timer = window.setTimeout(() => focusables()[0]?.focus(), 40);
     return () => {
       window.removeEventListener('keydown', onKey, true);
       window.clearTimeout(timer);
+      restoreTo?.focus();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
   return (
@@ -323,10 +349,10 @@ export function SignalChain({
     <div className={cx('flex items-stretch', className)}>
       {nodes.map((node, index) => (
         <Fragment key={node.label}>
-          <div className="min-w-0 flex-1 rounded-md border border-[var(--line-soft)] bg-[var(--surface)] px-2.5 py-2">
+          <div className="min-w-0 flex-1 rounded-lg border border-[var(--line-soft)] bg-[linear-gradient(180deg,#1a1e28_0%,#141821_100%)] px-3 py-2.5 shadow-[0_1px_0_var(--edge-top)_inset]">
             <div className="eyebrow text-[9.5px]">{node.label}</div>
             <div className="mt-1 flex items-center gap-1.5">
-              <span className={cx('dot flex-none', tone(node.tone))} aria-hidden />
+              <span className={cx('dot flex-none', active && node.tone !== 'idle' ? 'dot-live' : '', tone(node.tone))} aria-hidden />
               <span className="mono truncate text-[10.5px] text-ink/90">{node.value}</span>
             </div>
           </div>
@@ -379,6 +405,7 @@ export function Sparkline({
   tone?: 'accent' | 'ok' | 'warn';
 }) {
   const color = tone === 'ok' ? 'text-ok' : tone === 'warn' ? 'text-warn' : 'text-accent';
+  const id = useId();
   const points = values.length > 1 ? values : [0, values[0] ?? 0];
   const max = Math.max(1, ...points);
   const min = Math.min(...points);
@@ -389,13 +416,19 @@ export function Sparkline({
     .join(' ');
   const area = `${line} L100,100 L0,100 Z`;
   return (
-    <svg viewBox="0 0 100 100" preserveAspectRatio="none" className={cx('block', color, className)} aria-hidden="true">
-      <path d={area} fill="currentColor" opacity={0.08} />
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none" className={cx('spark-glow block', color, className)} aria-hidden="true">
+      <defs>
+        <linearGradient id={`${id}-fill`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="currentColor" stopOpacity="0.26" />
+          <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={area} fill={`url(#${id}-fill)`} />
       <path
         d={line}
         fill="none"
         stroke="currentColor"
-        strokeWidth={1.25}
+        strokeWidth={1.5}
         vectorEffect="non-scaling-stroke"
         strokeLinejoin="round"
         strokeLinecap="round"

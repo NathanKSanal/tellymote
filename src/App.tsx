@@ -88,6 +88,7 @@ function BootError({ message }: { message: string }) {
 export default function App() {
   const { state, actions } = useApp();
   const [view, setView] = useState<ViewId>('dashboard');
+  const [bootStalled, setBootStalled] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
   const fullscreenRef = useRef(false);
 
@@ -108,6 +109,12 @@ export default function App() {
     const shortcuts = state.settings?.shortcuts;
     if (!shortcuts) return;
     const handler = (event: KeyboardEvent) => {
+      // A rebound shortcut can be a bare letter, which would otherwise fire
+      // while the user is typing in the text-entry or ADB console fields.
+      const target = event.target as HTMLElement | null;
+      if (target && (target.isContentEditable || target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) {
+        return;
+      }
       if (matchesShortcut(event, shortcuts.toggleFullscreen)) {
         event.preventDefault();
         void toggleFullscreen();
@@ -122,8 +129,21 @@ export default function App() {
     return () => window.removeEventListener('keydown', handler);
   }, [state.settings?.shortcuts, toggleFullscreen]);
 
-  if (!state.ready) return <BootScreen />;
+  // A hung IPC call never rejects, so the spinner needs its own way out.
+  useEffect(() => {
+    if (state.ready || state.bootError) return;
+    const id = window.setTimeout(() => setBootStalled(true), 12000);
+    return () => window.clearTimeout(id);
+  }, [state.ready, state.bootError]);
+
   if (state.bootError) return <BootError message={state.bootError} />;
+  if (!state.ready) {
+    return bootStalled ? (
+      <BootError message="The main process did not answer within 12 seconds. Retry, and if it keeps happening check Diagnostics in the logs folder." />
+    ) : (
+      <BootScreen />
+    );
+  }
 
   const body = (() => {
     switch (view) {
@@ -156,10 +176,11 @@ export default function App() {
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={view}
-                initial={{ opacity: 0, y: 6 }}
+                className="view-stage"
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -3 }}
-                transition={{ duration: 0.12, ease: [0.2, 0.7, 0.3, 1] }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.16, ease: [0.2, 0.7, 0.3, 1] }}
               >
                 {body}
               </motion.div>

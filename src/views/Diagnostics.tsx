@@ -209,7 +209,7 @@ export function Diagnostics() {
             </StatRow>
           </Panel>
 
-          <div className="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
             <Panel className="p-5">
               <SectionTitle
                 eyebrow="Preflight"
@@ -280,7 +280,7 @@ export function Diagnostics() {
             </div>
           </div>
 
-          <div className="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
             <Panel className="p-5">
               <SectionTitle
                 eyebrow="Capabilities"
@@ -374,7 +374,7 @@ export function Diagnostics() {
             </Panel>
           )}
 
-          <div className="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
             <Panel className="p-5">
               <SectionTitle
                 eyebrow="Log"

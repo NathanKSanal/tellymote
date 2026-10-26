@@ -23,9 +23,9 @@ import type { RemoteKey } from '@shared/types';
 import type { ViewId } from '../App';
 import { useApp, useDisplayDevice } from '../lib/store';
 import { api } from '../lib/api';
-import { cx, formatMs, shortHost } from '../lib/format';
+import { cx, formatMs, remoteTransportLabel, shortHost } from '../lib/format';
 import { RemotePad } from '../components/RemotePad';
-import { ConfirmDialog, EmptyState, InlineNote, PageHeader, Panel, SectionTitle, Toggle } from '../components/ui';
+import { ConfirmDialog, EmptyState, InlineNote, KeyValue, PageHeader, Panel, SectionTitle, Toggle } from '../components/ui';
 
 const EXTRA_KEYS: Array<{ key: RemoteKey; label: string; icon: typeof Info; note?: string }> = [
   { key: 'guide', label: 'Guide', icon: Grid2x2, note: 'TV app dependent' },
@@ -45,7 +45,7 @@ export function Remote({ onNavigate }: { onNavigate: (view: ViewId) => void }) {
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
   const [confirmPower, setConfirmPower] = useState(false);
-  const [rtt, setRtt] = useState<number | null>(null);
+  const [link, setLink] = useState<{ rttMs: number | null; keyRttMs: number | null; commandsSent: number } | null>(null);
   const isActive = Boolean(device && state.connection.deviceId === device.id);
   const remoteReady = state.connection.remoteTransport !== 'none';
   const rokuReady = state.connection.remoteTransport === 'roku';
@@ -62,18 +62,29 @@ export function Remote({ onNavigate }: { onNavigate: (view: ViewId) => void }) {
 
   useEffect(() => {
     if (!device) return;
+    let stale = false;
     void api
       .diagnostics()
-      .then((snapshot) => setRtt(snapshot.network.rttMs))
+      .then((snapshot) => {
+        // A slow snapshot from the previous TV must not be shown for this one.
+        if (!stale)
+          setLink({ rttMs: snapshot.network.rttMs, keyRttMs: snapshot.remote.keyRttMs, commandsSent: snapshot.remote.commandsSent });
+      })
       .catch(() => undefined);
+    return () => {
+      stale = true;
+    };
   }, [device?.id, state.connection.phase]);
 
   useEffect(() => {
     if (!keyboardEnabled || !remoteReady) return;
     const handler = (event: KeyboardEvent) => {
-      if (event.ctrlKey || event.metaKey || event.altKey) return;
+      if (event.ctrlKey || event.metaKey || event.altKey || event.defaultPrevented) return;
       const target = event.target as HTMLElement | null;
       if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) return;
+      // Activation keys on a focused control already send their own press; firing the
+      // binding too would double-tap the TV. Arrow-key navigation stays global.
+      if ((event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') && target?.closest('button, a[href], [role="button"], [tabindex]')) return;
       const lookup = event.key.length === 1 ? event.key.toLowerCase() : event.key;
       const remoteKey = keyBindings.get(lookup);
       if (!remoteKey) return;
@@ -102,9 +113,10 @@ export function Remote({ onNavigate }: { onNavigate: (view: ViewId) => void }) {
   const sendText = async () => {
     if (!text.trim() || sending) return;
     setSending(true);
-    await actions.text(text);
+    const sent = await actions.text(text);
     setSending(false);
-    setText('');
+    // Keep what was typed when the TV refused it so it can be corrected.
+    if (sent) setText('');
   };
 
   return (
@@ -119,7 +131,7 @@ export function Remote({ onNavigate }: { onNavigate: (view: ViewId) => void }) {
               <span className="dot" />
               {state.connection.remoteTransport === 'atv-v2' ? 'Android TV remote v2' : state.connection.remoteTransport === 'roku' ? 'Roku ECP' : state.connection.remoteTransport === 'adb' ? 'ADB key fallback' : 'Not connected'}
             </span>
-            {rtt !== null && <span className="chip mono">RTT {formatMs(rtt)}</span>}
+            {link?.rttMs != null && <span className="chip mono">RTT {formatMs(link.rttMs)}</span>}
             <button type="button" className="btn" onClick={() => onNavigate('apps')}>
               <Grid2x2 size={14} /> Apps
             </button>
@@ -141,9 +153,21 @@ export function Remote({ onNavigate }: { onNavigate: (view: ViewId) => void }) {
         </div>
       )}
 
-      <div className="grid gap-6 xl:grid-cols-[340px_minmax(0,1fr)]">
-        <div>
+      <div className="grid gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
+        <div className="space-y-4 lg:sticky lg:top-2 lg:self-start">
           <RemotePad />
+          <Panel className="p-4">
+            <div className="eyebrow mb-2 flex items-center gap-2">
+              Link
+              {remoteReady && <span className="dot dot-live text-ok" aria-hidden />}
+            </div>
+            <div className="divide-y divide-[var(--line-soft)]">
+              <KeyValue label="Transport" value={remoteTransportLabel(state.connection.remoteTransport)} />
+              <KeyValue label="Key round trip" value={link?.keyRttMs != null ? formatMs(link.keyRttMs) : 'not measured'} />
+              <KeyValue label="Network round trip" value={link?.rttMs != null ? formatMs(link.rttMs) : 'not measured'} />
+              <KeyValue label="Commands sent" value={link?.commandsSent ?? 0} />
+            </div>
+          </Panel>
         </div>
 
         <div className="space-y-4">
@@ -167,11 +191,11 @@ export function Remote({ onNavigate }: { onNavigate: (view: ViewId) => void }) {
             </div>
           </Panel>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <Panel className="p-5">
+          <div className="grid gap-4 xl:grid-cols-2">
+            <Panel className="flex flex-col p-5">
               <SectionTitle eyebrow="Text entry" title="Send text to the TV" description="Requires an authorised debugging connection." />
               <textarea
-                className="field mt-3 h-[92px] resize-none py-2.5"
+                className="field mt-3 min-h-[92px] flex-1 resize-none py-2.5"
                 placeholder={textReady ? 'Type something and send it to the focused field on the TV…' : 'Debugging is not authorised'}
                 value={text}
                 maxLength={500}
@@ -197,9 +221,9 @@ export function Remote({ onNavigate }: { onNavigate: (view: ViewId) => void }) {
               )}
             </Panel>
 
-            <Panel className="p-5">
+            <Panel className="flex flex-col p-5">
               <SectionTitle eyebrow="Favourites" title="Launch something" description="Deep links need debugging; keys work without it." />
-              <div className="mt-3 space-y-1.5">
+              <div className="mt-3 flex-1 space-y-1.5">
                 {(state.settings?.favoriteApps ?? []).slice(0, 5).map((pkg) => (
                   <button
                     key={pkg}

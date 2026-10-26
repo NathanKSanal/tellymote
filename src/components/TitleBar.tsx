@@ -17,14 +17,17 @@ export function TitleBar() {
 
   return (
     <header
-      className="drag-region relative z-30 flex h-11 flex-none items-center border-b border-[var(--line)] bg-[var(--bg)] pr-[148px]"
-      style={connected ? { boxShadow: 'inset 0 -1px 0 var(--accent-line)' } : undefined}
+      className="drag-region relative z-30 flex h-11 flex-none items-center border-b border-[var(--line-soft)] bg-[linear-gradient(180deg,#11151d_0%,#0b0d12_100%)] pr-[148px]"
+      style={connected ? { boxShadow: 'inset 0 -1px 0 var(--accent-line), 0 10px 26px -22px var(--accent-glow)' } : undefined}
     >
       <div className="flex w-[212px] flex-none items-center gap-2 px-4">
-        <div className="grid h-[22px] w-[22px] place-items-center rounded-[5px] bg-[var(--accent)] text-[var(--accent-ink)]">
+        <div
+          className="grid h-[22px] w-[22px] place-items-center rounded-[6px] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--accent)_88%,#fff),var(--accent))] text-[var(--accent-ink)]"
+          style={{ boxShadow: '0 1px 0 rgba(255,255,255,0.3) inset, 0 4px 12px -4px var(--accent-glow)' }}
+        >
           <Tv size={12} strokeWidth={2.4} />
         </div>
-        <span className="display text-[13px] font-semibold tracking-[0.01em] text-ink">TellyMote</span>
+        <span className="display text-[13.5px] font-semibold tracking-[0.005em] text-ink">TellyMote</span>
         <span className="mono text-[10px] text-faint">{state.appInfo?.version ? `v${state.appInfo.version}` : ''}</span>
       </div>
 

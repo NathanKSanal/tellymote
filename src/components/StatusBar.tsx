@@ -22,8 +22,8 @@ export function StatusBar() {
   const sep = <span className="h-3 w-px flex-none bg-[var(--line)]" aria-hidden />;
 
   return (
-    <footer className="flex h-7 flex-none items-center gap-2.5 border-t border-[var(--line)] bg-[#090a0c] px-3 text-[10px] text-faint">
-      <span className={cx('dot flex-none', TONE[tone])} aria-hidden />
+    <footer className="flex h-7 flex-none items-center gap-2.5 border-t border-[var(--line-soft)] bg-[linear-gradient(180deg,#0b0d12_0%,#08090c_100%)] px-3 text-[10px] text-faint">
+      <span className={cx('dot flex-none', live && tone === 'ok' ? 'dot-live' : '', TONE[tone])} aria-hidden />
       <span className="max-w-[220px] truncate text-muted">{device?.name ?? 'No display'}</span>
       <span className="hidden sm:inline">{phaseLabel(connection.phase)}</span>
       {sep}

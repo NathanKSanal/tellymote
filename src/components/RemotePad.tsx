@@ -1,4 +1,5 @@
 import {
+  useEffect,
   useRef,
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
@@ -46,13 +47,11 @@ function useKeyPress({ keyName, disabled, longPress, guard }: KeyPressOptions) {
   const { actions } = useApp();
   const [pressed, setPressed] = useState(false);
   const timer = useRef<number | null>(null);
-  const longRef = useRef(false);
-
-  const trigger = (action: 'tap' | 'down' | 'up') => {
-    if (disabled) return;
-    if (guard && !guard()) return;
-    void actions.key(keyName, action);
-  };
+  const held = useRef(false);
+  const longHeld = useRef(false);
+  const lastKeyboardAt = useRef(0);
+  const current = useRef({ actions, keyName, disabled, guard });
+  current.current = { actions, keyName, disabled, guard };
 
   const clear = () => {
     if (timer.current !== null) {
@@ -61,58 +60,97 @@ function useKeyPress({ keyName, disabled, longPress, guard }: KeyPressOptions) {
     }
   };
 
-  const onPointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
-    if (disabled || event.button !== 0) return;
-    event.currentTarget.setPointerCapture?.(event.pointerId);
+  const send = (action: 'tap' | 'down' | 'up') => {
+    void current.current.actions.key(current.current.keyName, action);
+  };
+
+  const trigger = (action: 'tap' | 'down') => {
+    if (current.current.disabled) return;
+    const { guard: allow } = current.current;
+    if (allow && !allow()) return;
+    send(action);
+  };
+
+  /**
+   * Ends a hold. The release is sent even when the pad has been disabled in the
+   * meantime: a missing 'up' leaves the TV repeating the key forever.
+   */
+  const release = () => {
+    clear();
+    held.current = false;
+    setPressed(false);
+    if (!longHeld.current) return;
+    longHeld.current = false;
+    send('up');
+  };
+  const releaseRef = useRef(release);
+  releaseRef.current = release;
+
+  useEffect(() => () => releaseRef.current(), []);
+
+  // Alt-tabbing or minimising mid-hold never delivers a pointerup/keyup.
+  useEffect(() => {
+    if (!pressed) return;
+    window.addEventListener('blur', releaseRef.current);
+    return () => window.removeEventListener('blur', releaseRef.current);
+  }, [pressed]);
+
+  const beginHold = () => {
+    if (current.current.disabled || held.current) return;
+    held.current = true;
+    longHeld.current = false;
     setPressed(true);
-    longRef.current = false;
-    if (longPress) {
-      timer.current = window.setTimeout(() => {
-        longRef.current = true;
-        trigger('down');
-      }, 420);
-    }
+    if (!longPress) return;
+    timer.current = window.setTimeout(() => {
+      timer.current = null;
+      longHeld.current = true;
+      trigger('down');
+    }, 420);
   };
 
   const finish = () => {
+    if (!held.current) return;
+    const wasLong = longHeld.current;
     clear();
+    held.current = false;
+    longHeld.current = false;
     setPressed(false);
-    if (longRef.current) {
-      longRef.current = false;
-      trigger('up');
-    } else {
-      trigger('tap');
-    }
+    if (wasLong) send('up');
+    else trigger('tap');
   };
 
-  const onPointerUp = () => {
-    if (!pressed) return;
-    finish();
-  };
-
-  const onPointerCancel = () => {
-    clear();
-    setPressed(false);
-    if (longRef.current) {
-      longRef.current = false;
-      trigger('up');
-    }
-  };
-
-  const onClick = (event: MouseEvent<HTMLButtonElement>) => {
-    if (event.detail === 0) trigger('tap');
-  };
+  const isActivationKey = (key: string) => key === 'Enter' || key === ' ' || key === 'Spacebar';
 
   return {
     pressed,
     handlers: {
-      onPointerDown,
-      onPointerUp,
-      onPointerCancel,
-      onClick,
+      onPointerDown: (event: ReactPointerEvent<HTMLButtonElement>) => {
+        if (event.button !== 0) return;
+        event.currentTarget.setPointerCapture?.(event.pointerId);
+        beginHold();
+      },
+      onPointerUp: () => finish(),
+      onPointerCancel: () => release(),
+      onClick: (event: MouseEvent<HTMLButtonElement>) => {
+        if (event.detail !== 0) return;
+        // A keyboard activation already fired on keyup; suppress the click the
+        // browser synthesises for it. detail 0 also covers assistive tech.
+        if (Date.now() - lastKeyboardAt.current < 700) return;
+        trigger('tap');
+      },
       onContextMenu: (event: MouseEvent) => event.preventDefault(),
       onKeyDown: (event: ReactKeyboardEvent<HTMLButtonElement>) => {
-        if (event.key === 'Enter' || event.key === ' ') event.preventDefault();
+        if (!isActivationKey(event.key)) return;
+        event.preventDefault();
+        if (event.repeat) return;
+        lastKeyboardAt.current = Date.now();
+        beginHold();
+      },
+      onKeyUp: (event: ReactKeyboardEvent<HTMLButtonElement>) => {
+        if (!isActivationKey(event.key)) return;
+        event.preventDefault();
+        lastKeyboardAt.current = Date.now();
+        finish();
       },
     },
   };

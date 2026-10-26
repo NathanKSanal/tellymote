@@ -114,7 +114,15 @@ export function LiveScreen({ onNavigate }: { onNavigate: (view: ViewId) => void 
   const togglePause = async () => {
     const next = !paused;
     setPaused(next);
-    await api.setCapturePaused(next).catch(() => undefined);
+    const ok = await api
+      .setCapturePaused(next)
+      .then(() => true)
+      .catch(() => false);
+    if (!ok) {
+      // Otherwise the switch reads "paused" while the TV keeps capturing.
+      setPaused(!next);
+      actions.toast('error', 'The pause switch failed', 'The capture session did not accept it, so the switch was reverted.');
+    }
   };
 
   const toggleFullscreen = async () => {
@@ -255,7 +263,7 @@ export function LiveScreen({ onNavigate }: { onNavigate: (view: ViewId) => void 
         }
       />
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_312px]">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_312px]">
         <div className="min-w-0">
           <div ref={stageRef} className="viewport aspect-video w-full bg-black">
             <canvas
@@ -297,7 +305,8 @@ export function LiveScreen({ onNavigate }: { onNavigate: (view: ViewId) => void 
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="mono rounded border border-[var(--line)] bg-black/80 px-1.5 py-1 text-[10px] text-ink/80">
-                      {state.metrics.width ? `${state.metrics.width}×${state.metrics.height}` : '—'} · {feed.fps || state.metrics.fps || 0} fps
+                      {state.metrics.width ? `${state.metrics.width}×${state.metrics.height}` : '—'} ·{' '}
+                      {paused ? 0 : feed.fps || state.metrics.fps || 0} fps
                     </span>
                   </div>
                 </div>
@@ -365,8 +374,11 @@ export function LiveScreen({ onNavigate }: { onNavigate: (view: ViewId) => void 
               <div className="absolute inset-0 grid place-items-center bg-black/70 p-6">
                 <div className="max-w-[440px] text-center">
                   <AlertTriangle size={22} className="mx-auto text-warn" />
-                  <div className="mt-2.5 text-[13px] font-semibold text-ink">The feed stopped</div>
+                  <div className="mt-2.5 text-[13px] font-semibold text-ink">{feed.retrying ? 'The feed is interrupted' : 'The feed stopped'}</div>
                   <div className="mt-1.5 text-[11.5px] leading-relaxed text-muted">{feed.error ?? 'No frames arrived from the TV.'}</div>
+                  {feed.retrying && (
+                    <div className="mt-1 text-[10.5px] text-faint">TellyMote is still polling and recovers as soon as the TV answers.</div>
+                  )}
                   <div className="mt-4 flex justify-center gap-2">
                     {isVideo && (
                       <button type="button" className="btn" onClick={() => void actions.startCapture('png')} disabled={busy}>
@@ -509,7 +521,7 @@ export function LiveScreen({ onNavigate }: { onNavigate: (view: ViewId) => void 
               )}
             </div>
             <div className="mt-2 grid grid-cols-2 gap-2">
-              <MiniStat icon={<Gauge size={13} />} label="Frames" value={`${state.metrics.fps || feed.fps || 0}/s`} />
+              <MiniStat icon={<Gauge size={13} />} label="Frames" value={`${paused ? 0 : state.metrics.fps || feed.fps || 0}/s`} />
               <MiniStat icon={<Timer size={13} />} label="Dropped" value={String(state.metrics.dropped)} />
               <MiniStat icon={<Video size={13} />} label="Size" value={state.metrics.width ? `${state.metrics.width}×${state.metrics.height}` : '—'} />
               <MiniStat icon={<Zap size={13} />} label="Paint" value={formatMs(state.metrics.renderMs)} />

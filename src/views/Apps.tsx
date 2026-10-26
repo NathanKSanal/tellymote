@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AppWindow, Loader2, Play, RefreshCw, Search, ShieldCheck, Star, Terminal, Tv } from 'lucide-react';
 import type { AppEntry } from '@shared/types';
 import { useActiveDevice, useApp } from '../lib/store';
@@ -14,6 +14,8 @@ export function Apps() {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [onlyFavourites, setOnlyFavourites] = useState(false);
+  const requestSeq = useRef(0);
+  const inFlight = useRef(false);
   const appsReady =
     device?.capabilities.adb.state === 'verified' ||
     state.connection.remoteTransport === 'roku' ||
@@ -21,20 +23,33 @@ export function Apps() {
   const favourites = state.settings?.favoriteApps ?? [];
 
   const load = async () => {
-    if (!appsReady || loading) return;
+    if (!appsReady || inFlight.current) return;
+    const id = ++requestSeq.current;
+    inFlight.current = true;
     setLoading(true);
     setError(null);
     try {
       const list = await api.listApps();
+      if (id !== requestSeq.current) return;
       setApps(list);
     } catch (err) {
+      if (id !== requestSeq.current) return;
       setError(err instanceof Error ? err.message : 'Could not read the package list.');
     } finally {
-      setLoading(false);
+      if (id === requestSeq.current) {
+        inFlight.current = false;
+        setLoading(false);
+      }
     }
   };
 
   useEffect(() => {
+    // Switching TV invalidates whatever the previous one was still returning,
+    // so a slow response can never paint another device's app list.
+    requestSeq.current += 1;
+    inFlight.current = false;
+    setApps([]);
+    setLoading(false);
     if (appsReady) void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appsReady, device?.id]);
@@ -87,7 +102,7 @@ export function Apps() {
           />
         </Panel>
       ) : (
-        <div className="grid gap-5 xl:grid-cols-[1fr_300px]">
+        <div className="grid gap-5 lg:grid-cols-[1fr_300px]">
           <div>
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <div className="search flex-1">
@@ -146,7 +161,7 @@ export function Apps() {
                       </button>
                       <button
                         type="button"
-                        className="icon-btn h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100"
+                        className="icon-btn h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100"
                         onClick={() => void actions.launchApp(app.packageName)}
                         aria-label={`Launch ${app.label}`}
                         title="Launch on TV"
@@ -156,6 +171,16 @@ export function Apps() {
                     </div>
                   );
                 })}
+              </div>
+            )}
+
+            {apps.length > 0 && (
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-[var(--line-soft)] pt-3 text-[10.5px] text-faint">
+                <span>
+                  {filtered.length} of {apps.length} packages · read from {device?.name ?? 'the TV'} over{' '}
+                  {state.connection.remoteTransport === 'roku' ? 'Roku ECP' : 'an authorised debugging connection'}
+                </span>
+                <span>Launching sends one intent to the TV. Nothing is installed or removed.</span>
               </div>
             )}
           </div>
