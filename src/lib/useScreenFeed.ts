@@ -7,6 +7,8 @@ export type FeedStatus = 'idle' | 'waiting' | 'live' | 'paused' | 'error';
 export interface FeedState {
   status: FeedStatus;
   error: string | null;
+  /** True while the PNG poller is retrying on its own, so the UI can say so. */
+  retrying: boolean;
   fps: number;
   lastFrameAt: number;
   frames: number;
@@ -21,7 +23,7 @@ interface FeedOptions {
   onReport: (renderMs: number, dropped: number, stats: { width?: number; height?: number; fps?: number }) => void;
 }
 
-const INITIAL: FeedState = { status: 'idle', error: null, fps: 0, lastFrameAt: 0, frames: 0 };
+const INITIAL: FeedState = { status: 'idle', error: null, retrying: false, fps: 0, lastFrameAt: 0, frames: 0 };
 
 /**
  * Renderer-side screen feed.
@@ -39,6 +41,8 @@ export function useScreenFeed(options: FeedOptions): FeedState {
   reportRef.current = onReport;
   const pausedRef = useRef(paused);
   pausedRef.current = paused;
+  /** Set when the reference chain broke, so decoding waits for a keyframe. */
+  const needsKeyframeRef = useRef(false);
 
   useEffect(() => {
     if (!active || transport === 'none') {
@@ -69,6 +73,8 @@ export function useScreenFeed(options: FeedOptions): FeedState {
       setFeed((prev) => ({
         ...prev,
         status: 'live',
+        error: null,
+        retrying: false,
         fps: Math.round(fps * 10) / 10,
         lastFrameAt,
         frames: frameCount,
@@ -106,7 +112,10 @@ export function useScreenFeed(options: FeedOptions): FeedState {
             const url = `${frameUrl}${frameUrl.includes('?') ? '&' : '?'}seq=${lastSeq}`;
             const response = await fetch(url, { cache: 'no-store', signal: controller.signal });
             if (cancelled) return;
-            if (response.status === 204) {
+            // 204 = the long poll elapsed with no newer frame; 429 = too many
+            // waiters. Neither is a fault, so both reset the failure counter.
+            if (response.status === 204 || response.status === 429) {
+              failures = 0;
               continue;
             }
             if (!response.ok) throw new Error(`Frame server returned ${response.status}`);
@@ -134,15 +143,14 @@ export function useScreenFeed(options: FeedOptions): FeedState {
           } catch (err) {
             if (cancelled || controller.signal.aborted) return;
             failures += 1;
-            if (failures > 6) {
-              setFeed((prev) => ({
-                ...prev,
-                status: 'error',
-                error: err instanceof Error ? err.message : 'The frame server stopped responding.',
-              }));
-              return;
+            const message = err instanceof Error ? err.message : 'The frame server stopped responding.';
+            // Keep polling. A capture restart or one stalled screencap used to
+            // end the feed for good after six failures; now it says so and
+            // recovers on the next frame the TV answers with.
+            if (failures > 3) {
+              setFeed((prev) => ({ ...prev, status: 'error', error: message, retrying: true }));
             }
-            await sleep(Math.min(2400, 180 * 2 ** failures));
+            await sleep(Math.min(3000, 200 * 2 ** Math.min(failures, 4)));
           }
         }
       };
@@ -166,6 +174,7 @@ export function useScreenFeed(options: FeedOptions): FeedState {
     let pendingBytes = 0;
     let timestamp = Math.round(performance.now() * 1000);
     let waitingTimer: number | null = null;
+    let restartTimer: number | null = null;
     const arrival = new Map<number, number>();
 
     const clearWaiting = () => {
@@ -175,14 +184,31 @@ export function useScreenFeed(options: FeedOptions): FeedState {
       }
     };
 
-    waitingTimer = window.setTimeout(() => {
-      if (cancelled || configured) return;
-      setFeed((prev) => ({
-        ...prev,
-        status: 'error',
-        error: 'The TV is sending video without codec headers. Switch to the screenshot feed.',
-      }));
-    }, 5000);
+    /** A stalled start must be reported, not left spinning as "waiting" forever. */
+    const armWaiting = (ms: number) => {
+      clearWaiting();
+      waitingTimer = window.setTimeout(() => {
+        waitingTimer = null;
+        if (cancelled || configured) return;
+        setFeed((prev) => ({
+          ...prev,
+          status: 'error',
+          error: 'The TV is sending video without codec headers. Switch to the screenshot feed.',
+        }));
+      }, ms);
+    };
+
+    /** Asks the TV for one fresh SPS/PPS + keyframe burst. */
+    const requestRestart = (ms: number) => {
+      if (restartTimer !== null) window.clearTimeout(restartTimer);
+      restartTimer = window.setTimeout(() => {
+        restartTimer = null;
+        if (cancelled || configured) return;
+        void api.restartVideo().catch(() => undefined);
+      }, ms);
+    };
+
+    armWaiting(5000);
     const configure = (sps: Uint8Array) => {
       try {
         const profile = sps[1] ?? 0x42;
@@ -253,6 +279,10 @@ export function useScreenFeed(options: FeedOptions): FeedState {
             pendingBytes = 0;
             if (decoder?.state === 'configured') {
               const hasIdr = nalTypes(merged).includes(5);
+              // Entering mid-GOP would paint reference frames that were never
+              // decoded, so wait for the next keyframe instead.
+              if (needsKeyframeRef.current && !hasIdr) return;
+              needsKeyframeRef.current = false;
               const ts = timestamp;
               timestamp += 16_000;
               arrival.set(ts, performance.now());
@@ -274,8 +304,17 @@ export function useScreenFeed(options: FeedOptions): FeedState {
       const backlog = decoder.decodeQueueSize;
       if (backlog > 10 && !hasIdr) {
         dropped += 1;
+        // The reference chain is broken from here on; re-enter on a keyframe.
+        needsKeyframeRef.current = true;
         publish();
         return;
+      }
+      if (needsKeyframeRef.current) {
+        if (!hasIdr) {
+          dropped += 1;
+          return;
+        }
+        needsKeyframeRef.current = false;
       }
       const ts = timestamp;
       timestamp += 16_000;
@@ -294,14 +333,16 @@ export function useScreenFeed(options: FeedOptions): FeedState {
         );
       } catch (err) {
         dropped += 1;
+        needsKeyframeRef.current = true;
         setFeed((prev) => ({ ...prev, status: 'error', error: `Chunk rejected: ${(err as Error).message}` }));
       }
     };
 
+    // Pausing freezes the picture, not the stream: the TV keeps encoding, so the
+    // chunks are still decoded (and simply not painted). Dropping them instead
+    // would break the reference chain and smear the picture after resume.
     const unsubscribe = onEvent('video:chunk', ({ chunk }) => {
-      if (cancelled || pausedRef.current) {
-        return;
-      }
+      if (cancelled) return;
       feedChunk(chunk instanceof Uint8Array ? chunk : new Uint8Array(chunk));
     });
 
@@ -311,6 +352,7 @@ export function useScreenFeed(options: FeedOptions): FeedState {
       pending = [];
       pendingBytes = 0;
       arrival.clear();
+      needsKeyframeRef.current = false;
       if (decoder && decoder.state !== 'closed') {
         try {
           decoder.close();
@@ -320,21 +362,24 @@ export function useScreenFeed(options: FeedOptions): FeedState {
       }
       decoder = null;
       configured = false;
-      setFeed((prev) => ({ ...prev, status: 'waiting', error: null }));
+      setFeed((prev) => ({ ...prev, status: 'waiting', error: null, retrying: false }));
+      // The restarted encoder sends its headers on open, but if this view never
+      // sees them it would sit on "waiting" forever: re-arm both watchdogs.
+      armWaiting(5000);
+      requestRestart(1500);
     });
 
     // This TV sends parameter sets and a keyframe only when screenrecord opens
     // its stream. If this view attached mid-stream it would otherwise wait
     // forever, so ask the main process for a fresh burst once.
-    const restartTimer = window.setTimeout(() => {
-      if (cancelled || configured) return;
-      void api.restartVideo().catch(() => undefined);
-    }, 1200);
+    requestRestart(1200);
 
     return () => {
       cancelled = true;
       clearWaiting();
-      window.clearTimeout(restartTimer);
+      if (restartTimer !== null) window.clearTimeout(restartTimer);
+      restartTimer = null;
+      needsKeyframeRef.current = false;
       unsubscribe();
       unsubscribeReset();
       try {
@@ -346,6 +391,17 @@ export function useScreenFeed(options: FeedOptions): FeedState {
       arrival.clear();
     };
   }, [active, transport, frameUrl, canvasRef]);
+
+  // If frames were lost while paused, the resume has to enter on a keyframe.
+  // Give the encoder a moment to produce one, then ask the TV for a fresh burst
+  // instead of leaving a frozen picture on screen.
+  useEffect(() => {
+    if (paused || !active || transport !== 'adb-h264' || !needsKeyframeRef.current) return;
+    const id = window.setTimeout(() => {
+      if (needsKeyframeRef.current) void api.restartVideo().catch(() => undefined);
+    }, 2500);
+    return () => window.clearTimeout(id);
+  }, [paused, active, transport]);
 
   return feed;
 }

@@ -40,6 +40,19 @@ export function PairingModal() {
     void actions.cancelPairing();
   };
 
+  // The dialog is modal, so Escape has to dismiss it like the Cancel button.
+  useEffect(() => {
+    if (!prompt || busy) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.stopPropagation();
+      close();
+    };
+    window.addEventListener('keydown', onKey, true);
+    return () => window.removeEventListener('keydown', onKey, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prompt, busy]);
+
   return (
     <AnimatePresence>
       {prompt && (

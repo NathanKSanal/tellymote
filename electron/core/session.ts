@@ -122,6 +122,7 @@ export class LumaSession {
   private adbIdentity: AdbIdentity | null = null;
   private reconnectTimer: NodeJS.Timeout | null = null;
   private reconnectAttempt = 0;
+  private connectInFlight: Promise<ConnectionState> | null = null;
   private intentionalClose = false;
   private rttSamples: number[] = [];
   private lastAdbProps: { model: string; manufacturer: string; version: string; sdk: number | null; serial: string } | null = null;
@@ -440,6 +441,24 @@ export class LumaSession {
   }
 
   async connect(deviceId: string, options: { isReconnect?: boolean; autoPair?: boolean } = {}): Promise<ConnectionState> {
+    // Auto-reconnect can land on top of a manual connect. Two runs negotiating
+    // at once would close each other's sockets mid-handshake and leave an
+    // orphaned client holding a port on the TV, so they are serialised.
+    const previous = this.connectInFlight;
+    if (previous) {
+      await previous.catch(() => undefined);
+      if (this.connectInFlight && this.connectInFlight !== previous) return this.connect(deviceId, options);
+    }
+    const run = this.negotiate(deviceId, options);
+    this.connectInFlight = run;
+    try {
+      return await run;
+    } finally {
+      if (this.connectInFlight === run) this.connectInFlight = null;
+    }
+  }
+
+  private async negotiate(deviceId: string, options: { isReconnect?: boolean; autoPair?: boolean }): Promise<ConnectionState> {
     const device = this.findDevice(deviceId);
     this.clearReconnectTimer();
     await this.closeTransports();
@@ -456,6 +475,7 @@ export class LumaSession {
 
     const atvOutcome = await this.tryRemote(device, options.autoPair !== false);
     if (atvOutcome === 'pairing') return this.connection;
+    if (this.intentionalClose) return this.abandonConnect();
 
     let adbOk = false;
     if (device.protocols.includes('adb') || (atvOutcome === 'unavailable' && !device.protocols.includes('roku-ecp'))) {
@@ -466,6 +486,7 @@ export class LumaSession {
     if (atvOutcome !== 'connected' && !adbOk && device.protocols.includes('roku-ecp')) {
       rokuOk = await this.tryRoku(device);
     }
+    if (this.intentionalClose) return this.abandonConnect();
 
     if (atvOutcome !== 'connected' && !adbOk && !rokuOk) {
       const error = this.connection.error ?? appError('REMOTE_UNAVAILABLE', 'No supported control protocol accepted the connection.');
@@ -477,10 +498,14 @@ export class LumaSession {
     return this.connection;
   }
 
+  /** A disconnect arrived while transports were still being negotiated. */
+  private async abandonConnect(): Promise<ConnectionState> {
+    await this.closeTransports();
+    this.deps.log.info('connection', 'Connect abandoned: the session was disconnected mid-handshake.');
+    return this.connection;
+  }
+
   private async tryRemote(device: DiscoveredDevice, autoPair: boolean): Promise<'connected' | 'pairing' | 'unavailable'> {
-    if (!device.reachable && !device.protocols.includes('atv-remote-v2') && !device.simulated) {
-      // Still attempt: discovery may have missed the port while the TV was waking.
-    }
     const cert = this.ensureCertificate();
     const client = new AtvRemoteClient(device.host, cert);
     try {
@@ -730,9 +755,7 @@ export class LumaSession {
 
   async startPairing(deviceId: string): Promise<void> {
     const device = this.findDevice(deviceId);
-    if (this.adb) {
-      // Paired for control already; nothing to do unless the user explicitly re-pairs.
-    }
+    if (this.connectInFlight) await this.connectInFlight.catch(() => undefined);
     await this.closeTransports();
     this.activeDeviceId = device.id;
     await this.beginPairing(device);
@@ -741,19 +764,41 @@ export class LumaSession {
   async submitPairingCode(code: string): Promise<void> {
     const session = this.pairing;
     if (!session) throw appError('PAIRING_TIMEOUT', 'There is no active pairing request.');
+
+    // The 16s timeout and both listeners must be torn down on every path: a
+    // 'failure' arriving after submitCode threw would reject a promise nobody
+    // is awaiting, which Node reports as an unhandled rejection.
+    let timer: NodeJS.Timeout | undefined;
+    let settle: (err?: AppError) => void = () => {};
+    const cleanup = (): void => {
+      if (timer) clearTimeout(timer);
+      timer = undefined;
+      session.removeListener('paired', onPaired);
+      session.removeListener('failure', onFailure);
+    };
+    const onPaired = (): void => {
+      cleanup();
+      settle();
+    };
+    const onFailure = (err: AppError): void => {
+      cleanup();
+      settle(err);
+    };
     const paired = new Promise<void>((resolve, reject) => {
-      const timer = setTimeout(() => reject(appError('PAIRING_TIMEOUT', 'The TV did not confirm the pairing code.')), 16000);
-      session.once('paired', () => {
-        clearTimeout(timer);
-        resolve();
-      });
-      session.once('failure', (err: AppError) => {
-        clearTimeout(timer);
-        reject(err);
-      });
+      settle = (err?: AppError) => (err ? reject(err) : resolve());
+      timer = setTimeout(() => {
+        cleanup();
+        settle(appError('PAIRING_TIMEOUT', 'The TV did not confirm the pairing code.'));
+      }, 16000);
+      session.once('paired', onPaired);
+      session.once('failure', onFailure);
     });
-    await session.submitCode(code.trim().toLowerCase());
-    await paired;
+    try {
+      await session.submitCode(code.trim().toLowerCase());
+      await paired;
+    } finally {
+      cleanup();
+    }
   }
 
   cancelPairing(): void {
@@ -857,10 +902,14 @@ export class LumaSession {
       };
     }
     if (this.roku) {
+      // ECP and ADB have no key-down/key-up split, so a release must not fire a
+      // second press: the remote pad sends 'down' then 'up' for every hold.
+      if (action === 'up') return { ok: true, transport: 'roku', note: 'Roku ECP has no key-release event.' };
       const result = await this.roku.key(key);
       return { ok: true, rttMs: result.rttMs, transport: 'roku', note: result.note };
     }
     if (this.adb?.isOpen) {
+      if (action === 'up') return { ok: true, transport: 'adb', note: 'ADB keyevent has no key-release event.' };
       const code = KEY_CODES[key];
       const started = performance.now();
       await this.adb.exec(`input keyevent ${code}`, 5000);
@@ -1183,6 +1232,9 @@ export class LumaSession {
     const trimmed = command.trim();
     if (!trimmed) throw appError('INTERNAL', 'Enter an ADB shell command.');
     if (trimmed.length > 500) throw appError('INTERNAL', 'That command is too long.');
+    if (/[\u0000-\u001f\u007f]/.test(trimmed)) {
+      throw appError('INTERNAL', 'Control characters are not allowed: a newline would start a second command.');
+    }
     if (/[;&|><`$]/.test(trimmed)) {
       throw appError('INTERNAL', 'Command chaining and redirection are not allowed.');
     }

@@ -102,7 +102,8 @@ export interface AppActions {
   forget: (deviceId: string) => Promise<void>;
   rename: (deviceId: string, name: string) => Promise<void>;
   key: (key: RemoteKey, action?: 'tap' | 'down' | 'up') => Promise<void>;
-  text: (text: string) => Promise<void>;
+  /** Resolves false when the TV refused the text, so callers can keep it. */
+  text: (text: string) => Promise<boolean>;
   launchApp: (packageName: string) => Promise<void>;
   startCapture: (preference?: 'h264' | 'png') => Promise<void>;
   stopCapture: () => Promise<void>;
@@ -192,17 +193,22 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
   );
 
   const refresh = useCallback(async () => {
-    const status = await api.status();
-    const frame = await api.captureStatus().catch(() => null);
-    setState((prev) => ({
-      ...prev,
-      devices: status.devices.length ? status.devices : prev.devices,
-      connection: status.connection,
-      metrics: status.metrics,
-      prompt: status.prompt,
-      scan: status.scan,
-      frameUrl: frame?.frameUrl || prev.frameUrl,
-    }));
+    try {
+      const status = await api.status();
+      const frame = await api.captureStatus().catch(() => null);
+      setState((prev) => ({
+        ...prev,
+        devices: status.devices.length ? status.devices : prev.devices,
+        connection: status.connection,
+        metrics: status.metrics,
+        prompt: status.prompt,
+        scan: status.scan,
+        frameUrl: frame?.frameUrl || prev.frameUrl,
+      }));
+    } catch {
+      // Background sync only: the main process re-emits connection state, and
+      // callers already surface the error that triggered this refresh.
+    }
   }, []);
 
   useEffect(() => {
@@ -236,7 +242,11 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
           onEvent('scan:status', (scan) => patch({ scan })),
           onEvent('pairing:prompt', (prompt) => patch({ prompt })),
           onEvent('metrics:changed', (metrics) => patch({ metrics })),
-          onEvent('frame:meta', (frame) => patch({ frameMeta: frame, frameUrl: frame.url })),
+          onEvent('frame:meta', (frame) =>
+            // An empty url means the loopback frame server is not up yet; keep
+            // the last known good one so the live view does not go blank.
+            setState((prev) => ({ ...prev, frameMeta: frame, frameUrl: frame.url || prev.frameUrl })),
+          ),
           onEvent('log:entry', (entry) => setState((prev) => ({ ...prev, logs: [...prev.logs.slice(-349), entry] }))),
           onEvent('toast', (payload) => toast(payload.kind, payload.title, payload.message)),
           onEvent('video:reset', () => {
@@ -373,8 +383,10 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
         try {
           const result = await api.text(text);
           toast('success', 'Text sent', result.note);
+          return true;
         } catch (err) {
           fail(err, 'Could not send text');
+          return false;
         }
       },
       launchApp: async (packageName: string) => {

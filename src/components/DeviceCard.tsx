@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Check,
   Loader2,
@@ -24,10 +24,30 @@ export function DeviceCard({ device, onManage }: { device: DiscoveredDevice; onM
   const [renaming, setRenaming] = useState(false);
   const [name, setName] = useState(device.name);
   const [confirmForget, setConfirmForget] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
   const active = state.connection.deviceId === device.id;
   const connected = active && (state.connection.phase === 'connected' || state.connection.phase === 'degraded');
   const busy =
     active && (state.connection.phase === 'connecting' || state.connection.phase === 'pairing' || state.connection.phase === 'reconnecting');
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.stopPropagation();
+      setMenuOpen(false);
+      menuButton.current?.focus();
+    };
+    window.addEventListener('keydown', onKey, true);
+    return () => window.removeEventListener('keydown', onKey, true);
+  }, [menuOpen]);
+
+  const openRename = () => {
+    setMenuOpen(false);
+    // Seed on open: a cancelled edit or a name that changed since mount must not leak in.
+    setName(device.name);
+    setRenaming(true);
+  };
 
   const remoteReady = device.capabilities.remote.state === 'verified' || device.protocols.includes('atv-remote-v2') || device.protocols.includes('roku-ecp');
   const adbReady = device.capabilities.adb.state === 'verified' || device.protocols.includes('adb');
@@ -67,7 +87,15 @@ export function DeviceCard({ device, onManage }: { device: DiscoveredDevice; onM
           </div>
         </div>
         <div className="relative flex items-center gap-1">
-          <button type="button" className="icon-btn h-7 w-7" onClick={() => setMenuOpen((open) => !open)} aria-label="Device actions">
+          <button
+            type="button"
+            ref={menuButton}
+            className="icon-btn h-7 w-7"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-label="Device actions"
+            aria-haspopup="true"
+            aria-expanded={menuOpen}
+          >
             <MoreHorizontal size={15} />
           </button>
           {menuOpen && (
@@ -77,10 +105,7 @@ export function DeviceCard({ device, onManage }: { device: DiscoveredDevice; onM
                 <button
                   type="button"
                   className="btn btn-ghost h-8 w-full justify-start px-2 text-[11.5px]"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    setRenaming(true);
-                  }}
+                  onClick={openRename}
                 >
                   <Pencil size={13} /> Rename
                 </button>
