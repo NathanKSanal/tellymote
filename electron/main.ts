@@ -27,6 +27,7 @@ import { appError, toAppError } from './core/errors';
 import { KEY_CODES } from './core/remote/atv/messages';
 
 const isDev = !app.isPackaged;
+const PROJECT_SITE = 'https://nathanksanal.github.io/tellymote/';
 const smokeMode = process.argv.includes('--smoke');
 app.setName('TellyMote');
 const channelSet = new Set<string>(CHANNELS);
@@ -157,6 +158,18 @@ async function bootstrap(): Promise<void> {
       }, 2200);
     }
   }
+
+  // A fresh install introduces itself once; updates never re-open the browser.
+  if (!smokeMode && app.isPackaged && claimFirstRun(directory)) {
+    setTimeout(() => {
+      void shell.openExternal(PROJECT_SITE).catch((err: unknown) => {
+        log.warn('app', 'The project website could not be opened in the default browser.', {
+          detail: (err as Error).message,
+        });
+      });
+      log.info('app', 'First run: opened the project website in the default browser.');
+    }, 1500);
+  }
 }
 
 function applyCsp(): void {
@@ -189,6 +202,17 @@ function applyCsp(): void {
 
 function appIconPath(): string {
   return path.join(app.getAppPath(), 'build', 'icon.png');
+}
+
+function claimFirstRun(directory: string): boolean {
+  const marker = path.join(directory, 'first-run-complete');
+  if (fs.existsSync(marker)) return false;
+  try {
+    fs.writeFileSync(marker, new Date().toISOString(), 'utf8');
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function createWindow(): void {

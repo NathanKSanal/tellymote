@@ -160,6 +160,10 @@ Or download the APK from the Android CI workflow / preview release.
 
 ## First run
 
+The first launch of an installed build opens the project site, <https://nathanksanal.github.io/tellymote/>,
+once in your default browser alongside the app. A marker in the userData folder stops it reopening on
+later launches or after updates; dev builds never open it.
+
 1. **Same network.** Put the PC and TV on the same Wi-Fi/LAN. Guest networks and AP isolation block
    every local protocol.
 2. **Scan.** The app scans on startup. `Devices → Scan` reruns it; `Add manually` accepts an IP or
