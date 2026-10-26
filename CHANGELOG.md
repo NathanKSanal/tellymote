@@ -2,6 +2,30 @@
 
 This project was previously called LumaRemote. Entries before 1.3.0 keep that name.
 
+## 1.4.0
+
+- **First launch introduces the project.** A freshly installed build opens
+  <https://nathanksanal.github.io/tellymote/> once in the default browser alongside the app. A marker
+  in the userData folder stops it reopening on later launches or after updates; development builds
+  never open it.
+- **New interface across all seven views.** A broadcast control-room design system: layered light on
+  a warm charcoal surface, hairline instrument panels, tabular mono readouts, and a single amber
+  signal colour that glows only where something is live. The remote is a machined slab, the live
+  feed sits in a monitor bezel, throughput draws as a real sparkline.
+- **Layout holds its shape on smaller laptops.** Two-column instrument layouts now persist down to
+  1024 px; the remote pad and its link readout (transport, key round trip, commands sent) stay
+  in view while the page scrolls.
+- **Motion is deliberate and optional.** View reveals, live-dot breathing and connector pulses all
+  honour `prefers-reduced-motion`; nothing loops for decoration.
+- **Control-room details:** capability rows gained separators and hover, text entry stretches to
+  fill its panel, apps carry a provenance footer, and dashboards gained a connected-since strip.
+- **Fixes:** the app no longer double-fires a key when Enter activates a focused pad button; the
+  device menu closes on Escape and returns focus; rename re-seeds with the current name; the pairing
+  dialog traps focus; session teardown never reports a phase the TV did not confirm; the screen feed
+  retries a dead poll without inventing dropped counts.
+- **Website rebuilt** as a scroll-choreographed film with a captioned 3D cut and a smooth-scroll
+  engine; all motion documentation lives in `docs/MOTION.md`.
+
 ## 1.3.3
 
 - **Remote page no longer dead-ends.** With a saved TV that is currently off, the full pad stays
