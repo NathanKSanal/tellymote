@@ -1,13 +1,13 @@
 {
   "$schema": "https://raw.githubusercontent.com/ScoopInstaller/Scoop/master/schema.json",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "description": "LAN-only remote and live screen viewer for Android TV, Google TV and Roku. No account, no cloud relay, no telemetry.",
   "homepage": "https://github.com/NathanKSanal/tellymote",
   "license": "FSL-1.1-MIT",
   "architecture": {
     "64bit": {
-      "url": "https://github.com/NathanKSanal/tellymote/releases/download/v1.3.3/TellyMote-1.3.3-portable-safe.zip",
-      "hash": "55CC46258EE8C639A0CDDCB0745903E73D4C3C71C92BBFA901A9A4556B7E5B5E"
+      "url": "https://github.com/NathanKSanal/tellymote/releases/download/v1.4.0/TellyMote-1.4.0-portable-safe.zip",
+      "hash": "6927E54DE4B5489AAB8A12D5845E3119B606A3C627951BB4A2FABFCD4DA5A284"
     }
   },
   "shortcuts": [
