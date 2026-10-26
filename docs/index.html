@@ -1,28 +1,80 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="no-js">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>TellyMote — your TV, on your desktop</title>
     <meta
       name="description"
-      content="A narrated scroll film for TellyMote: a remote and live screen viewer for Android TV, Google TV and Roku, running on your own network with no account, no cloud relay and no telemetry."
+      content="A remote and live screen viewer for Android TV, Google TV and Roku. LAN-only: no account, no cloud relay, no telemetry. Scroll the 30-second film."
     />
     <link rel="canonical" href="https://nathanksanal.github.io/tellymote/" />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="TellyMote" />
     <meta property="og:title" content="TellyMote — your TV, on your desktop" />
     <meta
       property="og:description"
-      content="Remote and live screen for Android TV, Google TV and Roku over your LAN. No account, no cloud relay, no telemetry."
+      content="Remote and live screen for Android TV, Google TV and Roku over your own network. No account, no cloud relay, no telemetry."
     />
     <meta property="og:url" content="https://nathanksanal.github.io/tellymote/" />
-    <meta property="og:image" content="https://nathanksanal.github.io/tellymote/media/promo-poster.jpg" />
-    <meta name="theme-color" content="#0b0c0f" />
-    <link rel="icon" href="media/promo-poster.jpg" />
-    <link rel="preload" as="image" href="media/dashboard.png" />
+    <meta property="og:image" content="https://nathanksanal.github.io/tellymote/media/tellymote-3d-poster.jpg" />
+    <meta name="theme-color" content="#0a0b0e" />
+    <link rel="icon" href="media/tellymote-3d-poster.jpg" />
     <link rel="stylesheet" href="site/site.css" />
-    <link rel="stylesheet" href="site/film.css" />
+    <script>
+      /* flips no-js before first paint; reduced class lands here too so
+         the preloader and motion-only chrome never flash */
+      (function () {
+        var de = document.documentElement;
+        de.classList.replace("no-js", "js");
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) de.classList.add("reduced");
+      })();
+    </script>
+    <script>
+      /* rAF watchdog: in occluded webviews and some battery savers the
+         compositor stops scheduling frames while the page still reports
+         "visible", which would freeze GSAP and Lenis mid-animation.
+         Native frames are used whenever they arrive; a 16 ms timer only
+         takes over after 250 ms of silence, and a periodic probe hands
+         control back the moment real frames return. */
+      (function () {
+        var native = window.requestAnimationFrame;
+        if (!native) return;
+        var queue = [], nextId = 1, last = 0, mode = 0, pending = false;
+        var probing = false, lastProbe = 0;
+        function run(now) {
+          last = now;
+          var q = queue; queue = [];
+          for (var i = 0; i < q.length; i++) {
+            try { q[i](now); } catch (e) { setTimeout(function () { throw e; }, 0); }
+          }
+          if (queue.length) schedule();
+        }
+        function schedule() {
+          if (pending || !queue.length) return;
+          pending = true;
+          if (mode === 0) native(function (now) { pending = false; run(now); });
+          else setTimeout(function () { pending = false; run(performance.now()); }, 16);
+        }
+        window.requestAnimationFrame = function (cb) {
+          queue.push(cb);
+          schedule();
+          return nextId++;
+        };
+        window.cancelAnimationFrame = function () {};
+        setInterval(function () {
+          if (!queue.length) return;
+          if (mode === 0 && performance.now() - last > 250) { mode = 1; pending = false; schedule(); }
+          else if (mode === 1 && !probing && performance.now() - lastProbe > 1500) {
+            probing = true;
+            native(function () {
+              probing = false; lastProbe = performance.now();
+              mode = 0; schedule();
+            });
+            setTimeout(function () { probing = false; lastProbe = performance.now(); }, 600);
+          }
+        }, 300);
+      })();
+    </script>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -33,341 +85,592 @@
         "description": "Remote and live screen viewer for Android TV, Google TV and Roku over the local network.",
         "url": "https://github.com/NathanKSanal/tellymote",
         "downloadUrl": "https://github.com/NathanKSanal/tellymote/releases/latest",
-        "license": "https://github.com/NathanKSanal/tellymote/blob/main/LICENSE",
+        "screenshot": "https://nathanksanal.github.io/tellymote/media/dashboard.png",
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "GBP" }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Does TellyMote need developer mode?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Only for part of it. Remote keys work over Android TV Remote v2 without developer options. Text entry, the app list and the live screen use ADB on port 5555, which does need debugging enabled on the TV." }
+          },
+          {
+            "@type": "Question",
+            "name": "Does TellyMote phone home?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. There is no account, no cloud relay and no telemetry. The frame server binds 127.0.0.1 only, behind a per-run token." }
+          },
+          {
+            "@type": "Question",
+            "name": "Does it work with Roku?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Partly. Roku ECP on port 8060 covers keys, app launch and literal text. Roku exposes no screen-capture endpoint, so there is no live view." }
+          },
+          {
+            "@type": "Question",
+            "name": "Why is the build unsigned?",
+            "acceptedAnswer": { "@type": "Answer", "text": "There is no code-signing certificate behind the project, so SmartScreen warns once. Every release publishes SHA-256 hashes, and the source can be built locally." }
+          }
+        ]
       }
     </script>
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
-    <div class="grain" aria-hidden="true"></div>
-    <div class="glow" aria-hidden="true"></div>
-    <div class="grid-bg" aria-hidden="true"></div>
 
-    <header class="topbar">
+    <!-- preloader: skipped entirely for reduced motion and repeat visits -->
+    <div class="preloader" data-preloader aria-hidden="true">
+      <div class="pre-inner">
+        <p class="pre-word mono">TEL<span class="pre-block"></span>MOTE</p>
+        <p class="pre-count mono"><span data-pre-count>000</span></p>
+      </div>
+    </div>
+
+    <!-- custom cursor (fine pointers, motion allowed) -->
+    <div class="cursor" data-cursor aria-hidden="true">
+      <span class="cursor-dot"></span>
+      <span class="cursor-ring"></span>
+      <span class="cursor-label mono" data-cursor-label></span>
+    </div>
+
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="topbar" data-topbar>
       <a class="brand" href="#top" aria-label="TellyMote, back to top">
         <span class="mark" aria-hidden="true">T</span>
-        <span>TellyMote</span>
+        <span class="brand-name">TellyMote</span>
       </a>
       <nav class="topnav" aria-label="Sections">
-        <a href="#remote" data-num="02">Remote</a>
-        <a href="#screen" data-num="03">Screen</a>
-        <a href="#protocols" data-num="04">Protocols</a>
-        <a href="#compare" data-num="06">Compare</a>
+        <a href="#cinema">Film</a>
+        <a href="#remote">Remote</a>
+        <a href="#screen">Screen</a>
+        <a href="#protocols">Protocols</a>
+        <a href="#compare">Compare</a>
       </nav>
       <a class="btn btn-primary btn-sm" href="download.html">Download</a>
     </header>
 
-    <nav class="rail" aria-label="Section progress">
-      <div class="rail-track" aria-hidden="true"><div class="rail-fill"></div></div>
-      <a href="#remote" data-num="02"><span>Remote</span></a>
-      <a href="#screen" data-num="03"><span>Screen</span></a>
-      <a href="#protocols" data-num="04"><span>Protocols</span></a>
-      <a href="#numbers" data-num="05"><span>Numbers</span></a>
-      <a href="#compare" data-num="06"><span>Compare</span></a>
-      <a href="#download" data-num="07"><span>Download</span></a>
+    <nav class="rail" data-rail-nav aria-label="Page sections">
+      <a href="#top"><i></i><span class="mono">01</span><em>Intro</em></a>
+      <a href="#cinema"><i></i><span class="mono">02</span><em>Film</em></a>
+      <a href="#thefilm"><i></i><span class="mono">03</span><em>Player</em></a>
+      <a href="#how"><i></i><span class="mono">04</span><em>Journey</em></a>
+      <a href="#remote"><i></i><span class="mono">05</span><em>Remote</em></a>
+      <a href="#screen"><i></i><span class="mono">06</span><em>Screen</em></a>
+      <a href="#protocols"><i></i><span class="mono">07</span><em>Protocols</em></a>
+      <a href="#numbers"><i></i><span class="mono">08</span><em>Ledger</em></a>
+      <a href="#download"><i></i><span class="mono">09</span><em>Get it</em></a>
     </nav>
 
     <main id="main">
-      <!-- ---------------- hero ---------------- -->
+      <!-- ============================ HERO / SIGNATURE 01 ============================ -->
       <section class="hero" id="top">
-        <div class="wrap hero-grid">
-          <div>
-            <p class="eyebrow">Local network · no account</p>
-            <h1>
-              <span class="line"><span>Your TV,</span></span>
-              <span class="line"><span>on your <em>desktop</em>.</span></span>
-            </h1>
-            <p class="lede hero-sub">
-              A remote and live screen viewer for Android TV, Google TV and Roku. Everything runs on your
-              own network — no account, no cloud relay, no telemetry.
-            </p>
-            <div class="hero-actions">
-              <a class="btn btn-primary" href="download.html">Download for Windows</a>
-              <a class="btn btn-ghost" href="download.html#tour">Watch the 47s tour</a>
-            </div>
-            <div class="hero-meta">
-              <span><i class="dot" aria-hidden="true"></i> Verified on Mi TV 4A</span>
-              <span>Windows · macOS · Linux</span>
-              <span>FSL-1.1-MIT</span>
-            </div>
-          </div>
-
-          <div class="hero-visual">
-            <div class="hero-frame">
-              <img
-                src="media/dashboard.png"
-                width="1280"
-                height="778"
-                alt="TellyMote dashboard showing a saved TV that is not connected, with signal chain, capture rate and capability panels."
-              />
-            </div>
-            <div class="chip-float chip-a"><b>ATV v2</b> paired</div>
-            <div class="chip-float chip-b"><i class="dot" aria-hidden="true"></i> loopback only</div>
-          </div>
+        <div class="hero-bg" aria-hidden="true">
+          <span class="bg-word bg-tel">TEL</span>
+          <span class="bg-word bg-mote">MOTE</span>
         </div>
 
-        <div class="scroll-cue" aria-hidden="true"><span>SCROLL</span><i></i></div>
+        <div class="shell hero-grid">
+          <div class="hero-copy">
+            <p class="meta-line" data-intro><span class="dot"></span> Local network only</p>
+            <h1 class="hero-title" data-split>
+              <span class="line">Your TV,</span>
+              <span class="line">on your</span>
+              <span class="line"><em>desktop.</em></span>
+            </h1>
+            <p class="lede" data-intro>
+              A remote and a live screen for Android TV, Google TV and Roku. Pair once over your own
+              network. Nothing leaves the room.
+            </p>
+            <div class="hero-actions" data-intro>
+              <a class="btn btn-primary" href="download.html" data-magnetic>Download for Windows</a>
+              <button class="btn btn-ghost" type="button" data-open-cinema data-cursor-label="SCRUB">
+                <span class="play-glyph" aria-hidden="true"></span>
+                Scroll the 30s film
+              </button>
+            </div>
+            <dl class="facts" data-intro>
+              <div><dt>Verified on</dt><dd>Xiaomi Mi TV 4A</dd></div>
+              <div><dt>Platforms</dt><dd>Windows · macOS · Linux</dd></div>
+              <div><dt>Licence</dt><dd>FSL-1.1-MIT</dd></div>
+            </dl>
+          </div>
+
+          <!-- SIGNATURE MOMENT 01 — the interface as one physical object -->
+          <figure class="hero-figure" data-intro>
+            <div class="stage3d" data-stage3d>
+              <span class="stage-glow" aria-hidden="true"></span>
+              <div class="plate" data-plate="0">
+                <img src="media/devices.png" width="1280" height="778" decoding="async"
+                     alt="TellyMote device discovery: televisions found on the local network." />
+              </div>
+              <div class="plate" data-plate="1">
+                <img src="media/dashboard.png" width="1280" height="778" decoding="async"
+                     alt="The TellyMote dashboard with the saved living-room TV and connection state." />
+              </div>
+              <div class="plate" data-plate="2">
+                <img src="media/remote.png" width="1280" height="778" decoding="async"
+                     alt="The TellyMote remote view with D-pad, volume and keyboard bindings." />
+              </div>
+              <span class="stage-rim" aria-hidden="true"></span>
+            </div>
+            <figcaption>
+              Fig. 01 — Discovery, dashboard, remote: the real interface, one object.
+              <a href="#thefilm" data-open-film>Watch the film with sound</a>.
+            </figcaption>
+          </figure>
+        </div>
+
+        <div class="shell hero-strip" data-hero-strip>
+          <div><b>3</b><span>protocols spoken</span></div>
+          <div><b>166</b><span>automated tests</span></div>
+          <div><b>0</b><span>accounts, relays, trackers</span></div>
+          <div><b>720p</b><span>capture verified on hardware</span></div>
+        </div>
+
+        <div class="scroll-cue" aria-hidden="true"><span class="cue-line"></span><span class="mono">SCROLL</span></div>
       </section>
 
-      <!-- ---------------- remote ---------------- -->
+      <!-- ============================ MARQUEE ============================ -->
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track mono">
+          <span>No account</span><i></i><span>No cloud relay</span><i></i><span>No telemetry</span><i></i>
+          <span>LAN only</span><i></i><span>FSL-1.1-MIT</span><i></i><span>Three protocols</span><i></i>
+          <span>No account</span><i></i><span>No cloud relay</span><i></i><span>No telemetry</span><i></i>
+          <span>LAN only</span><i></i><span>FSL-1.1-MIT</span><i></i><span>Three protocols</span><i></i>
+        </div>
+      </div>
+
+      <!-- ============================ CINEMA — SCROLL-SCRUBBED FILM ============================ -->
+      <section class="cinema" id="cinema">
+        <h2 class="vh">The film, driven by your scroll</h2>
+        <div class="cinema-stage">
+          <video
+            class="cinema-video"
+            data-cinema-video
+            src="media/tellymote-3d.mp4"
+            poster="media/tellymote-3d-poster.jpg"
+            muted
+            playsinline
+            preload="auto"
+            aria-label="The thirty-second TellyMote film. On desktop, scrolling moves the playhead; the full player with sound follows below."
+          ></video>
+          <div class="cinema-scan" aria-hidden="true"></div>
+
+          <div class="cinema-hud" aria-hidden="true">
+            <div class="hud-top">
+              <span class="hud-chip"><i class="rec"></i>SCROLL&nbsp;·&nbsp;SCRUB</span>
+              <span class="hud-chip mono" data-hud-tc>00:00:00:00</span>
+              <span class="hud-chip mono" data-hud-ch>CH 01 / 06</span>
+            </div>
+            <div class="hud-bottom">
+              <p class="cinema-caption" data-cinema-caption>This is TellyMote. Your TV, on your desktop.</p>
+              <div class="cinema-bar">
+                <span class="cinema-fill" data-cinema-fill></span>
+                <span class="cinema-ticks">
+                  <i style="left: 16.66%"></i><i style="left: 33.33%"></i><i style="left: 50%"></i>
+                  <i style="left: 66.66%"></i><i style="left: 83.33%"></i>
+                </span>
+              </div>
+              <div class="hud-row">
+                <span class="mono" data-hud-frame>F 0000 / 0720</span>
+                <span class="hud-hint mono" data-cinema-hint>You are the playhead — keep scrolling</span>
+                <button class="hud-cta mono" type="button" data-cinema-sound hidden>▶&nbsp;WATCH WITH SOUND</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================ FILM / PLAYER ============================ -->
+      <section class="film" id="thefilm">
+        <div class="shell">
+          <div class="section-head" data-reveal>
+            <p class="meta-line">Fig. 02 — The film, in full</p>
+            <h2>Thirty seconds, six chapters, one room.</h2>
+            <p class="lede">
+              Real 3D geometry, rendered offline, with the app's own screenshots as textures. No stock
+              footage, no cloud service, no AI video.
+            </p>
+          </div>
+
+          <div class="film-grid">
+            <div class="player" id="player" data-reveal>
+              <video
+                id="film-video"
+                src="media/tellymote-3d.mp4"
+                poster="media/tellymote-3d-poster.jpg"
+                controls
+                preload="metadata"
+                playsinline
+              >
+                <track kind="captions" src="media/tellymote-3d.vtt" srclang="en" label="English" default />
+              </video>
+
+              <button class="poster-play" type="button" data-play aria-label="Play film">
+                <span class="poster-play-glyph" aria-hidden="true"></span>
+                <span class="poster-play-label">0:30 · 6 chapters</span>
+              </button>
+
+              <div class="player-controls">
+                <button class="pbtn" type="button" data-play aria-label="Play film">
+                  <span class="picon" data-icon>▶</span>
+                </button>
+                <div class="ptrack" data-seek role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="30" aria-valuenow="0">
+                  <span class="pfill" data-fill></span>
+                  <span class="pticks" aria-hidden="true">
+                    <i style="left: 16.6%"></i><i style="left: 33.3%"></i><i style="left: 50%"></i>
+                    <i style="left: 66.6%"></i><i style="left: 83.3%"></i>
+                  </span>
+                </div>
+                <span class="ptime mono" data-time>0:00 / 0:30</span>
+                <button class="pbtn" type="button" data-mute aria-label="Unmute film">
+                  <span class="picon" data-mute-icon>MUTED</span>
+                </button>
+                <button class="pbtn" type="button" data-captions aria-pressed="true" aria-label="Toggle captions">CC</button>
+                <button class="pbtn" type="button" data-fullscreen aria-label="Fullscreen">⛶</button>
+              </div>
+            </div>
+
+            <div class="film-side" data-reveal>
+              <ol class="chapters" aria-label="Film chapters">
+                <li><button type="button" data-chapter="0"><span class="mono">0:00</span> Title</button></li>
+                <li><button type="button" data-chapter="5"><span class="mono">0:05</span> Remote and live screen</button></li>
+                <li><button type="button" data-chapter="10"><span class="mono">0:10</span> No cloud</button></li>
+                <li><button type="button" data-chapter="15"><span class="mono">0:15</span> Three protocols</button></li>
+                <li><button type="button" data-chapter="20"><span class="mono">0:20</span> The ledger</button></li>
+                <li><button type="button" data-chapter="25"><span class="mono">0:25</span> Where to get it</button></li>
+              </ol>
+
+              <dl class="film-meta">
+                <div><dt>Runtime</dt><dd>0:30</dd></div>
+                <div><dt>Resolution</dt><dd>1920 × 1080 · 24 fps</dd></div>
+                <div><dt>Rendered</dt><dd>Blender · Workbench</dd></div>
+                <div><dt>Audio</dt><dd>−16.6 LUFS · −4.4 dBTP</dd></div>
+              </dl>
+            </div>
+          </div>
+
+          <div class="film-below">
+            <details class="transcript" data-transcript>
+              <summary>Read the transcript</summary>
+              <ol>
+                <li data-t="0.6"><span class="mono">0:00</span> This is TellyMote. Your TV, on your desktop.</li>
+                <li data-t="5.6"><span class="mono">0:05</span> A remote, and a live screen, on your own network.</li>
+                <li data-t="10.6"><span class="mono">0:10</span> No account, no cloud relay, no telemetry.</li>
+                <li data-t="15.6"><span class="mono">0:15</span> Android TV Remote version two, ADB, and Roku ECP.</li>
+                <li data-t="20.6"><span class="mono">0:20</span> A hundred and sixty-six tests. Three protocols. Zero accounts.</li>
+                <li data-t="25.4"><span class="mono">0:25</span> Free at github dot com slash Nathan K Sanal slash tellymote.</li>
+              </ol>
+            </details>
+
+            <figure class="promo" data-reveal>
+              <video
+                controls
+                preload="none"
+                playsinline
+                poster="media/promo-poster.jpg"
+                aria-label="The 47-second hands-on tour of the TellyMote interface"
+              >
+                <source src="media/tellymote-promo.mp4" type="video/mp4" />
+                <track kind="captions" src="media/tellymote-promo.vtt" srclang="en" label="English" />
+              </video>
+              <figcaption>Prefer the real thing? The 47-second hands-on tour, narrated.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================ HOW IT WORKS ============================ -->
+      <section class="how" id="how">
+        <div class="shell">
+          <div class="section-head" data-reveal>
+            <p class="meta-line">Fig. 03 — How it works</p>
+            <h2>Find it, pair it, forget it.</h2>
+          </div>
+          <div class="how-wrap">
+            <svg class="how-wire" viewBox="0 0 1200 140" preserveAspectRatio="none" aria-hidden="true">
+              <path class="wire-track" d="M20,70 C180,70 240,26 400,26 C560,26 620,114 780,114 C920,114 1020,70 1180,70" />
+              <path class="wire-draw" data-wire-draw d="M20,70 C180,70 240,26 400,26 C560,26 620,114 780,114 C920,114 1020,70 1180,70" />
+              <circle class="wire-node" data-node="0" cx="20" cy="70" r="6" />
+              <circle class="wire-node" data-node="1" cx="600" cy="70" r="6" />
+              <circle class="wire-node" data-node="2" cx="1180" cy="70" r="6" />
+              <circle class="wire-marker" data-wire-marker r="8" />
+            </svg>
+            <ol class="how-grid">
+              <li data-step="0" data-reveal>
+                <span class="step-num mono">01</span>
+                <h3>Find</h3>
+                <p>SSDP, mDNS and a direct TCP probe of your subnet run in parallel. Saved TVs reconnect without a scan.</p>
+                <p class="step-meta mono">Ports 6466 · 5555 · 8060</p>
+              </li>
+              <li data-step="1" data-reveal>
+                <span class="step-num mono">02</span>
+                <h3>Pair</h3>
+                <p>The TV shows a six-character code. Type it once; the client certificate stays on your laptop.</p>
+                <p class="step-meta mono">RSA key · stored locally</p>
+              </li>
+              <li data-step="2" data-reveal>
+                <span class="step-num mono">03</span>
+                <h3>Control</h3>
+                <p>Keys, volume and typed text go straight from your machine to the TV. Round-trip time is measured per press.</p>
+                <p class="step-meta mono">No relay in the path</p>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================ REMOTE / SIGNATURE 02 ============================ -->
       <section class="remote" id="remote">
         <div class="remote-sticky">
-          <div class="wrap remote-grid">
-            <div>
-              <p class="eyebrow"><span class="idx">02</span>Remote</p>
-              <h2 class="reveal">Every key, from your keyboard.</h2>
+          <span class="remote-watermark" aria-hidden="true">5555</span>
+          <div class="shell remote-grid">
+            <div class="remote-copy">
+              <p class="meta-line">Fig. 04 — Remote</p>
+              <h2>Every key, from your keyboard.</h2>
               <div class="steps">
-                <div class="step">
-                  <h3>D-pad and OK</h3>
-                  <p>Arrow keys move. Enter selects. Hold an arrow and it repeats, like the plastic remote.</p>
-                  <div class="kbd-row"><span class="kbd">↑</span><span class="kbd">↓</span><span class="kbd">←</span><span class="kbd">→</span><span class="kbd">Enter</span></div>
+                <div class="step" data-beat="0">
+                  <h3><span class="mono step-index" data-step-index>01 / 03</span> D-pad and OK</h3>
+                  <p>Arrows move, Enter selects. Hold an arrow and it repeats like the plastic remote.</p>
+                  <div class="keys"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd><kbd>Enter</kbd></div>
                 </div>
-                <div class="step">
-                  <h3>Volume and transport</h3>
+                <div class="step" data-beat="1">
+                  <h3><span class="mono step-index" data-step-index>02 / 03</span> Volume and transport</h3>
                   <p>Page Up and Down for volume, Space for play/pause, F8 to mute. Every binding is editable.</p>
-                  <div class="kbd-row"><span class="kbd">PgUp</span><span class="kbd">PgDn</span><span class="kbd">Space</span><span class="kbd">F8</span></div>
+                  <div class="keys"><kbd>PgUp</kbd><kbd>PgDn</kbd><kbd>Space</kbd><kbd>F8</kbd></div>
                 </div>
-                <div class="step">
-                  <h3>Text, the fast way</h3>
+                <div class="step" data-beat="2">
+                  <h3><span class="mono step-index" data-step-index>03 / 03</span> Text, the fast way</h3>
                   <p>Type a YouTube search on a real keyboard instead of hunting letters on a grid.</p>
-                  <div class="kbd-row"><span class="kbd">Ctrl</span><span class="kbd">+</span><span class="kbd">V</span></div>
+                  <div class="keys"><kbd>Ctrl</kbd><kbd>V</kbd></div>
                 </div>
               </div>
             </div>
 
-            <div class="pad-wrap">
-              <div class="pad-img">
-                <img src="media/remote.png" width="1280" height="778" alt="TellyMote remote view with the D-pad, volume, transport keys and keyboard bindings." />
+            <figure class="pad-figure">
+              <div class="pad" data-pad>
+                <img src="media/remote.png" width="1280" height="778" alt="The TellyMote remote view: D-pad, volume, transport keys and keyboard bindings." />
+                <span class="pad-key" data-key="up" aria-hidden="true"></span>
+                <span class="pad-key" data-key="ok" aria-hidden="true"></span>
+                <span class="pad-key" data-key="vol" aria-hidden="true"></span>
+                <span class="pad-key" data-key="text" aria-hidden="true"></span>
+                <span class="pad-type" data-pad-type aria-hidden="true"><span data-typed></span><i class="caret"></i></span>
               </div>
-              <span class="pad-key" data-key="up" aria-hidden="true"></span>
-              <span class="pad-key" data-key="ok" aria-hidden="true"></span>
-              <span class="pad-key" data-key="back" aria-hidden="true"></span>
-            </div>
+              <figcaption>Bindings are editable per key. Latency is measured on every press.</figcaption>
+            </figure>
           </div>
         </div>
       </section>
 
-      <!-- ---------------- screen ---------------- -->
+      <!-- ============================ LIVE SCREEN / SIGNATURE 03 ============================ -->
       <section class="screen-pin" id="screen">
         <div class="screen-sticky">
-          <div class="wrap">
-            <div class="screen-head">
-              <p class="eyebrow"><span class="idx">03</span>Live screen</p>
-              <h2 class="reveal">The TV screen, on your laptop.</h2>
+          <div class="shell">
+            <div class="center-head">
+              <p class="meta-line">Fig. 05 — Live screen</p>
+              <h2>The TV screen, on your laptop.</h2>
             </div>
-            <figure class="screen-figure">
-              <div class="frame-badge"><span class="rec" aria-hidden="true"></span><span class="frame-count">0000</span><span>× 720 PNG frames</span></div>
-              <div class="reveal-frame">
-                <img src="media/dashboard.png" width="1280" height="778" alt="The TellyMote window with the live screen panel open." />
+            <figure class="reveal-figure">
+              <div class="frame-badge"><span class="rec" aria-hidden="true"></span><span class="count mono" data-count>0000</span><span>scroll frames</span></div>
+              <div class="reveal-frame" data-reveal-frame>
+                <img class="rf-remote" src="media/remote.png" width="1280" height="778" alt="" aria-hidden="true" />
+                <img class="rf-screen" src="media/dashboard.png" width="1280" height="778" alt="The TellyMote window with the live screen panel open." />
                 <span class="scan" aria-hidden="true"></span>
               </div>
-              <figcaption class="reveal-caption">Shown with no TV attached — live frames need an authorised ADB connection</figcaption>
+              <figcaption>Shown with no TV attached. Live frames need an authorised ADB connection.</figcaption>
             </figure>
-            <p class="lede screen-note">
-              Capture needs ADB debugging enabled on the TV. DRM apps render black — that is the DRM, not a bug.
+            <p class="lede center-note">
+              Capture requires ADB debugging on the TV. DRM apps render black — that is the DRM, not a bug.
             </p>
           </div>
         </div>
       </section>
 
-      <!-- ---------------- protocols ---------------- -->
-      <section class="protocols section" id="protocols">
-        <div class="wrap">
-          <p class="eyebrow"><span class="idx">04</span>Protocols</p>
-          <h2 class="reveal" style="max-width: 20ch">Three protocols. One window.</h2>
-          <p class="lede reveal" style="margin-top: 18px">
-            No platform-tools, no vendor app, no account. TellyMote speaks the protocols the devices already
-            expose on your network.
-          </p>
-          <div class="h-rail" style="margin-top: 42px">
-            <article class="p-card">
-              <span class="tag">6466 / 6467</span>
-              <div>
+      <!-- ============================ PROTOCOLS ============================ -->
+      <section class="protocols" id="protocols">
+        <div class="protocols-pin">
+          <div class="shell">
+            <div class="section-head">
+              <p class="meta-line">Fig. 06 — Protocols</p>
+              <h2>Three protocols. One window.</h2>
+              <p class="lede">No vendor app, no platform-tools, no account. TellyMote speaks what the devices already expose.</p>
+            </div>
+
+            <svg class="net" viewBox="0 0 1200 190" preserveAspectRatio="none" aria-hidden="true">
+              <g class="net-nodes">
+                <rect class="net-box" x="10" y="70" width="150" height="52" rx="8" />
+                <text class="net-label" x="85" y="101" text-anchor="middle">LAPTOP</text>
+                <rect class="net-box" x="1040" y="70" width="150" height="52" rx="8" />
+                <text class="net-label" x="1115" y="101" text-anchor="middle">TV / ROKU</text>
+              </g>
+              <path class="net-wire" data-wire="0" d="M160,80 C420,80 420,34 640,34 C860,34 860,80 1040,80" />
+              <path class="net-wire" data-wire="1" d="M160,96 C420,96 420,96 640,96 C860,96 860,96 1040,96" />
+              <path class="net-wire" data-wire="2" d="M160,112 C420,112 420,158 640,158 C860,158 860,112 1040,112" />
+              <text class="net-port" data-port="0" x="600" y="24" text-anchor="middle">6466/6467</text>
+              <text class="net-port" data-port="1" x="600" y="86" text-anchor="middle">5555</text>
+              <text class="net-port" data-port="2" x="600" y="180" text-anchor="middle">8060</text>
+            </svg>
+          </div>
+
+          <div class="rail-clip">
+            <div class="rail-track" data-protos>
+              <article class="proto">
+                <span class="port">6466<span class="slash">/</span>6467</span>
                 <h3>Android TV Remote v2</h3>
-                <p>Native pairing with the six-character code the TV shows, then authenticated key events.</p>
-              </div>
-              <div class="meta">
-                <div><span>Pairing</span><b>RSA + code</b></div>
-                <div><span>Controls</span><b>Keys, power, volume</b></div>
-                <div><span>Status</span><b>Verified on Mi TV 4A</b></div>
-              </div>
-            </article>
-            <article class="p-card">
-              <span class="tag">5555</span>
-              <div>
+                <p>Pairing with the six-character code on screen, then authenticated key events.</p>
+                <dl>
+                  <div><dt>Pairing</dt><dd>RSA + code</dd></div>
+                  <div><dt>Controls</dt><dd>Keys, power, volume</dd></div>
+                  <div><dt>Status</dt><dd>Verified on Mi TV 4A</dd></div>
+                </dl>
+              </article>
+              <article class="proto">
+                <span class="port">5555</span>
                 <h3>ADB host protocol</h3>
-                <p>Implemented in-app, so there is nothing to install. Unlocks text entry, the app list and capture.</p>
-              </div>
-              <div class="meta">
-                <div><span>Auth</span><b>RSA key exchange</b></div>
-                <div><span>Unlocks</span><b>Text, apps, screen</b></div>
-                <div><span>Status</span><b>Optional, off by default</b></div>
-              </div>
-            </article>
-            <article class="p-card">
-              <span class="tag">8060</span>
-              <div>
+                <p>Implemented in-app, so there is nothing to install. Unlocks text, apps and capture.</p>
+                <dl>
+                  <div><dt>Auth</dt><dd>RSA key exchange</dd></div>
+                  <div><dt>Unlocks</dt><dd>Text, apps, screen</dd></div>
+                  <div><dt>Status</dt><dd>Optional, off by default</dd></div>
+                </dl>
+              </article>
+              <article class="proto">
+                <span class="port">8060</span>
                 <h3>Roku ECP</h3>
-                <p>Remote keys, app launch and literal text over HTTP. Roku exposes no capture endpoint.</p>
-              </div>
-              <div class="meta">
-                <div><span>Transport</span><b>HTTP / ECP</b></div>
-                <div><span>Live screen</span><b>Not possible</b></div>
-                <div><span>Status</span><b>Implemented</b></div>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <!-- ---------------- numbers ---------------- -->
-      <section class="numbers" id="numbers">
-        <div class="wrap">
-          <div class="num-grid">
-            <div class="num">
-              <b data-value="166">166</b>
-              <span>automated tests</span>
-              <small>Real TLS and TCP mock servers</small>
-            </div>
-            <div class="num">
-              <b data-value="3">3</b>
-              <span>protocols spoken</span>
-              <small>ATV v2 · ADB · Roku ECP</small>
-            </div>
-            <div class="num">
-              <b data-value="0">0</b>
-              <span>accounts, relays, trackers</span>
-              <small>Frames stay on the machine</small>
-            </div>
-            <div class="num">
-              <b data-value="720" data-suffix="p">720p</b>
-              <span>verified capture</span>
-              <small>Measured on real hardware</small>
+                <p>Keys, app launch and literal text over HTTP. Roku exposes no capture endpoint.</p>
+                <dl>
+                  <div><dt>Transport</dt><dd>HTTP / ECP</dd></div>
+                  <div><dt>Live screen</dt><dd>Not possible</dd></div>
+                  <div><dt>Status</dt><dd>Implemented</dd></div>
+                </dl>
+              </article>
+              <article class="proto proto-end">
+                <span class="proto-end-mark mono">0</span>
+                <h3>Cloud relays used</h3>
+                <p>Every packet you just read about stays on the network it was born on.</p>
+                <a class="proto-link" href="https://github.com/NathanKSanal/tellymote/blob/main/docs/PRIVACY.md">Read the privacy note →</a>
+              </article>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- ---------------- compare ---------------- -->
-      <section class="section" id="compare">
-        <div class="wrap">
-          <p class="eyebrow"><span class="idx">06</span>Compare</p>
-          <h2 class="reveal" style="max-width: 24ch">Where it fits, and where it doesn't.</h2>
-          <div class="compare-wrap" style="margin-top: 40px">
-            <table class="compare">
-              <caption>Capabilities as understood in October 2026. scrcpy is the better tool for pure mirroring.</caption>
+      <!-- ============================ NUMBERS ============================ -->
+      <section class="ledger" id="numbers">
+        <div class="shell">
+          <div class="section-head" data-reveal>
+            <p class="meta-line">Fig. 07 — The ledger</p>
+            <h2>Facts, counted once.</h2>
+          </div>
+          <div class="ledger-grid">
+            <div data-reveal><b><span data-value="166">166</span></b><span>automated tests</span><small>Real TLS and TCP mock servers</small></div>
+            <div data-reveal><b><span data-value="3">3</span></b><span>protocols spoken</span><small>ATV v2 · ADB · Roku ECP</small></div>
+            <div data-reveal><b><span data-value="0">0</span></b><span>accounts or relays</span><small>Frames stay on this machine</small></div>
+            <div data-reveal><b><span data-value="720">720</span><i class="unit">p</i></b><span>verified capture</span><small>Measured on real hardware</small></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================ COMPARE ============================ -->
+      <section class="compare-section" id="compare">
+        <div class="shell">
+          <div class="section-head" data-reveal>
+            <p class="meta-line">Fig. 08 — Compare</p>
+            <h2>Where it fits, and where it does not.</h2>
+          </div>
+          <div class="table-wrap" data-reveal>
+            <table>
+              <caption>Capabilities as understood in October 2026. For pure mirroring, scrcpy is the better tool.</caption>
               <thead>
-                <tr>
-                  <th scope="col">Tool</th>
-                  <th scope="col">Control from PC</th>
-                  <th scope="col">Live screen</th>
-                  <th scope="col">Developer mode</th>
-                  <th scope="col">Account</th>
-                </tr>
+                <tr><th scope="col">Tool</th><th scope="col">Control from PC</th><th scope="col">Live screen</th><th scope="col">Developer mode</th><th scope="col">Account</th></tr>
               </thead>
               <tbody>
-                <tr class="own">
-                  <th scope="row">TellyMote</th>
-                  <td class="yes">Yes — D-pad, volume, media keys</td>
-                  <td>Yes, over authorised ADB</td>
-                  <td>Only for text, apps and capture</td>
-                  <td class="yes">None</td>
-                </tr>
-                <tr>
-                  <th scope="row">scrcpy</th>
-                  <td class="yes">Yes, with the mirror</td>
-                  <td class="yes">Yes, lowest latency</td>
-                  <td class="no">Required</td>
-                  <td class="yes">None</td>
-                </tr>
-                <tr>
-                  <th scope="row">Google TV app</th>
-                  <td class="no">Phone only</td>
-                  <td class="no">No</td>
-                  <td class="no">No</td>
-                  <td class="no">Google account</td>
-                </tr>
+                <tr class="own"><th scope="row">TellyMote</th><td>Yes — D-pad, volume, media</td><td>Yes, over authorised ADB</td><td>Only for text, apps, capture</td><td>None</td></tr>
+                <tr><th scope="row">scrcpy</th><td>Yes, with the mirror</td><td>Yes, lowest latency</td><td>Required</td><td>None</td></tr>
+                <tr><th scope="row">Google TV app</th><td>Phone only</td><td>No</td><td>No</td><td>Google account</td></tr>
               </tbody>
             </table>
           </div>
-          <p class="lede reveal" style="margin-top: 26px; font-size: 15px">
-            Full comparison, including Yatse and Unified Remote, on the
-            <a href="alternatives.html">alternatives page</a>.
-          </p>
+          <p class="after-table" data-reveal>Full comparison, including Yatse and Unified Remote, on the <a href="alternatives.html">alternatives page</a>.</p>
         </div>
       </section>
 
-      <!-- ---------------- download ---------------- -->
-      <section class="cta" id="download">
-        <div class="wrap">
-          <p class="eyebrow" style="text-align: center">No sign-up · no relay</p>
-          <h2 class="reveal">Put the remote back in your hands.</h2>
-          <p class="lede" style="margin-top: 16px">
-            Free for non-competing use. Windows installer and a no-install portable ZIP; macOS and Linux builds
-            come from CI.
-          </p>
-          <div class="cta-actions">
-            <a class="btn btn-primary" href="download.html">Download TellyMote</a>
-            <a class="btn btn-ghost" href="https://github.com/NathanKSanal/tellymote">View the source</a>
+      <!-- ============================ FAQ ============================ -->
+      <section class="faq" id="faq">
+        <div class="shell faq-grid">
+          <div data-reveal>
+            <p class="meta-line">Fig. 09 — Questions</p>
+            <h2>Straight answers.</h2>
           </div>
-          <p class="cta-note">Unsigned build · SHA-256 in every release · 8.5 MB promo video on the download page</p>
+          <div class="faq-list">
+            <details data-reveal>
+              <summary>Does it need developer mode?</summary>
+              <p>Only for part of it. Remote keys work over Android TV Remote v2 without developer options. Text entry, the app list and the live screen use ADB on port 5555, which does need debugging enabled on the TV.</p>
+            </details>
+            <details data-reveal>
+              <summary>Does TellyMote phone home?</summary>
+              <p>No. There is no account, no cloud relay and no telemetry. The frame server binds 127.0.0.1 only, behind a per-run token.</p>
+            </details>
+            <details data-reveal>
+              <summary>Does it work with Roku?</summary>
+              <p>Partly. Roku ECP on port 8060 covers keys, app launch and literal text. Roku exposes no screen-capture endpoint, so there is no live view.</p>
+            </details>
+            <details data-reveal>
+              <summary>Why is the app unsigned?</summary>
+              <p>There is no code-signing certificate behind the project, so SmartScreen warns once. Every release publishes SHA-256 hashes, and you can build it yourself from source.</p>
+            </details>
+            <details data-reveal>
+              <summary>Is the Android app ready?</summary>
+              <p>Not yet. It is a discovery-only preview: it finds TVs and lists the protocols they answer, but cannot pair or control them.</p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================ DOWNLOAD ============================ -->
+      <section class="download" id="download">
+        <div class="shell download-grid">
+          <div data-reveal>
+            <p class="meta-line">Fig. 10 — Download</p>
+            <h2>Put the remote back<br />in your hands.</h2>
+            <p class="lede">Free for non-competing use. Windows installer and a no-install portable ZIP; macOS and Linux builds come from CI.</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="download.html" data-magnetic>Download TellyMote</a>
+              <a class="btn btn-ghost" href="https://github.com/NathanKSanal/tellymote">View the source</a>
+            </div>
+            <p class="fineprint mono">Unsigned build · SHA-256 in every release · 8.5 MB narrated tour on the download page</p>
+          </div>
+          <dl class="install-matrix" data-reveal>
+            <div><dt>Windows</dt><dd>Installer <span class="dim">or</span> portable ZIP</dd></div>
+            <div><dt>macOS</dt><dd>arm64 <span class="dim">and</span> Intel, unsigned</dd></div>
+            <div><dt>Linux</dt><dd>AppImage, x86_64</dd></div>
+            <div><dt>Android</dt><dd>Discovery-only preview</dd></div>
+          </dl>
         </div>
       </section>
     </main>
 
-    <footer class="foot wrap">
-      <span>FSL-1.1-MIT · free non-competing use</span>
-      <nav aria-label="Footer">
-        <a href="download.html">Download</a>
-        <a href="alternatives.html">Compare</a>
-        <a href="https://github.com/NathanKSanal/tellymote">Source</a>
-        <a href="https://github.com/NathanKSanal/tellymote/blob/main/docs/PRIVACY.md">Privacy</a>
-        <a href="https://github.com/NathanKSanal/tellymote/blob/main/TRADEMARK.md">Trademark</a>
-      </nav>
+    <footer class="foot">
+      <div class="shell foot-inner">
+        <span>FSL-1.1-MIT · free non-competing use</span>
+        <nav aria-label="Footer">
+          <a href="download.html">Download</a>
+          <a href="alternatives.html">Compare</a>
+          <a href="https://github.com/NathanKSanal/tellymote">Source</a>
+          <a href="https://github.com/NathanKSanal/tellymote/blob/main/docs/PRIVACY.md">Privacy</a>
+          <a href="https://github.com/NathanKSanal/tellymote/blob/main/TRADEMARK.md">Trademark</a>
+        </nav>
+      </div>
     </footer>
-
-    <!-- film controls -->
-    <div class="caption" id="caption" aria-live="polite"><span></span></div>
-
-    <aside class="film-hud" id="film-hud" aria-label="Narration controls">
-      <button class="hud-btn" id="hud-play" type="button" aria-label="Play or pause narration">
-        <span class="hud-icon" aria-hidden="true">❚❚</span>
-      </button>
-      <div class="hud-body">
-        <div class="hud-row">
-          <span class="hud-chapter" id="hud-chapter">01 · Hero</span>
-          <span class="hud-time" id="hud-time">0:00 / 0:00</span>
-        </div>
-        <div class="hud-track"><span class="hud-fill" id="hud-fill"></span></div>
-      </div>
-      <div class="hud-bars" id="hud-bars" aria-hidden="true">
-        <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-      </div>
-      <button class="hud-btn hud-mute" id="hud-mute" type="button" aria-label="Mute narration">Mute</button>
-    </aside>
-
-    <div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
-      <div class="gate-card">
-        <div class="gate-mark" aria-hidden="true">T</div>
-        <p class="eyebrow">A 58-second scroll film</p>
-        <h2 id="gate-title">TellyMote, narrated.</h2>
-        <p class="gate-sub">
-          Scroll and the film plays itself: each chapter speaks when you reach it. Seven chapters, no autoplay
-          until you ask.
-        </p>
-        <div class="gate-actions">
-          <button class="btn btn-primary" id="gate-start" type="button">Play with narration</button>
-          <button class="btn btn-ghost" id="gate-silent" type="button">Continue without sound</button>
-        </div>
-        <p class="gate-note">Voice: synthetic. Captions always on screen. Press M to mute.</p>
-      </div>
-    </div>
 
     <script src="site/vendor/gsap.min.js"></script>
     <script src="site/vendor/ScrollTrigger.min.js"></script>
+    <script src="site/vendor/lenis.min.js"></script>
     <script src="site/site.js"></script>
-    <script src="site/film.js"></script>
-
+    <script src="site/player.js"></script>
   </body>
 </html>
